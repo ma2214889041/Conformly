@@ -1,0 +1,11 @@
+name: firsteck
+version: 0.1.0
+description: "Firsteck Hermes — medical-compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR. Ships CPS workflow tracking, regulation lookup, and client/NB-letter triage skills backed by the Firsteck Vault."
+author: "Firsteck Bio"
+license: "Proprietary"
+metadata:
+  hermes:
+    tags: [medical, ivdr, ivd, compliance, regulatory-affairs, cps, eu]
+    vault_path_env: FIRSTECK_VAULT
+    default_vault_path: "~/firsteck-vault"
+hooks: []
