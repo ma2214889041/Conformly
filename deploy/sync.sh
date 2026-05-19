@@ -145,14 +145,14 @@ fi
 ok "$URL/api/health responding"
 echo "    $HEALTH" | python3 -m json.tool 2>/dev/null | head -8
 
-LANDING=$(curl -sfI "$URL/" | head -1 || echo "")
-[[ "$LANDING" == *"200"* ]] && ok "landing page $LANDING" || err "landing page broken: $LANDING"
-
-DEMO=$(curl -sfI "$URL/demo" | head -1 || echo "")
-[[ "$DEMO" == *"200"* ]] && ok "/demo $DEMO" || err "/demo broken: $DEMO"
-
-DASHBOARD=$(curl -sfI "$URL/dashboard" | head -1 || echo "")
-[[ "$DASHBOARD" == *"200"* ]] && ok "/dashboard $DASHBOARD" || err "/dashboard broken: $DASHBOARD"
+for path in / /dashboard /documents /analysis /reports /nb-simulation /chat /knowledge /legacy/demo; do
+    line=$(curl -sfI "$URL$path" | head -1 || echo "")
+    if [[ "$line" == *"200"* ]]; then
+        ok "$path $line"
+    else
+        err "$path broken: ${line:-(no response)}"
+    fi
+done
 
 echo
 ok "deploy complete · local $LOCAL_SHA = remote $LOCAL_SHA = live"
