@@ -1,6 +1,6 @@
 # Conformly
 
-> **IVDR/CRO regulatory co-pilot** for Chinese in-vitro diagnostic manufacturers entering the EU.
+> **IVDR/CRO regulatory co-pilot** for in-vitro diagnostic manufacturers entering the EU.
 >
 > Built on top of the **[NousResearch Hermes Agent](https://github.com/NousResearch/hermes-agent)** framework.
 
@@ -16,7 +16,7 @@ Conformly turns a generic AI assistant into a domain-expert IVDR junior consulta
 4. **Generates** GSPR gap analyses by comparing a client's technical documentation against IVDR Annex I.
 5. **Logs** every action to an auditable JSON-Lines trail so the work survives an ISO 13485 review.
 
-Architecture is the **LLM-Wiki** pattern popularised by Karpathy (April 2026): all knowledge lives as plain markdown inside `vault/`, and a long-context LLM (Gemini 2.5 Pro, 2M window) reads it directly. No vector DB, no embeddings, no RAG infrastructure.
+Architecture is the **LLM-Wiki** pattern popularised by long-context: all knowledge lives as plain markdown inside `vault/`, and a long-context LLM (Gemini 2.5 Pro, 2M window) reads it directly. No vector DB, no embeddings, no RAG infrastructure.
 
 ---
 
@@ -31,7 +31,7 @@ conformly/
 │   ├── skills/              # markdown SKILL.md procedure files
 │   └── tests/               # pytest suite (passes today)
 │
-├── vault/           # the knowledge base (Karpathy LLM-Wiki style)
+├── vault/           # the knowledge base (long-context LLM design)
 │   ├── raw/                 # raw inputs: regulations, NB letters, client docs
 │   ├── notes/               # agent-curated structured notes (procedures, regulations)
 │   ├── clients/             # one markdown per client, with YAML frontmatter
@@ -53,7 +53,7 @@ conformly/
 |------|-------|-------|
 | `conformly_get_client_status(client_id)` | ✅ 16 | Reads `clients/<id>.md`, parses frontmatter + risk table + next-actions checklist |
 | `conformly_list_clients(status, sort_by, ivdr_class)` | ✅ 18 | Portfolio overview — feeds the 20-client dashboard |
-| `conformly_search_regulation(query, doc_type)` | ✅ 21 | Returns the regulation catalog (LLM-Wiki style — no embeddings) |
+| `conformly_search_regulation(query, doc_type)` | ✅ 21 | Returns the regulation catalog (no embeddings — long-context LLM reads markdown directly) |
 | `conformly_parse_nb_letter(letter_path or letter_text)` | ✅ 16 | LLM-backed extraction; demo hero #1 |
 | `conformly_gspr_gap_analyzer(client_id, focus_clauses)` | ✅ 19 | LLM-backed Annex I check; demo hero #2 |
 

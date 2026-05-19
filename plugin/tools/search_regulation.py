@@ -1,6 +1,6 @@
 """conformly_search_regulation — regulation catalog for LLM-driven retrieval.
 
-LLM-Wiki design (Karpathy 2026-04): instead of running our own embeddings
+Long-context design: instead of running our own embeddings
 or vector search, we expose the regulation library as a structured
 catalog. The calling agent reads the catalog, decides which files are
 worth reading in full, then uses Hermes' built-in ``read_file`` to pull

@@ -177,7 +177,7 @@ def _real_llm_caller(
     )
 
     instructions = (
-        "You are a senior regulatory-affairs reviewer assessing a Chinese IVD "
+        "You are a senior regulatory-affairs reviewer assessing an IVD "
         "manufacturer's technical evidence against the EU IVDR Annex I General "
         "Safety and Performance Requirements (GSPR).\n\n"
         "You will be given:\n"

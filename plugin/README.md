@@ -1,6 +1,6 @@
 # Conformly Plugin
 
-A Hermes Agent plugin that turns the agent into a medical-compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR (Regulation 2017/746).
+A Hermes Agent plugin that turns the agent into a medical-compliance co-pilot for IVD manufacturers entering the EU under IVDR (Regulation 2017/746).
 
 ## What's inside
 

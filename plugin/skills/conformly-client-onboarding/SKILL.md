@@ -22,7 +22,7 @@ Use when the user says:
 
 ### Phase 1 — Intake (ask the user these in order; stop after 2–3 questions per turn)
 
-1. **Company basics**: legal name (Chinese + English), HQ city, founding year, key personnel.
+1. **Company basics**: legal name (global + English), HQ city, founding year, key personnel.
 2. **Product**: trade name, intended purpose, sample type, target analyte(s).
 3. **Existing markets**: what regulatory clearances already held? (NMPA, FDA, ASEAN, etc.)
 4. **EU strategy**: first time in EU? Self-test (Class B+)? Companion diagnostic?

@@ -136,7 +136,7 @@ export const SCENARIOS: Scenario[] = [
     hook: "One call. Annex I clause-by-clause. Long-context reasoning, no RAG.",
     duration: "~25 s",
     description:
-      "Conformly reads the full curated GSPR checklist (20 clauses) plus the client dossier in one Gemini 2.5 Pro call. No vector DB, no embeddings — pure long-context Karpathy-style LLM-Wiki.",
+      "Conformly reads the full curated GSPR checklist (20 clauses) plus the client dossier in one Gemini 2.5 Pro call. No vector DB, no embeddings — pure long-context long-context LLM design.",
     timeline: [
       {
         kind: "user",
@@ -300,7 +300,7 @@ export const SCENARIOS: Scenario[] = [
             day_in_journey: 196,
             risk_level: "high",
             risk_count: 4,
-            next_action_text: "跟进 CE Parere Unico 结果",
+            next_action_text: "Follow up CE Parere Unico decision",
             next_action_due: "2026-05-28",
           },
           {
@@ -311,7 +311,7 @@ export const SCENARIOS: Scenario[] = [
             day_in_journey: 27,
             risk_level: "high",
             risk_count: 4,
-            next_action_text: "完成 IVDR gap analysis report 交付",
+            next_action_text: "Deliver IVDR gap analysis report",
             next_action_due: "2026-05-30",
           },
           {
@@ -322,7 +322,7 @@ export const SCENARIOS: Scenario[] = [
             day_in_journey: 338,
             risk_level: "medium",
             risk_count: 1,
-            next_action_text: "Torino 入组评估",
+            next_action_text: "Turin enrolment review",
             next_action_due: "2026-06-30",
           },
         ],

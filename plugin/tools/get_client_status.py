@@ -135,9 +135,9 @@ def _filter_risks(rows: List[Dict[str, str]], include_history: bool) -> List[Dic
 def _derive_risk_level(risk_rows: List[Dict[str, str]]) -> str:
     """Roll the risk table up to a single label.
 
-    Looks at the severity column (Chinese 严重度 or English Severity). Any
-    high/major row → 'high'. Any medium → 'medium'. Otherwise 'low' (or
-    'none' when the table is empty).
+    Looks at the severity column (English Severity, or legacy CJK 严重度).
+    Any high/major row → 'high'. Any medium → 'medium'. Otherwise 'low'
+    (or 'none' when the table is empty).
     """
     if not risk_rows:
         return "none"
@@ -182,8 +182,8 @@ def parse_client_dossier(md_path: Path, include_history: bool = False) -> Dict[s
     fm, body = split_frontmatter(text)
     sections = extract_sections(body)
 
-    # Risks — section title is in Chinese in the existing dossiers; also
-    # accept English/Italian variants so future files don't need a code change.
+    # Risks — section title is English/Italian in current dossiers; the
+    # CJK alternates remain for backward compatibility with the v0 fixtures.
     risks_md = find_section(sections, "已识别风险", "Risks", "Rischi")
     risks_table = parse_md_table(risks_md)
     risks = _filter_risks(risks_table, include_history)

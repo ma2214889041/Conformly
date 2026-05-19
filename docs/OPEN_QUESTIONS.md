@@ -20,7 +20,7 @@
 - (b) 用 OpenRouter → 你提供 `OPENROUTER_API_KEY`,但接受可能 ≤1M token 上下文
 - 选哪个?
 
-**推荐:** (a) — 直连 Google,拿满 2M 窗口,这是你 LLM-Wiki 架构的关键前提。
+**推荐:** (a) — 直连 Google,拿满 2M 窗口,这是你 long-context LLM architecture的关键前提。
 
 ---
 
@@ -143,7 +143,7 @@ Hermes 默认开了 `conformly` toolset 后,5 个工具会一起进 LLM 的 sche
 
 Hermes 默认 SOUL.md 是通用助理。要不要改造成:
 
-> "You are Conformly — a compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR. You speak Chinese, English, and Italian fluently. You always cite IVDR articles when answering regulatory questions, and you never give legal advice — you defer to the user's RA lead."
+> "You are Conformly — a compliance co-pilot for IVD manufacturers entering the EU under IVDR. You speak global, English, and Italian fluently. You always cite IVDR articles when answering regulatory questions, and you never give legal advice — you defer to the user's RA lead."
 
 **待你拍板:** 同意改吗?用上面这版还是你另写?
 

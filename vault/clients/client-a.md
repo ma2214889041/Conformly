@@ -2,7 +2,7 @@
 client_id: CLIENT-A
 codename: "Shenzhen MoleQ Diagnostics"
 country: CN
-contact_lang: [zh, en]
+contact_lang: [en, zh]
 ivd_class: C
 product_type: "Molecular IVD — Multiplex RT-PCR Kit"
 indication: "Respiratory viral panel (Influenza A/B, RSV, SARS-CoV-2)"
@@ -15,74 +15,74 @@ status: active
 risk_flags: ["NB clock-stop possible", "Clinical evidence gap on RSV strain coverage"]
 ---
 
-# Client A — Shenzhen MoleQ Diagnostics(脱敏代号)
+# Client A — Shenzhen MoleQ Diagnostics (codename)
 
-> ⚠️ 模拟数据 / Hackathon Demo。所有公司名、产品名、人物、日期均为虚构。
+> Demo / mock data. Company, product, and dates are fictional.
 
-## 1. 公司基本面
+## 1. Company
 
-- **总部**:深圳南山区
-- **成立**:2017
-- **核心团队**:CEO Dr. Liang Wei(原 BGI),CTO Dr. Sun Min(分子诊断 12 年)
-- **现有市场**:中国 NMPA 三类证(2022 拿到),东南亚 5 国注册
-- **欧盟战略**:首次进入 EU,以呼吸道多重 PCR 为先导产品
+- HQ: Shenzhen, Nanshan district
+- Founded: 2017
+- Leadership: CEO Dr. Liang Wei (ex-BGI), CTO Dr. Sun Min (12 years molecular diagnostics)
+- Existing markets: NMPA Class III (2022), Southeast-Asia (5 markets)
+- EU strategy: first EU launch with a respiratory multiplex PCR panel
 
-## 2. 产品 (Device under assessment)
+## 2. Product
 
-| 字段 | 值 |
-|------|----|
-| 商品名 | MoleQ Respi-4 Panel |
-| Intended Purpose | 鼻咽拭子样本中 Flu A/B + RSV + SARS-CoV-2 核酸定性检测 |
-| Use Setting | 中心实验室 + 中型医院 |
-| IVDR Classification | **Class C** (Rule 3(a) — 传染性病原体检测) |
-| Reference standard | RT-PCR + 测序 |
-| Software | Yes — 内嵌结果判读算法 (MoleQ-Analytica v2.3) |
+| Field | Value |
+|-------|-------|
+| Trade name | MoleQ Respi-4 Panel |
+| Intended Purpose | Qualitative nucleic-acid detection of Flu A/B, RSV, SARS-CoV-2 from nasopharyngeal swabs |
+| Use setting | Central lab + mid-size hospital |
+| IVDR classification | **Class C** (Rule 3(a) — detection of transmissible agents) |
+| Reference standard | RT-PCR + sequencing |
+| Software | Yes — embedded interpretation algorithm (MoleQ-Analytica v2.3) |
 
-## 3. 监管路径
+## 3. Regulatory route
 
-- **Conformity Assessment**:Annex IX (Full QMS + Tech Doc Assessment)
-- **Notified Body**:BSI Netherlands(NB 2797)— 合同已签,提交窗口 2026 Q3
-- **CPS 必要性**:✅ 是(Class C + 新分析声明组合)
-- **EU Authorised Representative**:Obelis (Brussels) — 已委任
+- **Conformity assessment**: Annex IX (full QMS + Tech Doc assessment)
+- **Notified Body**: BSI Netherlands (NB 2797) — contract signed, submission window 2026 Q3
+- **CPS required**: yes (Class C + new analytical claim)
+- **EU Authorised Representative**: Obelis (Brussels) — appointed
 
-## 4. 当前进展 (CPS Workflow 视角)
+## 4. Current progress
 
-参见 [[cps-workflow]](../notes/procedures/cps-workflow.md)
+See [[cps-workflow]](../notes/procedures/cps-workflow.md).
 
-- ✅ Phase 0 — Evaluation 完成(2025-12)
-- ✅ Phase 1 — Site selection:主中心 Ospedale San Raffaele (Milano)
-- ✅ Phase 2 — Quotation:合同 € 487,000 已签
-- ✅ Phase 2.5 — Protocol writing v1.4 完成
-- 🟡 Phase 3 — SUBMISSION(**当前阶段**)
-  - ✅ CE 提交 2026-03-18
-  - 🟡 等待 Parere Unico(预计 2026-05-28)
-  - ⬜ MinSal 申请尚未递交
-- ⬜ GREEN LIGHT #1 — Admin & RA(未通过)
+- Phase 0 — Evaluation completed (2025-12)
+- Phase 1 — Site selection: lead site Ospedale San Raffaele (Milan)
+- Phase 2 — Quotation: contract signed for € 487,000
+- Phase 2.5 — Protocol writing v1.4 finalised
+- Phase 3 — SUBMISSION (**current**)
+  - CE submission 2026-03-18
+  - Waiting for Parere Unico (expected 2026-05-28)
+  - MinSal application not yet filed
+- GREEN LIGHT #1 — Admin & RA (not passed)
 
-## 5. 已识别风险
+## 5. Risks
 
-| # | 风险 | 严重度 | 当前应对 |
-|---|------|--------|---------|
-| R1 | RSV 临床证据样本量不足(预估 n=42, 需 n≥80) | 高 | 拟增 2 个卫星中心(Bologna + Padova) |
-| R2 | 软件 v2.3 未提交 IEC 62304 文档 | 高 | 客户工程团队 2026-06-15 前补齐 |
-| R3 | 中文版 IFU 翻译不符合 EU 语言要求(需 24 种语言) | 中 | 与 Obelis 协商分阶段策略 |
-| R4 | NB 审核员档期紧(BSI 2026 Q3 满档) | 中 | 已锁定 2026-09 时间窗 |
+| # | Issue | Severity | Mitigation |
+|---|-------|----------|------------|
+| R1 | RSV clinical evidence underpowered (est. n=42, need n>=80) | High | Activate 2 satellite sites (Bologna + Padova) |
+| R2 | Software v2.3 missing IEC 62304 documentation | High | Client engineering to deliver by 2026-06-15 |
+| R3 | Multilingual IFU coverage incomplete (Article 17) | Medium | Phased rollout agreed with Obelis |
+| R4 | BSI auditor capacity tight in 2026 Q3 | Medium | Slot locked for 2026-09 |
 
-## 6. 关键沟通记录
+## 6. Recent communications
 
-- 2026-05-12 — 与 CTO Sun Min 电话:确认 RSV 增点方案
-- 2026-04-30 — BSI 邮件:要求补充 Annex II IFU 中的稳定性数据
-- 2026-04-15 — 与 PI Prof. Rossi(San Raffaele)视频会:protocol amendment #1 审议
+- 2026-05-12 — Call with CTO Sun Min: confirmed RSV satellite-site plan
+- 2026-04-30 — BSI email: request for additional Annex II stability data in IFU
+- 2026-04-15 — Video call with PI Prof. Rossi (San Raffaele): protocol amendment #1 reviewed
 
-## 7. 下一步动作(Agent 应主动追踪)
+## 7. Next actions
 
-- [ ] 2026-05-28 — 跟进 CE Parere Unico 结果
-- [ ] 2026-06-01 — 启动 MinSal 申请准备
-- [ ] 2026-06-15 — 客户软件文档 (IEC 62304) deadline check
-- [ ] 2026-06-30 — Bologna / Padova 卫星中心可行性确认
+- [ ] 2026-05-28 — Follow up CE Parere Unico decision
+- [ ] 2026-06-01 — Start MinSal application package
+- [ ] 2026-06-15 — Client software IEC 62304 documentation deadline
+- [ ] 2026-06-30 — Confirm feasibility of Bologna + Padova satellite sites
 
-## 8. 文件索引
+## 8. File index
 
-- 原始资料:`raw/clients/client-a/`(待客户上传)
-- NB 来信:`raw/nb_letters/`(2026-04-30 BSI 邮件待存)
-- 项目日志:`projects/client-a-cps-2026/`(待建)
+- Raw inputs: `raw/clients/client-a/` (to be uploaded by client)
+- NB letters: `raw/nb_letters/` (2026-04-30 BSI email pending archive)
+- Project log: `projects/client-a-cps-2026/`

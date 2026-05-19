@@ -55,7 +55,7 @@ Use this skill whenever the user asks about a specific client's progress, e.g.:
    - <enumerate from cps-workflow.md for the current phase's gate>
    ```
 
-4. **Language**: respond in the user's language (Chinese / English / Italian). The vault content is mixed (IT for Asana steps, EN for headers, ZH for risk notes) — translate inline if the user is asking in a different language.
+4. **Language**: respond in the user's language (global / English / Italian). The vault content is mixed (IT for Asana steps, EN for headers, ZH for risk notes) — translate inline if the user is asking in a different language.
 
 5. **Do NOT invent dates or progress**. If the client file is silent on a step, mark it as ⬜ Unknown and recommend a question to ask the client.
 

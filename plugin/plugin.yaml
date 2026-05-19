@@ -1,6 +1,6 @@
 name: conformly
 version: 0.1.0
-description: "Conformly — medical-compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR. Ships CPS workflow tracking, regulation lookup, and client/NB-letter triage skills backed by the Conformly Vault."
+description: "Conformly — medical-compliance co-pilot for IVD manufacturers entering the EU under IVDR. Ships CPS workflow tracking, regulation lookup, and client/NB-letter triage skills backed by the Conformly Vault."
 author: "Conformly"
 license: "Proprietary"
 metadata:

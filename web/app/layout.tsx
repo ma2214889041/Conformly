@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Conformly — IVDR compliance co-pilot",
     description:
-      "Built on Hermes Agent. Karpathy-style LLM-Wiki architecture. 90 unit tests. One Vultr VPS.",
+      "Autonomous IVDR co-pilot powered by Gemini 3. Five tools, 90 unit tests, deployed on a single Vultr VPS.",
     url: "https://conformly.promp.com",
     siteName: "Conformly",
   },
