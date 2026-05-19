@@ -29,7 +29,7 @@ set -euo pipefail
 # 0. Required inputs
 # ---------------------------------------------------------------------------
 : "${DOMAIN:?DOMAIN env var required (e.g. conformly.promp.com)}"
-: "${ACME_EMAIL:?ACME_EMAIL env var required (for Let's Encrypt)}"
+: "${ACME_EMAIL:?ACME_EMAIL env var required for LetsEncrypt registration}"
 GEMINI_API_KEY="${GEMINI_API_KEY:-}"
 
 REPO_URL="https://github.com/ma2214889041/Conformly.git"
