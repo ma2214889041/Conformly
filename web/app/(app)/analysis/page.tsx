@@ -104,7 +104,7 @@ function SuggestionsTab() {
     setElapsed(0);
     startedAt.current = Date.now();
     toast({
-      title: "Calling Gemini 3 Pro",
+      title: "Calling Gemini 3",
       body: "Benching the GSPR checklist against the SHM-7300 dossier…",
       tone: "info",
     });
@@ -139,7 +139,7 @@ function SuggestionsTab() {
               <div className="flex flex-wrap items-center gap-2 mb-1.5">
                 <Badge tone="sky">
                   <Sparkles className="h-3 w-3" />
-                  Gemini 3 Pro
+                  Gemini 3 Flash
                 </Badge>
                 <Badge tone={live ? "green" : "neutral"}>
                   <Zap className="h-3 w-3" />
@@ -152,7 +152,7 @@ function SuggestionsTab() {
                 </span>
               </div>
               <p className="text-[13px] text-ink-600 leading-relaxed">
-                Press <strong>Run live GSPR analysis</strong> to call Gemini 3 Pro through the FastAPI sidecar. It reads the full GSPR checklist and the project dossier in one prompt, scores every clause, and returns a typed gap report — typically in 12-16 seconds.
+                Press <strong>Run live GSPR analysis</strong> to call Gemini 3 through the FastAPI sidecar. It reads the full GSPR checklist and the project dossier in one prompt, scores every clause, and returns a typed gap report — typically in 8-14 seconds.
               </p>
             </div>
             <div className="flex flex-col gap-2 shrink-0">

@@ -57,13 +57,13 @@ export default function LandingPage() {
             </Link>
             <Link href="/nb-simulation" className="btn-lg btn-secondary">
               <Zap className="h-4 w-4" />
-              See real Gemini in action
+              See Gemini 3 in action
             </Link>
           </div>
 
           <p className="mt-8 text-xs font-mono text-ink-500">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-success animate-pulse-soft mr-1.5 align-middle" />
-            press "Run live" on /nb-simulation · Gemini 3 Pro parses a real TÜV SÜD letter in ~10&nbsp;s
+            press "Run live" on /nb-simulation · Gemini 3 parses a real TÜV SÜD letter in ~10&nbsp;s
           </p>
         </div>
       </section>
@@ -100,7 +100,7 @@ export default function LandingPage() {
                 Compliance is visible from Day 1
               </h3>
               <ul className="space-y-2 text-[14px] text-ink-700 leading-relaxed">
-                <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Drop in a design file. Gemini 3 Pro reads it against every relevant regulation.</li>
+                <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Drop in a design file. Gemini 3 reads it against every relevant regulation.</li>
                 <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Every clause scored in real time. Every claim traced back to a source.</li>
                 <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Simulated Notified Body letter <strong>before</strong> you submit, so you fix what they'd flag.</li>
                 <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Multi-version vault — roll back to any past state and re-analyse.</li>
@@ -184,7 +184,7 @@ export default function LandingPage() {
               icon={<Brain className="h-5 w-5" />}
               metric="−65%"
               label="Cognitive load"
-              detail="A GSPR gap analysis touching 380 sub-requirements across 2,500+ pages of regulation, MDCG guidance and ISO/IEC/CLSI standards becomes one Gemini 3 Pro call — every clause scored, evidence quoted."
+              detail="A GSPR gap analysis touching 380 sub-requirements across 2,500+ pages of regulation, MDCG guidance and ISO/IEC/CLSI standards becomes one Gemini 3 call — every clause scored, evidence quoted."
             />
             <Impact
               icon={<DollarSign className="h-5 w-5" />}
@@ -219,7 +219,7 @@ export default function LandingPage() {
             />
             <Step
               n="02"
-              title="Gemini 3 Pro reads them"
+              title="Gemini 3 reads them"
               body="2-million-token context fits the entire regulation corpus plus your dossier in one prompt. No RAG."
             />
             <Step
@@ -323,8 +323,8 @@ export default function LandingPage() {
             <TryCard
               n="01"
               icon={<Gauge className="h-5 w-5" />}
-              title="Run real Gemini"
-              body="Open /nb-simulation, press 'Run live'. Gemini 3 Pro reads a real TÜV SÜD letter in ~10 seconds and returns 4 structured findings."
+              title="Run Gemini 3 live"
+              body="Open /nb-simulation, press 'Run live'. Gemini 3 reads a real TÜV SÜD letter in ~10 seconds and returns 4 structured findings."
               href="/nb-simulation"
               cta="Open NB simulator"
             />

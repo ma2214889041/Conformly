@@ -62,7 +62,7 @@ export default function NbSimulationPage() {
     setElapsed(0);
     startedAt.current = Date.now();
     toast({
-      title: "Calling Gemini 3 Pro",
+      title: "Calling Gemini 3",
       body: "Reading the TÜV SÜD deficiency letter from your vault…",
       tone: "info",
     });
@@ -102,7 +102,7 @@ export default function NbSimulationPage() {
       <PageHeader
         eyebrow="Notified Body simulator"
         title="Predict the deficiency letter before you submit"
-        subtitle="Conformly reads the full submission as a Notified Body would. It returns a simulated deficiency letter — by clause, by severity, with the affected documents named — and tracks score improvement across runs. Backed by Gemini 3 Pro's 2M-token context, trained on patterns from seven IVDR Notified Bodies."
+        subtitle="Conformly reads the full submission as a Notified Body would. It returns a simulated deficiency letter — by clause, by severity, with the affected documents named — and tracks score improvement across runs. Backed by Gemini 3's 1M-token context, grounded on patterns from seven IVDR Notified Bodies."
       />
 
       {/* Run simulation banner */}
@@ -113,7 +113,7 @@ export default function NbSimulationPage() {
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <Badge tone="sky">
                   <Sparkles className="h-3 w-3" />
-                  Gemini 3 Pro
+                  Gemini 3 Flash
                 </Badge>
                 <Badge tone={liveResult ? "green" : "neutral"}>
                   <RadioTower className="h-3 w-3" />
@@ -131,7 +131,7 @@ export default function NbSimulationPage() {
                 Run a new Notified Body review
               </h2>
               <p className="text-[13px] text-ink-600 leading-relaxed">
-                Press <span className="font-semibold text-ink-900">Run live</span> to call Gemini 3 Pro through the FastAPI sidecar.
+                Press <span className="font-semibold text-ink-900">Run live</span> to call Gemini 3 through the FastAPI sidecar.
                 It reads the TÜV SÜD deficiency letter in your vault (<code className="font-mono text-[11.5px] text-ink-700">projects/shm-7300/nb-letters/</code>) and returns a structured deficiency plan — typically in 8–14 seconds.
               </p>
               {liveError && (
@@ -144,7 +144,7 @@ export default function NbSimulationPage() {
             <div className="flex flex-col gap-2 shrink-0">
               <Button variant="primary" size="lg" onClick={runLive} disabled={running}>
                 {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-                {running ? `Calling Gemini · ${(elapsed / 1000).toFixed(1)} s` : "Run live (real Gemini)"}
+                {running ? `Calling Gemini · ${(elapsed / 1000).toFixed(1)} s` : "Run live with Gemini 3"}
               </Button>
               {liveResult && (
                 <Button variant="secondary" size="sm" onClick={() => setLiveResult(null)}>
@@ -183,7 +183,7 @@ function LiveResultBanner({ result }: { result: LiveResult }) {
         <div className="flex flex-wrap items-center gap-3 mb-3">
           <Badge tone="green">
             <Zap className="h-3 w-3" />
-            Live Gemini 3 Pro response
+            Live Gemini 3 response
           </Badge>
           <Badge tone="outline">{result.nb_name}</Badge>
           <Badge tone="outline">{result.nb_number}</Badge>
@@ -215,7 +215,7 @@ function VerdictCard({ liveResult }: { liveResult: LiveResult | null }) {
     ? (liveResult.counts.Critical > 0 ? "Likely to receive deficiencies" : liveResult.counts.Major > 0 ? "Submission needs revision" : "Ready to submit")
     : NB_SIM.verdict;
   const verdictDetail = liveResult
-    ? `${liveResult.counts.total} findings extracted directly by Gemini 3 Pro from the Notified Body letter — see structured rows below.`
+    ? `${liveResult.counts.total} findings extracted directly by Gemini 3 from the Notified Body letter — see structured rows below.`
     : NB_SIM.verdict_detail;
   return (
     <Card>
@@ -236,7 +236,7 @@ function VerdictCard({ liveResult }: { liveResult: LiveResult | null }) {
           <SectionLabel>Sources consulted</SectionLabel>
           <ul className="space-y-1 text-[12px] text-ink-700">
             {(liveResult
-              ? ["Gemini 3 Pro · 2M-token context", "TÜV SÜD letter (vault)", "IVDR Annex I", "ISO 10993-5", "ISO 14971 §7.3"]
+              ? ["Gemini 3 · long context", "TÜV SÜD letter (vault)", "IVDR Annex I", "ISO 10993-5", "ISO 14971 §7.3"]
               : NB_SIM.sources
             ).map((s) => (
               <li key={s} className="flex items-start gap-2">
@@ -299,7 +299,7 @@ function FindingsCard({ liveResult }: { liveResult: LiveResult | null }) {
         <p className="text-[11px] text-ink-500 mt-4 font-mono">
           {liveResult
             ? "These rows came back from the live Gemini call. Generate / mark / ignore actions write to the audit log."
-            : "Click any finding row to expand. Press 'Run live' above to replace with a real Gemini extraction."}
+            : "Click any finding row to expand. Press 'Run live' above to replace with a live Gemini extraction."}
         </p>
       </CardBody>
     </Card>

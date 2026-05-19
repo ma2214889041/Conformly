@@ -70,7 +70,7 @@ export default function PitchPage() {
           Compliance becomes a continuous design system
         </h3>
         <ul className="space-y-2 text-[15px] text-ink-700">
-          <li>· Drop in a design file — Gemini 3 Pro reads it against every relevant regulation.</li>
+          <li>· Drop in a design file — Gemini 3 reads it against every relevant regulation.</li>
           <li>· Every clause scored in real time. Every claim traced to its source.</li>
           <li>· Simulated NB review predicts the deficiency letter before submission.</li>
           <li>· Multi-version vault — roll back, re-analyse, audit anything.</li>
@@ -119,8 +119,8 @@ export default function PitchPage() {
         </pre>
         <p className="mt-4 text-[14px] text-ink-600">
           No vector database. No embeddings. No infrastructure to drift out of sync.
-          The whole regulatory corpus + a client's dossier fits in Gemini 3 Pro's
-          2M-token context window in one prompt.
+          The whole regulatory corpus + a client's dossier fits in Gemini 3's
+          long-context window in one prompt.
         </p>
       </Slide>
 
@@ -130,7 +130,7 @@ export default function PitchPage() {
           Three things changed in 2026 that made Conformly possible
         </h3>
         <ol className="space-y-3 text-[15px] text-ink-700">
-          <li><strong className="text-ink-900">1. Long-context.</strong> Gemini 3 Pro's 2M-token window replaces every RAG stack that existed before. The whole regulation fits in one prompt.</li>
+          <li><strong className="text-ink-900">1. Long-context.</strong> Gemini 3's 1M-token window replaces every RAG stack that existed before. The whole regulation fits in one prompt.</li>
           <li><strong className="text-ink-900">2. Agent frameworks.</strong> Hermes Agent (open-source) gives us tool dispatch, model routing, HITL gates, multi-platform gateway — out of the box.</li>
           <li><strong className="text-ink-900">3. IVDR deadlines.</strong> Class C / D transition deadlines (2027) mean every IVD on the market today must re-certify. Demand inflection point.</li>
         </ol>
@@ -171,7 +171,7 @@ export default function PitchPage() {
           From hackathon proof to multi-tenant SaaS
         </h3>
         <div className="space-y-3 text-[14px] text-ink-700">
-          <Row k="Hackathon" v="✅ 5 tools · 90 unit tests · live HTTPS · real Gemini integration on 2 pages" />
+          <Row k="Hackathon" v="✅ 5 tools · 90 unit tests · live HTTPS · live Gemini integration on 2 pages" />
           <Row k="Q3 2026" v="Dogfood across 20 real engagements at a Bologna CRO. Full multimodal PDF ingestion. Slack/Telegram HITL approvals." />
           <Row k="Q4 2026" v="Open beta. EUDAMED integration. MDCG 2022-9 SSP generator. Real-time NB-portal sync." />
           <Row k="2027" v="Multi-tenant SaaS · MDR (EU 2017/745) extension · UK/MHRA · FDA bridge." />
@@ -186,7 +186,7 @@ export default function PitchPage() {
         <div className="space-y-3 text-[14px] text-ink-700">
           <Row k="Product" v={<Link href="/dashboard" className="text-accent underline">conformly.gopromp.com/dashboard</Link>} />
           <Row k="Real Gemini demo" v={<Link href="/nb-simulation" className="text-accent underline">conformly.gopromp.com/nb-simulation → Run live</Link>} />
-          <Row k="Live chat" v={<Link href="/chat" className="text-accent underline">conformly.gopromp.com/chat → Live · Gemini 3 Pro</Link>} />
+          <Row k="Live chat" v={<Link href="/chat" className="text-accent underline">conformly.gopromp.com/chat → Live · Gemini 3</Link>} />
           <Row k="GitHub" v={<a href="https://github.com/ma2214889041/Conformly" className="text-accent underline" target="_blank" rel="noreferrer">github.com/ma2214889041/Conformly</a>} />
         </div>
         <div className="mt-8 text-center">

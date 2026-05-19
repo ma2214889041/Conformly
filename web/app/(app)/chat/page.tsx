@@ -85,7 +85,7 @@ export default function ChatPage() {
         ],
       }));
       toast({
-        title: `Reply from ${j.data.model || "Gemini 3 Pro"}`,
+        title: `Reply from ${j.data.model || "Gemini 3"}`,
         body: `${j.data.duration_ms} ms · ${j.data.cites?.length ?? 0} citations`,
         tone: "success",
       });
@@ -133,7 +133,7 @@ export default function ChatPage() {
               setLiveMode((m) => !m);
               toast({
                 title: liveMode ? "Switched to scripted replies" : "Switched to live Gemini replies",
-                body: liveMode ? "Faster but stub responses." : "Real Gemini 3 Pro · ~8-14 s per turn.",
+                body: liveMode ? "Faster but stub responses." : "Live Gemini 3 · ~5 s per turn.",
                 tone: "info",
               });
             }}
@@ -145,7 +145,7 @@ export default function ChatPage() {
             )}
           >
             {liveMode ? <Zap className="h-3.5 w-3.5" /> : <RadioTower className="h-3.5 w-3.5" />}
-            {liveMode ? "Live · Gemini 3 Pro" : "Scripted mode"}
+            {liveMode ? "Live · Gemini 3" : "Scripted mode"}
           </button>
         }
       />

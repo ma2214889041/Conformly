@@ -25,7 +25,7 @@ export default function ReportsPage() {
             <CardTitle>Generate a report</CardTitle>
             <Badge tone="sky">
               <Sparkles className="h-3 w-3" />
-              Gemini 3 Pro · citations on every paragraph
+              Gemini 3 · citations on every paragraph
             </Badge>
           </div>
         </CardHeader>
