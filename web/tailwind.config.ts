@@ -8,25 +8,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Compliance-grade palette — calm, trustworthy, with one warm accent
-        // for "agent is alive" affordances.
+        // Design-to-Certificate palette — regulatory-grade dark theme.
+        // Background #0A0A0F, surface step #11131A, primary text #FFFFFF,
+        // accent #0EA5E9 (sky-500). Risk amber + medical green tuned for
+        // status semantics, not branding.
         ink: {
-          50:  "#f6f7f9",
-          100: "#eceef2",
-          200: "#d4d8e0",
-          300: "#aeb5c2",
-          400: "#7c8597",
-          500: "#525c70",
-          600: "#3a4458",
-          700: "#2a3245",
-          800: "#1c2333",
-          900: "#0f1422",
-          950: "#080b15",
+          50:  "#f4f6fb",
+          100: "#dde2ec",
+          200: "#c4ccdc",
+          300: "#9ba6ba",
+          400: "#6f7a92",
+          500: "#4a5470",
+          600: "#33394d",
+          700: "#1f2330",
+          800: "#15171f",
+          900: "#0d0f14",
+          950: "#0A0A0F",
         },
         accent: {
-          DEFAULT: "#22d3ee", // cyan-400 — agent action / live-feed pulses
-          warm:    "#fb923c", // orange-400 — risk / HITL pending
+          DEFAULT: "#0EA5E9", // sky-500 — primary product accent
+          soft:    "#38bdf8", // sky-400 — hover / focus
+          warm:    "#f59e0b", // amber-500 — attention / partial gaps
         },
+        danger:  { DEFAULT: "#ef4444" },  // red-500 — critical
+        warning: { DEFAULT: "#f59e0b" },  // amber-500
+        success: { DEFAULT: "#10b981" },  // emerald-500
       },
       fontFamily: {
         sans: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
