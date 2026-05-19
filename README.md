@@ -6,7 +6,7 @@
 
 **Built at the [Milan AI Week Hackathon](https://lablab.ai/ai-hackathons/milan-ai-week-hackathon) · powered by Gemini 3 · deployed on Vultr**
 
-[Live demo](http://217.69.14.165/demo) · [Portfolio dashboard](http://217.69.14.165/dashboard) · [Landing page](http://217.69.14.165/) · [Tool catalogue](http://217.69.14.165/tools)
+[Live demo](https://conformly.gopromp.com/demo) · [Portfolio dashboard](https://conformly.gopromp.com/dashboard) · [Landing page](https://conformly.gopromp.com/) · [Tool catalogue](https://conformly.gopromp.com/tools)
 
 </div>
 
