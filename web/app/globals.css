@@ -4,14 +4,24 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
   html { scroll-behavior: smooth; }
   body {
-    @apply bg-ink-950 text-white antialiased;
+    @apply bg-surface-subtle text-ink-900 antialiased;
     font-feature-settings: "ss01", "cv11";
   }
-  ::selection { background: rgba(14, 165, 233, 0.28); }
+  ::selection { background: rgba(14, 165, 233, 0.18); }
+
+  /* Slim scrollbars that match the light surface */
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(15, 17, 21, 0.14);
+    border-radius: 8px;
+    border: 2px solid #F8F8FA;
+  }
+  *::-webkit-scrollbar-thumb:hover { background: rgba(15, 17, 21, 0.24); }
+  *::-webkit-scrollbar-track { background: transparent; }
 }
 
 @layer components {
@@ -19,41 +29,62 @@
   .container-wide   { @apply max-w-7xl mx-auto px-6; }
 
   .card {
-    @apply rounded-2xl border border-ink-700/60 bg-ink-900/70 backdrop-blur
-           shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset];
+    @apply rounded-lg border border-ink-200 bg-white shadow-[0_1px_2px_rgba(15,17,21,0.04)];
   }
-  .card-hover { @apply hover:border-ink-600 transition-colors; }
+  .card-hover { @apply hover:border-ink-300 hover:shadow-[0_4px_12px_rgba(15,17,21,0.06)] transition-all; }
 
   .btn {
-    @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium
-           text-sm transition-all focus:outline-none focus:ring-2
-           focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-ink-950;
+    @apply inline-flex items-center justify-center gap-2 rounded-md font-medium text-[13px]
+           transition-colors select-none whitespace-nowrap focus:outline-none
+           focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-40 disabled:cursor-not-allowed;
   }
-  .btn-primary   { @apply btn bg-accent text-ink-950 hover:bg-accent/90; }
-  .btn-secondary { @apply btn border border-ink-700 text-ink-100 hover:bg-ink-800; }
-  .btn-ghost     { @apply btn text-ink-300 hover:text-ink-50; }
+  .btn-xs { @apply btn h-7 px-2.5 text-[12px]; }
+  .btn-sm { @apply btn h-8 px-3; }
+  .btn-md { @apply btn h-9 px-4; }
+  .btn-lg { @apply btn h-10 px-5 text-[14px]; }
 
+  .btn-default   { @apply bg-ink-900 text-white hover:bg-ink-800; }
+  .btn-primary   { @apply bg-accent text-white hover:bg-accent-deep; }
+  .btn-secondary { @apply bg-white text-ink-900 border border-ink-200 hover:bg-ink-50; }
+  .btn-ghost     { @apply text-ink-600 hover:text-ink-900 hover:bg-ink-100; }
+  .btn-outline   { @apply border border-ink-200 text-ink-700 hover:bg-ink-50; }
+
+  /* Status badges */
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5
-           text-xs font-medium border;
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5
+           text-[11px] font-medium tracking-wide uppercase;
+    letter-spacing: 0.06em;
   }
-  .badge-cyan   { @apply badge border-cyan-400/40 text-cyan-300 bg-cyan-400/10; }
-  .badge-amber  { @apply badge border-amber-400/40 text-amber-300 bg-amber-400/10; }
-  .badge-rose   { @apply badge border-rose-400/40 text-rose-300 bg-rose-400/10; }
-  .badge-emerald{ @apply badge border-emerald-400/40 text-emerald-300 bg-emerald-400/10; }
-  .badge-slate  { @apply badge border-ink-600 text-ink-300 bg-ink-800/50; }
+  .badge-neutral { @apply badge bg-ink-50  text-ink-600 border-ink-200; }
+  .badge-sky     { @apply badge bg-sky-50  text-sky-700  border-sky-200; }
+  .badge-amber   { @apply badge bg-amber-50 text-amber-700 border-amber-200; }
+  .badge-red     { @apply badge bg-rose-50 text-rose-700  border-rose-200; }
+  .badge-green   { @apply badge bg-emerald-50 text-emerald-700 border-emerald-200; }
+  .badge-outline { @apply badge bg-transparent text-ink-500 border-ink-200; }
+  .badge-solid   { @apply badge bg-ink-900 text-white border-transparent; }
+
+  /* Code-style citation pill */
+  .citation {
+    @apply inline-flex items-center gap-1 rounded border border-sky-200 bg-sky-50
+           px-1.5 py-0.5 text-[11px] text-sky-700 hover:bg-sky-100 transition-colors font-mono;
+  }
+
+  /* Tiny eyebrow used above page titles */
+  .eyebrow {
+    @apply text-[11px] tracking-[0.22em] uppercase text-ink-400 font-medium;
+  }
 
   .code-block {
-    @apply font-mono text-[12.5px] leading-relaxed text-ink-200
-           bg-ink-950/70 border border-ink-700/60 rounded-lg p-4 overflow-x-auto;
+    @apply font-mono text-[12.5px] leading-relaxed text-ink-700
+           bg-ink-50 border border-ink-200 rounded-lg p-4 overflow-x-auto;
   }
 }
 
-/* Subtle radial highlight + grid behind the hero */
+/* Hero glow used on the marketing landing */
 .hero-glow {
   background:
-    radial-gradient(800px 380px at 50% -120px, rgba(34, 211, 238, 0.15), transparent 60%),
-    radial-gradient(600px 320px at 80% 20%, rgba(251, 146, 60, 0.07), transparent 60%);
+    radial-gradient(900px 380px at 50% -120px, rgba(14, 165, 233, 0.12), transparent 60%),
+    radial-gradient(700px 320px at 80% 20%, rgba(14, 165, 233, 0.05), transparent 60%);
   position: relative;
 }
 .hero-glow::before {
@@ -61,8 +92,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    linear-gradient(rgba(15, 17, 21, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 17, 21, 0.04) 1px, transparent 1px);
   background-size: 56px 56px;
   background-position: center top;
   mask-image: radial-gradient(ellipse at top, rgba(0,0,0,0.85), transparent 70%);
@@ -70,21 +101,3 @@
   pointer-events: none;
 }
 .hero-glow > * { position: relative; z-index: 1; }
-
-/* Phase indicator pill background — kept simple so cards stay scannable */
-.phase-bar {
-  background-image: linear-gradient(90deg, #22d3ee 0%, #22d3ee var(--p, 0%), rgba(255,255,255,0.06) var(--p, 0%));
-}
-
-/* Marker dot used on the agent feed timeline */
-.timeline-dot::before {
-  content: "";
-  position: absolute;
-  left: -1px;
-  top: 6px;
-  width: 9px;
-  height: 9px;
-  border-radius: 9999px;
-  background: #22d3ee;
-  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.15);
-}

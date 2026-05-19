@@ -1,21 +1,45 @@
 /**
- * Mock project data for the single-user Design-to-Certificate experience.
+ * Mock data for the single-user Design-to-Certificate experience.
  *
- * The product spec assumes ONE active device project — this module is the
- * canonical source of truth for that project across every page. Replace
- * with a real /api/project/[id] fetch once the backend supports per-user
- * project state.
+ * Mirrors the design's `ConformlyData` shape exactly, transcribed to TypeScript
+ * so Server Components can import without runtime hydration.
  */
 
-export type Severity = "critical" | "major" | "minor" | "info";
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
-export type CertificationPhase = {
-  id: string;
-  label: string;
-  /** 0..1 — fraction of work expected complete by the end of this phase */
-  weight: number;
-  /** 0..1 — actual completion */
-  progress: number;
+export type Severity = "urgent" | "attention" | "routine" | "critical" | "major" | "minor" | "high" | "medium" | "low";
+export type GsprState = "green" | "yellow" | "red";
+
+export type Project = {
+  name: string;
+  classification: string;
+  device_code: string;
+  manufacturer: string;
+  notified_body: string;
+  current_day: number;
+  estimated_days: number;
+  project_start: string;
+  target_submission: string;
+};
+
+export type Phase = {
+  id: number;
+  name: string;
+  status: "complete" | "active" | "pending";
+  pct: number;
+};
+
+export type Health = {
+  document_readiness: number;
+  evidence_completeness: number;
+  nb_readiness_score: number;
+  last_analysis: string;
+  documents_total: number;
+  documents_required: number;
+  gspr_total: number;
+  gspr_covered: number;
 };
 
 export type ActionItem = {
@@ -24,208 +48,239 @@ export type ActionItem = {
   title: string;
   context: string;
   regulation: string;
-  actionLabel: string;
+  affected_docs: string[];
 };
 
-export type AgentEvent = {
+export type ActivityEvent = {
   id: string;
-  at: string;       // ISO timestamp
-  type: "analysis" | "report" | "upload" | "suggestion" | "simulation";
+  at: string;
+  text: string;
+  tag: string;
+};
+
+export type Suggestion = {
+  id: string;
+  severity: "high" | "medium" | "low";
   title: string;
   body: string;
-  source?: string;  // file or regulation reference
+  reg: string;
+  action: string;
 };
 
-export type ProjectHealth = {
-  document_readiness: number;        // 0..100
-  evidence_completeness: number;     // 0..100
-  nb_readiness_score: number;        // 0..100
-  last_analysis_at: string;          // ISO
-  open_findings: { critical: number; major: number; minor: number };
-};
-
-export type Project = {
-  project_id: string;
+export type GsprChapter = {
+  id: string;
   name: string;
-  device_class: "A" | "B" | "C" | "D";
-  intended_purpose: string;
-  conformity_route: string;
-  notified_body: string;
-  opened: string;            // ISO date
-  estimated_completion: string;
-  day_in_journey: number;
-  estimated_total_days: number;
-  current_phase_id: string;
-  phases: CertificationPhase[];
-  health: ProjectHealth;
-  today_actions: ActionItem[];
-  recent_activity: AgentEvent[];
+  items: { id: string; title: string; state: GsprState; evidence: number }[];
 };
 
+export type Gap = {
+  id: string;
+  category: "critical" | "important" | "minor";
+  title: string;
+  reason: string;
+  reg: string;
+  owner: string;
+};
+
+export type Hazard = {
+  id: string;
+  category: string;
+  hazard: string;
+  severity: "Critical" | "Serious" | "Moderate" | "Minor";
+  probability: "Frequent" | "Probable" | "Possible" | "Remote" | "Improbable";
+  risk: "High" | "Medium" | "Low";
+  control: string;
+  residual: "Acceptable" | "Unverified" | "Unacceptable";
+  flagged?: boolean;
+};
+
+export type DocFolder = {
+  id: string;
+  num: string;
+  name: string;
+  count: number;
+  required: number;
+  status: "ok" | "warn" | "alert";
+};
+
+export type Document = {
+  id: string;
+  name: string;
+  uploaded: string;
+  status: "analyzed" | "analyzing" | "needs-review";
+  score: number | null;
+  kind: "pdf" | "doc" | "xlsx" | "cad" | "img";
+  flagged?: boolean;
+};
+
+export type ReportCatalogEntry = {
+  id: string;
+  title: string;
+  annex: string;
+  time: string;
+  completeness: number;
+  last_gen: string | null;
+};
+
+export type ReportLibEntry = {
+  id: string;
+  name: string;
+  type: string;
+  date: string;
+  version: string;
+  status: "draft" | "reviewed" | "final";
+};
+
+export type NbFinding = {
+  id: string;
+  severity: "critical" | "major" | "minor";
+  reg: string;
+  title: string;
+  desc: string;
+  docs: string[];
+};
+
+export type NbSim = {
+  run_date: string;
+  score: number;
+  verdict: string;
+  verdict_detail: string;
+  confidence: number;
+  sources: string[];
+  findings: NbFinding[];
+  history: { run: number; date: string; score: number; critical: number; major: number; minor: number }[];
+};
+
+export type KnowledgeNode = {
+  id: string;
+  name: string;
+  count?: number;
+  used?: number;
+  selected?: boolean;
+  children?: KnowledgeNode[];
+};
 
 // ---------------------------------------------------------------------------
-// THE project — Sample Handling Module, Class C IVD
+// Data
 // ---------------------------------------------------------------------------
 
 export const PROJECT: Project = {
-  project_id: "shm-2025",
   name: "Sample Handling Module",
-  device_class: "C",
-  intended_purpose:
-    "Automated sample preparation and aliquoting for downstream molecular diagnostic assays in central clinical laboratories.",
-  conformity_route: "IVDR Annex IX (full QMS + Technical Documentation assessment)",
-  notified_body: "BSI Group The Netherlands (NB 2797)",
-  opened: "2025-09-22",
-  estimated_completion: "2027-02-14",
-  day_in_journey: 240,
-  estimated_total_days: 510,
-
-  current_phase_id: "design_freeze",
-
-  phases: [
-    { id: "scoping",          label: "Scoping & classification", weight: 0.08, progress: 1.00 },
-    { id: "design_inputs",    label: "Design inputs",            weight: 0.14, progress: 1.00 },
-    { id: "design_outputs",   label: "Design outputs",           weight: 0.18, progress: 0.95 },
-    { id: "design_freeze",    label: "Design freeze & V&V",      weight: 0.22, progress: 0.55 },
-    { id: "performance",      label: "Clinical performance",     weight: 0.18, progress: 0.10 },
-    { id: "submission",       label: "Notified Body submission", weight: 0.20, progress: 0.00 },
-  ],
-
-  health: {
-    document_readiness: 72,
-    evidence_completeness: 64,
-    nb_readiness_score: 58,
-    last_analysis_at: "2026-05-19T05:18:00Z",
-    open_findings: { critical: 2, major: 7, minor: 14 },
-  },
-
-  today_actions: [
-    {
-      id: "act-1",
-      severity: "urgent",
-      title: "GSPR 12.1 stability data is incomplete",
-      context:
-        "Real-time stability is documented at 25 °C only. Annex I §12.1 requires evidence across the full transport and storage range claimed in the IFU.",
-      regulation: "IVDR Annex I §12.1",
-      actionLabel: "Open evidence gap",
-    },
-    {
-      id: "act-2",
-      severity: "urgent",
-      title: "Software classification not declared",
-      context:
-        "MoleQ-Analytica embedded firmware controls aliquoting volume. IEC 62304 software safety class must be declared before V&V can be evaluated.",
-      regulation: "IEC 62304 §4.3; IVDR Annex I §16",
-      actionLabel: "Declare class",
-    },
-    {
-      id: "act-3",
-      severity: "attention",
-      title: "Risk file v3.2 introduces 2 new hazards",
-      context:
-        "The updated risk analysis introduces sample carryover and aerosol generation as new hazards. Both currently lack control-measure evidence.",
-      regulation: "ISO 14971 §7.4",
-      actionLabel: "Review controls",
-    },
-    {
-      id: "act-4",
-      severity: "attention",
-      title: "Usability validation summary missing",
-      context:
-        "IFU references operator training but no summative usability test report has been uploaded. IEC 62366-1 §5.9 requires summative evaluation for a Class C device.",
-      regulation: "IEC 62366-1 §5.9",
-      actionLabel: "Upload report",
-    },
-    {
-      id: "act-5",
-      severity: "routine",
-      title: "Translate IFU into 3 additional EU languages",
-      context:
-        "Article 17 requires the IFU in each official EU language of every Member State of placement. Current coverage: EN, IT. Pending: DE, FR, ES.",
-      regulation: "IVDR Article 17",
-      actionLabel: "Plan translations",
-    },
-  ],
-
-  recent_activity: [
-    {
-      id: "ev-1",
-      at: "2026-05-19T05:18:00Z",
-      type: "analysis",
-      title: "Risk file v3.2 analysed",
-      body: "Identified 2 new hazards (sample carryover, aerosol generation) requiring control measures and verification.",
-      source: "/documents/risk-management/risk-file-v3.2.pdf",
-    },
-    {
-      id: "ev-2",
-      at: "2026-05-19T03:42:00Z",
-      type: "suggestion",
-      title: "Sample chamber material requires biocompatibility evidence",
-      body: "PMMA chamber is in indirect contact with biological samples. ISO 10993-5 cytotoxicity testing is required.",
-      source: "ISO 10993-5",
-    },
-    {
-      id: "ev-3",
-      at: "2026-05-18T22:11:00Z",
-      type: "upload",
-      title: "Mechanical drawings package v2 ingested",
-      body: "62 drawings processed and mapped to design output traceability matrix.",
-      source: "/documents/design-outputs/mech-pkg-v2.zip",
-    },
-    {
-      id: "ev-4",
-      at: "2026-05-18T14:30:00Z",
-      type: "report",
-      title: "Performance Evaluation Report v0.4 generated",
-      body: "Draft includes analytical performance per CLSI EP05-A3 / EP09. Clinical performance section requires CPS data still being collected.",
-      source: "Performance Evaluation Report v0.4",
-    },
-    {
-      id: "ev-5",
-      at: "2026-05-18T09:05:00Z",
-      type: "analysis",
-      title: "GSPR mapping refreshed",
-      body: "382 GSPR sub-requirements scored across 19 chapters. 23 newly addressed since last refresh; 7 newly flagged as partial.",
-      source: "IVDR Annex I",
-    },
-    {
-      id: "ev-6",
-      at: "2026-05-17T16:48:00Z",
-      type: "simulation",
-      title: "Notified Body review simulation completed",
-      body: "Predicted outcome: likely to receive deficiencies. 2 critical + 7 major findings identified before submission.",
-      source: "NB Simulation #3",
-    },
-    {
-      id: "ev-7",
-      at: "2026-05-17T11:12:00Z",
-      type: "upload",
-      title: "Software architecture document v2.3 ingested",
-      body: "Mapped to IVDR §16 software clauses. IEC 62304 safety classification still to be declared by the project owner.",
-      source: "/documents/software/architecture-v2.3.docx",
-    },
-  ],
+  classification: "Class C IVD",
+  device_code: "SHM-7300",
+  manufacturer: "Acme Diagnostics GmbH",
+  notified_body: "TÜV SÜD (NB 0123)",
+  current_day: 240,
+  estimated_days: 510,
+  project_start: "2025-09-22",
+  target_submission: "2026-12-15",
 };
 
+export const PHASES: Phase[] = [
+  { id: 1, name: "Design Input",                 status: "complete", pct: 100 },
+  { id: 2, name: "Risk Management",              status: "complete", pct: 100 },
+  { id: 3, name: "Verification & Validation",    status: "active",   pct: 68 },
+  { id: 4, name: "Performance Evaluation",       status: "active",   pct: 42 },
+  { id: 5, name: "Technical Documentation",      status: "pending",  pct: 18 },
+  { id: 6, name: "Notified Body Submission",     status: "pending",  pct: 0  },
+];
 
-// ---------------------------------------------------------------------------
-// Derived helpers
-// ---------------------------------------------------------------------------
+export const HEALTH: Health = {
+  document_readiness: 73,
+  evidence_completeness: 61,
+  nb_readiness_score: 58,
+  last_analysis: "11 minutes ago",
+  documents_total: 142,
+  documents_required: 194,
+  gspr_total: 380,
+  gspr_covered: 232,
+};
 
-export function overallProgress(project: Project = PROJECT): number {
-  return Math.round(
-    project.phases.reduce((sum, p) => sum + p.weight * p.progress, 0) * 100,
-  );
-}
+export const TODAY_ACTIONS: ActionItem[] = [
+  {
+    id: "a-1",
+    severity: "urgent",
+    title: "GSPR 12.1 stability data is incomplete",
+    context:
+      "Real-time stability is documented to 9 months. IVDR requires evidence covering full claimed shelf-life (24 months).",
+    regulation: "IVDR Annex I §12.1",
+    affected_docs: ["STAB-001 Stability Protocol v2", "STAB-003 Interim Report"],
+  },
+  {
+    id: "a-2",
+    severity: "urgent",
+    title: "Biocompatibility evidence missing for sample chamber (PMMA)",
+    context:
+      "ISO 10993-5 cytotoxicity test report not present in technical file. Material is patient-contacting via aerosol path.",
+    regulation: "ISO 10993-1 §6",
+    affected_docs: ["MAT-002 Material Specification"],
+  },
+  {
+    id: "a-3",
+    severity: "attention",
+    title: "Software classification appears to be Class B",
+    context:
+      "Detected hazard analysis references injury severity 'minor reversible' — confirm intended use before locking IEC 62304 deliverables.",
+    regulation: "IEC 62304 §4.3",
+    affected_docs: ["SW-DOC-001 Software Architecture"],
+  },
+  {
+    id: "a-4",
+    severity: "attention",
+    title: "Performance evaluation plan needs CLSI EP05 reference",
+    context:
+      "Precision study protocol cites internal SOP only. Notified Body expects alignment to CLSI EP05-A3.",
+    regulation: "CLSI EP05-A3",
+    affected_docs: ["PEP-001 Performance Evaluation Plan"],
+  },
+  {
+    id: "a-5",
+    severity: "routine",
+    title: "Updated risk file v3.2 successfully mapped",
+    context:
+      "2 new hazards introduced (thermal cycling drift, aerosol carry-over). Both have linked control measures.",
+    regulation: "ISO 14971 §5",
+    affected_docs: ["RA-003 Risk Analysis v3.2"],
+  },
+  {
+    id: "a-6",
+    severity: "routine",
+    title: "IFU draft v0.8 aligns with IEC 62366 usability outputs",
+    context:
+      "All identified use errors are represented in the warnings section. Ready for human factors validation.",
+    regulation: "IEC 62366-1 §5.9",
+    affected_docs: ["IFU-001 Instructions for Use"],
+  },
+];
 
-export function relativeTime(iso: string, now: Date = new Date()): string {
-  const ms = +now - +new Date(iso);
-  const m = Math.round(ms / 60_000);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m} min ago`;
-  const h = Math.round(m / 60);
-  if (h < 24) return `${h} h ago`;
-  const d = Math.round(h / 24);
-  if (d < 7) return `${d} d ago`;
-  return new Date(iso).toLocaleDateString();
-}
+export const RECENT_ACTIVITY: ActivityEvent[] = [
+  { id: "e1", at: "11 min ago",  tag: "Risk Management",     text: "Analyzed updated risk file v3.2 — identified 2 new hazards requiring control measures." },
+  { id: "e2", at: "1 hour ago",  tag: "Compliance Mapping",  text: "Cross-mapped 18 verification protocols against IVDR Annex I §8 (Analytical Performance)." },
+  { id: "e3", at: "2 hours ago", tag: "Report Drafting",     text: "Drafted Technical File §4.2 — Device Performance Characteristics. 1,840 words. 12 citations." },
+  { id: "e4", at: "4 hours ago", tag: "Evidence Gaps",       text: "Flagged 3 gaps in performance evaluation plan against CLSI EP09 commutability requirements." },
+  { id: "e5", at: "Yesterday",   tag: "Compliance Mapping",  text: "Completed full GSPR re-scan after design change ECO-118. Coverage increased from 58% to 61%." },
+  { id: "e6", at: "Yesterday",   tag: "Notified Body",       text: "Generated CAPA response draft for simulated NB finding F-2025-04 (labeling deficiency)." },
+  { id: "e7", at: "Yesterday",   tag: "Knowledge Base",      text: "Indexed 4 new MDCG guidance documents into knowledge base (MDCG 2022-2, 2022-9, 2023-1, 2024-2)." },
+  { id: "e8", at: "2 days ago",  tag: "Software",            text: "Re-evaluated software safety classification after architecture revision v1.4 — unchanged at Class B." },
+];
+
+export const UPCOMING_MILESTONE = {
+  title: "Performance evaluation freeze",
+  body: "All performance studies locked for technical file v1.0.",
+  date: "Jun 30, 2026",
+  days_remaining: 42,
+};
+
+export const CHAT_SUGGESTED = [
+  "Is my device Class B or Class C?",
+  "What evidence do I need for GSPR 9.1?",
+  "Show me my biggest compliance risks",
+  "What documents am I missing?",
+];
+
+// User profile (single user)
+export const USER = {
+  name: "Elena Marchetti",
+  role: "Compliance Lead",
+  initials: "EM",
+};

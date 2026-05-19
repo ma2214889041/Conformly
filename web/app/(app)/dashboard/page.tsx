@@ -1,348 +1,324 @@
+import Link from "next/link";
 import {
   AlertOctagon,
   AlertTriangle,
   ArrowRight,
+  CalendarClock,
+  Check,
   CheckCircle2,
-  Clock,
-  FileText,
-  FolderUp,
-  Microscope,
-  Sparkles,
-  TrendingUp,
+  Download,
+  Plus,
 } from "lucide-react";
-import Link from "next/link";
 import clsx from "clsx";
-import { PROJECT, overallProgress, relativeTime, type ActionItem, type AgentEvent } from "@/lib/mock-project";
+import {
+  PROJECT, PHASES, HEALTH, TODAY_ACTIONS, RECENT_ACTIVITY, UPCOMING_MILESTONE,
+} from "@/lib/mock-project";
+import {
+  Badge, Button, Card, CardBody, CardHeader, CardTitle, Citation,
+  PageHeader, ProgressBar, ScoreRing, SectionLabel, SeverityChip,
+} from "@/components/app/atoms";
 
 export default function DashboardPage() {
-  const p = PROJECT;
-  const pct = overallProgress(p);
-  const phaseIndex = p.phases.findIndex((ph) => ph.id === p.current_phase_id);
-  const currentPhase = p.phases[phaseIndex];
-
   return (
-    <div className="px-6 lg:px-10 py-8 space-y-8">
-      {/* =============================================================== */}
-      {/* HEADER — project identity + progress                              */}
-      {/* =============================================================== */}
-      <section>
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-mono uppercase tracking-wider text-accent mb-1">
-              your active project
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-              {p.name}
-            </h1>
-            <p className="mt-1 text-ink-300">
-              <span className="inline-flex items-center gap-1.5 mr-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                Class {p.device_class} IVD
-              </span>
-              <span className="text-ink-400">
-                Day {p.day_in_journey} of est. {p.estimated_total_days} ·{" "}
-                target {new Date(p.estimated_completion).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
-              </span>
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-ink-500">overall</p>
-            <p className="text-3xl font-semibold text-white">{pct}%</p>
-            <p className="text-[11px] text-ink-500 font-mono">complete</p>
-          </div>
-        </div>
+    <div className="px-8 py-8 max-w-[1600px] mx-auto">
+      <PageHeader
+        eyebrow="Project overview"
+        title={PROJECT.name}
+        subtitle={`${PROJECT.classification} · ${PROJECT.manufacturer} · Notified Body: ${PROJECT.notified_body}`}
+        right={
+          <>
+            <Button variant="secondary" size="md">
+              <Download className="h-3.5 w-3.5" />
+              Export status
+            </Button>
+            <Button variant="primary" size="md">
+              <Plus className="h-3.5 w-3.5" />
+              Upload document
+            </Button>
+          </>
+        }
+      />
 
-        {/* Phase progress strip */}
-        <div className="mt-6">
-          <div className="flex gap-1 h-2.5 rounded-full overflow-hidden bg-ink-800">
-            {p.phases.map((ph, i) => {
-              const width = ph.weight * 100;
-              const fill = ph.progress * 100;
-              return (
+      {/* Day counter + phase timeline */}
+      <div className="grid grid-cols-12 gap-4 mb-4">
+        <DayCounterCard />
+        <div className="col-span-12 lg:col-span-9">
+          <PhaseTimeline />
+        </div>
+      </div>
+
+      {/* Main grid: actions (left, 2/3) + health (right, 1/3) */}
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 lg:col-span-8 space-y-4">
+          <TodaysActionsCard />
+          <ActivityFeedCard />
+        </div>
+        <div className="col-span-12 lg:col-span-4">
+          <HealthPanel />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===========================================================================
+// Sections
+// ===========================================================================
+
+function DayCounterCard() {
+  return (
+    <div className="col-span-12 lg:col-span-3 card p-5">
+      <div className="text-[10px] tracking-[0.22em] uppercase text-ink-500 mb-1">Day in journey</div>
+      <div className="flex items-baseline gap-2">
+        <div className="text-[40px] font-semibold tracking-tight text-ink-900 leading-none font-display">
+          {PROJECT.current_day}
+        </div>
+        <div className="text-[13px] text-ink-500">of estimated {PROJECT.estimated_days}</div>
+      </div>
+      <div className="mt-3">
+        <ProgressBar value={PROJECT.current_day} max={PROJECT.estimated_days} color="sky" />
+      </div>
+      <div className="mt-3 flex items-center justify-between text-[11px] font-mono text-ink-500">
+        <span>Started {new Date(PROJECT.project_start).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+        <span>Target {new Date(PROJECT.target_submission).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</span>
+      </div>
+    </div>
+  );
+}
+
+function PhaseTimeline() {
+  return (
+    <div className="card p-5 h-full">
+      <SectionLabel>Certification journey · 6 phases</SectionLabel>
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+        {PHASES.map((p) => {
+          const done = p.status === "complete";
+          const active = p.status === "active";
+          return (
+            <div key={p.id} className="flex flex-col">
+              <div className="flex items-center gap-2 mb-1.5">
                 <div
-                  key={ph.id}
-                  className="relative flex-none h-full"
-                  style={{ width: `${width}%` }}
-                  title={`${ph.label} — ${Math.round(ph.progress * 100)}%`}
-                >
-                  <div className="absolute inset-0 bg-ink-700" />
-                  <div
-                    className={clsx(
-                      "absolute inset-y-0 left-0",
-                      i < phaseIndex ? "bg-success" :
-                      i === phaseIndex ? "bg-accent" :
-                      "bg-accent/30",
-                    )}
-                    style={{ width: `${fill}%` }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-          {/* Phase labels */}
-          <ol className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-[11px] font-mono">
-            {p.phases.map((ph, i) => (
-              <li
-                key={ph.id}
-                className={clsx(
-                  "flex items-center gap-1.5",
-                  i === phaseIndex ? "text-accent" :
-                  i < phaseIndex ? "text-ink-300" :
-                  "text-ink-500",
-                )}
-              >
-                <span
                   className={clsx(
-                    "inline-block h-1.5 w-1.5 rounded-full",
-                    i === phaseIndex ? "bg-accent" :
-                    i < phaseIndex ? "bg-success" :
-                    "bg-ink-600",
+                    "h-6 w-6 rounded-full grid place-items-center text-[11px] font-mono font-semibold border shrink-0",
+                    done   && "bg-accent text-white border-accent",
+                    active && "bg-sky-50 text-accent border-accent/40",
+                    !done && !active && "bg-surface-subtle text-ink-400 border-ink-200",
                   )}
-                />
-                <span className="truncate">{ph.label}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+                >
+                  {done ? <Check className="h-3 w-3" /> : p.id}
+                </div>
+                <div className="h-px flex-1 bg-ink-200" />
+              </div>
+              <div className={clsx(
+                "text-[12px] font-medium leading-tight mb-1",
+                done || active ? "text-ink-900" : "text-ink-400",
+              )}>
+                {p.name}
+              </div>
+              <ProgressBar value={p.pct} color={done || active ? "sky" : "ink"} />
+              <div className="text-[10px] text-ink-500 mt-1.5 font-mono">{p.pct}%</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
-      {/* =============================================================== */}
-      {/* MAIN GRID — today's actions (left) + health (right)               */}
-      {/* =============================================================== */}
-      <section className="grid lg:grid-cols-[1fr_320px] gap-6">
-        {/* ============ today's actions ============ */}
-        <div>
-          <header className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-mono uppercase tracking-wider text-ink-300">
-              Today's actions
-            </h2>
-            <span className="badge-slate text-[10px]">
-              {p.today_actions.length} items
-            </span>
-          </header>
-
-          <ul className="space-y-2.5">
-            {p.today_actions.map((a) => <ActionRow key={a.id} action={a} />)}
-          </ul>
-        </div>
-
-        {/* ============ project health rail ============ */}
-        <aside className="space-y-4">
-          <HealthCard
-            title="Document readiness"
-            value={p.health.document_readiness}
-            hint="Required documents present, by IVDR Annex II structure"
-          />
-          <HealthCard
-            title="Evidence completeness"
-            value={p.health.evidence_completeness}
-            hint="GSPR clauses backed by sufficient evidence"
-          />
-          <HealthCard
-            title="Notified Body readiness"
-            value={p.health.nb_readiness_score}
-            hint="Predicted likelihood of passing the NB review today"
-            highlight
-          />
-
-          <div className="card p-4">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-ink-500 mb-2">
-              Open findings
-            </p>
-            <ul className="space-y-1.5 text-[13px]">
-              <FindingLine n={p.health.open_findings.critical} tone="critical" label="Critical — will block certification" />
-              <FindingLine n={p.health.open_findings.major}    tone="major"    label="Major — likely deficiency" />
-              <FindingLine n={p.health.open_findings.minor}    tone="minor"    label="Minor — recommended fix" />
-            </ul>
-            <Link
-              href="/analysis"
-              className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-accent hover:text-accent-soft"
-            >
-              Open analysis
-              <ArrowRight className="h-3 w-3" />
-            </Link>
+function TodaysActionsCard() {
+  const urgent     = TODAY_ACTIONS.filter((a) => a.severity === "urgent").length;
+  const attention  = TODAY_ACTIONS.filter((a) => a.severity === "attention").length;
+  const routine    = TODAY_ACTIONS.filter((a) => a.severity === "routine").length;
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Today's actions</CardTitle>
+            <div className="text-[13px] text-ink-500 mt-1.5">
+              {urgent} urgent · {attention} attention · {routine} routine
+            </div>
           </div>
-
-          <p className="text-[11px] font-mono text-ink-500 px-1">
-            last analysis · {relativeTime(p.health.last_analysis_at)}
-          </p>
-        </aside>
-      </section>
-
-      {/* =============================================================== */}
-      {/* ACTIVITY FEED — what Conformly did recently                       */}
-      {/* =============================================================== */}
-      <section>
-        <header className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-mono uppercase tracking-wider text-ink-300">
-            Recent activity (last 48 h)
-          </h2>
-          <Link href="/analysis" className="text-[11px] font-mono text-ink-400 hover:text-white">
-            full log →
-          </Link>
-        </header>
-
-        <ol className="card divide-y divide-ink-800/70 overflow-hidden">
-          {p.recent_activity.map((e) => (
-            <ActivityRow key={e.id} ev={e} />
-          ))}
-        </ol>
-      </section>
-
-      {/* =============================================================== */}
-      {/* QUICK ACTIONS                                                     */}
-      {/* =============================================================== */}
-      <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <QuickAction href="/documents" icon={<FolderUp className="h-4 w-4" />}    label="Upload a document"     hint="PDF, Word, Excel, CAD" />
-        <QuickAction href="/analysis"  icon={<Microscope className="h-4 w-4" />}  label="See design suggestions" hint="Continuous review" />
-        <QuickAction href="/reports"   icon={<FileText className="h-4 w-4" />}    label="Generate a report"      hint="Tech file, PER, SSP…" />
-        <QuickAction href="/nb-simulation" icon={<Sparkles className="h-4 w-4" />} label="Simulate NB review"     hint="Predict the verdict" />
-      </section>
-    </div>
+          <div className="flex items-center gap-1.5">
+            <button className="h-8 px-3 rounded-md text-[12px] text-ink-600 hover:text-ink-900 border border-ink-200 hover:border-ink-300">
+              All
+            </button>
+            <button className="h-8 px-3 rounded-md text-[12px] text-danger bg-danger-soft border border-danger/20">
+              Urgent
+            </button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardBody>
+        <div className="space-y-2.5">
+          {TODAY_ACTIONS.map((a) => <ActionRow key={a.id} a={a} />)}
+        </div>
+      </CardBody>
+    </Card>
   );
 }
 
-// ===========================================================================
-// Atoms
-// ===========================================================================
-
-function ActionRow({ action }: { action: ActionItem }) {
-  const sev = action.severity;
-  const icon = sev === "urgent"   ? <AlertOctagon  className="h-4 w-4 text-danger" />
-            : sev === "attention" ? <AlertTriangle className="h-4 w-4 text-warning" />
-            : <CheckCircle2 className="h-4 w-4 text-success" />;
-  const ring = sev === "urgent"   ? "border-danger/30"
-             : sev === "attention" ? "border-warning/30"
-             : "border-success/30";
+function ActionRow({ a }: { a: typeof TODAY_ACTIONS[number] }) {
+  const conf = {
+    urgent:    { ring: "border-danger/25 bg-rose-50/40",    icon: AlertOctagon,  iconC: "text-danger" },
+    attention: { ring: "border-warning/25 bg-amber-50/50",  icon: AlertTriangle, iconC: "text-warning" },
+    routine:   { ring: "border-success/20 bg-emerald-50/40",icon: CheckCircle2,  iconC: "text-success" },
+  }[a.severity];
+  const Icon = conf.icon;
   return (
-    <li className={clsx("card border-l-4 p-4", ring)}>
-      <div className="flex items-start gap-3">
-        <span className="mt-0.5 shrink-0">{icon}</span>
+    <div className={clsx("rounded-lg border p-4 transition-colors hover:bg-surface-subtle", conf.ring)}>
+      <div className="flex items-start gap-4">
+        <div className={clsx("h-9 w-9 shrink-0 rounded-md grid place-items-center bg-white border border-ink-200", conf.iconC)}>
+          <Icon className="h-4 w-4" />
+        </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-white">{action.title}</p>
-          <p className="mt-1 text-[13px] text-ink-300 leading-relaxed">{action.context}</p>
-          <p className="mt-1 text-[11px] font-mono text-ink-500">
-            cited: <span className="text-ink-300">{action.regulation}</span>
-          </p>
+          <div className="flex items-center gap-3 mb-1.5">
+            <SeverityChip kind={a.severity} />
+            <Citation>{a.regulation}</Citation>
+          </div>
+          <div className="text-[14px] text-ink-900 font-medium leading-snug mb-1">{a.title}</div>
+          <div className="text-[12.5px] text-ink-600 leading-relaxed mb-3">{a.context}</div>
+          <div className="text-[11px] mb-3 flex flex-wrap gap-1.5 items-center">
+            <span className="text-ink-500 mr-1">Affects:</span>
+            {a.affected_docs.map((d) => (
+              <span key={d} className="font-mono text-ink-700 bg-ink-50 border border-ink-200 rounded px-1.5 py-0.5">
+                {d}
+              </span>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="primary" size="sm">
+              <ArrowRight className="h-3.5 w-3.5" />
+              Take action
+            </Button>
+            <Button variant="secondary" size="sm">View details</Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-1.5 shrink-0">
-          <Link href="/analysis" className="btn-ghost text-xs whitespace-nowrap">
-            View details
-          </Link>
-          <Link href="/analysis" className="btn-primary text-xs whitespace-nowrap">
-            {action.actionLabel}
-          </Link>
-        </div>
       </div>
-    </li>
-  );
-}
-
-function HealthCard({
-  title, value, hint, highlight,
-}: {
-  title: string;
-  value: number;
-  hint: string;
-  highlight?: boolean;
-}) {
-  const tone =
-    value >= 80 ? "text-success" :
-    value >= 60 ? "text-accent" :
-    value >= 40 ? "text-warning" :
-    "text-danger";
-  return (
-    <div className={clsx("card p-4", highlight && "border-accent/30 bg-accent/[0.03]")}>
-      <p className="text-[10px] font-mono uppercase tracking-wider text-ink-500">{title}</p>
-      <div className="mt-1 flex items-baseline gap-2">
-        <p className={clsx("text-3xl font-semibold", tone)}>{value}</p>
-        <span className="text-xs font-mono text-ink-500">/ 100</span>
-      </div>
-      <div className="mt-2 h-1.5 rounded-full bg-ink-800 overflow-hidden">
-        <div
-          className={clsx(
-            "h-full",
-            value >= 80 ? "bg-success" :
-            value >= 60 ? "bg-accent" :
-            value >= 40 ? "bg-warning" :
-            "bg-danger",
-          )}
-          style={{ width: `${value}%` }}
-        />
-      </div>
-      <p className="mt-2 text-[11.5px] text-ink-400 leading-snug">{hint}</p>
     </div>
   );
 }
 
-function FindingLine({
-  n, tone, label,
-}: {
-  n: number;
-  tone: "critical" | "major" | "minor";
-  label: string;
-}) {
-  const colour =
-    tone === "critical" ? "text-danger" :
-    tone === "major" ? "text-warning" :
-    "text-ink-200";
+function ActivityFeedCard() {
   return (
-    <li className="flex items-center justify-between gap-2">
-      <span className="text-ink-300">{label}</span>
-      <span className={clsx("font-mono font-semibold", colour)}>{n}</span>
-    </li>
-  );
-}
-
-function ActivityRow({ ev }: { ev: AgentEvent }) {
-  const icon =
-    ev.type === "analysis"   ? <Microscope className="h-3.5 w-3.5 text-accent" /> :
-    ev.type === "suggestion" ? <Sparkles className="h-3.5 w-3.5 text-accent" /> :
-    ev.type === "upload"     ? <FolderUp className="h-3.5 w-3.5 text-ink-300" /> :
-    ev.type === "report"     ? <FileText className="h-3.5 w-3.5 text-ink-300" /> :
-    <TrendingUp className="h-3.5 w-3.5 text-accent" />;
-  return (
-    <li className="flex items-start gap-3 p-4">
-      <span className="shrink-0 mt-0.5 h-6 w-6 inline-flex items-center justify-center rounded-md bg-ink-800/60 border border-ink-700">
-        {icon}
-      </span>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <p className="text-sm font-medium text-white">{ev.title}</p>
-          <span className="text-[11px] font-mono text-ink-500">
-            <Clock className="h-2.5 w-2.5 inline mr-0.5" />
-            {relativeTime(ev.at)}
-          </span>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle>Recent activity · last 48 hours</CardTitle>
+          <Button variant="ghost" size="xs">
+            View all
+            <ArrowRight className="h-3 w-3" />
+          </Button>
         </div>
-        <p className="mt-0.5 text-[13px] text-ink-400 leading-snug">{ev.body}</p>
-        {ev.source && (
-          <p className="mt-1 text-[11px] font-mono text-ink-500">
-            source: <span className="text-ink-300">{ev.source}</span>
-          </p>
-        )}
-      </div>
-    </li>
+      </CardHeader>
+      <CardBody>
+        <div className="relative pl-6">
+          <div className="absolute left-2 top-1 bottom-1 w-px bg-ink-200" />
+          {RECENT_ACTIVITY.map((e) => (
+            <div key={e.id} className="relative pb-5 last:pb-0">
+              <div className="absolute -left-[18px] top-1.5 h-2 w-2 rounded-full bg-accent ring-4 ring-white" />
+              <div className="flex items-center gap-2 mb-1">
+                <span className="badge-outline">{e.tag}</span>
+                <span className="text-[11px] text-ink-500 font-mono">{e.at}</span>
+              </div>
+              <div className="text-[13px] text-ink-800 leading-relaxed pr-4">{e.text}</div>
+            </div>
+          ))}
+        </div>
+      </CardBody>
+    </Card>
   );
 }
 
-function QuickAction({
-  href, icon, label, hint,
+function HealthPanel() {
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Project health</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <div className="flex items-center gap-5 mb-5">
+            <ScoreRing value={HEALTH.nb_readiness_score} size={110} stroke={9} sublabel="NB readiness" />
+            <div className="flex-1 leading-tight">
+              <div className="text-[11px] tracking-[0.18em] uppercase text-ink-500 mb-1">Predicted</div>
+              <div className="text-[14px] text-ink-900 font-medium leading-snug">
+                Likely to receive deficiencies on submission as-is.
+              </div>
+              <div className="text-[12px] text-ink-500 mt-2">Based on 3 critical and 5 major gaps.</div>
+            </div>
+          </div>
+          <div className="space-y-4 pt-4 border-t border-ink-200">
+            <HealthBar
+              label="Document readiness"
+              value={HEALTH.document_readiness}
+              color="sky"
+              hint={`${HEALTH.documents_total} of ${HEALTH.documents_required} required documents`}
+            />
+            <HealthBar
+              label="Evidence completeness"
+              value={HEALTH.evidence_completeness}
+              color="amber"
+              hint={`${HEALTH.gspr_covered} of ${HEALTH.gspr_total} GSPR clauses covered`}
+            />
+            <div className="flex items-center justify-between pt-3 border-t border-ink-200">
+              <div className="text-[11px] text-ink-500 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-soft" />
+                Continuous analysis active
+              </div>
+              <div className="text-[11px] text-ink-500 font-mono">{HEALTH.last_analysis}</div>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Upcoming milestone</CardTitle>
+            <CalendarClock className="h-3.5 w-3.5 text-ink-400" />
+          </div>
+        </CardHeader>
+        <CardBody>
+          <div className="text-[13px] text-ink-900 font-medium mb-1">{UPCOMING_MILESTONE.title}</div>
+          <div className="text-[12px] text-ink-500 mb-3">{UPCOMING_MILESTONE.body}</div>
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="text-[10px] tracking-[0.2em] uppercase text-ink-500">Target</div>
+              <div className="text-[14px] font-mono text-ink-900 mt-0.5">{UPCOMING_MILESTONE.date}</div>
+            </div>
+            <Badge tone="amber">{UPCOMING_MILESTONE.days_remaining} days</Badge>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Link
+        href="/nb-simulation"
+        className="card card-hover p-4 flex items-center justify-between text-[13px] text-ink-700"
+      >
+        <span>Run a Notified Body simulation</span>
+        <ArrowRight className="h-3.5 w-3.5 text-accent" />
+      </Link>
+    </div>
+  );
+}
+
+function HealthBar({
+  label, value, color, hint,
 }: {
-  href: string;
-  icon: React.ReactNode;
   label: string;
+  value: number;
+  color: "sky" | "amber" | "green";
   hint: string;
 }) {
   return (
-    <Link href={href} className="card card-hover p-4 flex items-center gap-3 group">
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 border border-accent/30 text-accent shrink-0">
-        {icon}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-white truncate">{label}</p>
-        <p className="text-[11.5px] text-ink-400 truncate">{hint}</p>
+    <div>
+      <div className="flex items-baseline justify-between mb-1.5">
+        <div className="text-[12px] text-ink-700">{label}</div>
+        <div className="text-[13px] font-mono text-ink-900 font-semibold">{value}%</div>
       </div>
-      <ArrowRight className="h-3.5 w-3.5 text-ink-500 group-hover:text-accent group-hover:translate-x-1 transition-all shrink-0" />
-    </Link>
+      <ProgressBar value={value} color={color} />
+      <div className="text-[11px] text-ink-500 mt-1.5 font-mono">{hint}</div>
+    </div>
   );
 }
