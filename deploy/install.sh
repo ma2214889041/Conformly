@@ -48,9 +48,12 @@ warn(){ printf "\033[1;33m⚠\033[0m %s\n" "$*"; }
 log "Updating apt index"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
+# Ubuntu 24.04 ships python3.12 by default; setup-hermes.sh uses `uv` which
+# fetches its own Python 3.11 toolchain into ./venv, so we only need a base
+# python3 for build scripts + the right headers for any C-extension wheels.
 apt-get install -y -qq \
     git curl ca-certificates ufw \
-    python3.11 python3.11-venv python3.11-dev \
+    python3 python3-venv python3-dev \
     build-essential pkg-config libssl-dev \
     nginx certbot python3-certbot-nginx \
     unattended-upgrades \
