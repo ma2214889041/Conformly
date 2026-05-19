@@ -28,11 +28,16 @@ from .tools.get_client_status import (
     check_conformly_vault,
     handle_get_client_status,
 )
+from .tools.list_clients import (
+    LIST_CLIENTS_SCHEMA,
+    handle_list_clients,
+)
 
 
 # (name, schema, handler, emoji) — extend as more tools come online.
 _TOOLS = (
     ("conformly_get_client_status", GET_CLIENT_STATUS_SCHEMA, handle_get_client_status, "📋"),
+    ("conformly_list_clients",      LIST_CLIENTS_SCHEMA,      handle_list_clients,      "👥"),
 )
 
 

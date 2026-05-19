@@ -169,6 +169,61 @@ def _next_action(actions: List[Dict[str, Any]]) -> Dict[str, Any] | None:
 
 
 # ---------------------------------------------------------------------------
+# Core parser — shared with list_clients
+# ---------------------------------------------------------------------------
+
+def parse_client_dossier(md_path: Path, include_history: bool = False) -> Dict[str, Any]:
+    """Parse a clients/<id>.md file into the canonical status dict.
+
+    Raises ``OSError`` / ``yaml.YAMLError`` on unreadable / malformed files;
+    handlers are responsible for catching and converting to JSON errors.
+    """
+    text = md_path.read_text(encoding="utf-8")
+    fm, body = split_frontmatter(text)
+    sections = extract_sections(body)
+
+    # Risks — section title is in Chinese in the existing dossiers; also
+    # accept English/Italian variants so future files don't need a code change.
+    risks_md = find_section(sections, "已识别风险", "Risks", "Rischi")
+    risks_table = parse_md_table(risks_md)
+    risks = _filter_risks(risks_table, include_history)
+
+    actions_md = find_section(sections, "下一步动作", "Next actions", "Next Actions", "Prossime azioni")
+    next_actions = parse_checkboxes(actions_md)
+    next_action = _next_action(next_actions)
+
+    return {
+        # Identity
+        "client_id": fm.get("client_id") or md_path.stem.upper(),
+        "codename": fm.get("codename"),
+        "country": fm.get("country"),
+        "contact_lang": fm.get("contact_lang", []),
+        "file_path": str(md_path),
+        # Regulatory state
+        "ivdr_class": fm.get("ivd_class"),
+        "product_type": fm.get("product_type"),
+        "indication": fm.get("indication"),
+        "nb": fm.get("nb"),
+        "current_phase": fm.get("current_phase"),
+        "green_lights_passed": fm.get("green_lights_passed", []),
+        # Timeline
+        "opened": fm.get("opened"),
+        "last_contact": fm.get("last_contact"),
+        "day_in_journey": days_between(fm.get("opened")),
+        "days_since_contact": days_between(fm.get("last_contact")),
+        # Risk
+        "risk_flags": fm.get("risk_flags", []),
+        "risks": risks,
+        "risk_level": _derive_risk_level(risks),
+        # Forward-looking
+        "next_actions": next_actions,
+        "next_action": next_action,
+        # Lifecycle
+        "status": fm.get("status"),
+    }
+
+
+# ---------------------------------------------------------------------------
 # Handler
 # ---------------------------------------------------------------------------
 
@@ -202,57 +257,13 @@ def handle_get_client_status(args: Dict[str, Any], **_kw) -> str:
         )
 
     try:
-        text = md_path.read_text(encoding="utf-8")
-        fm, body = split_frontmatter(text)
+        data = parse_client_dossier(md_path, include_history=include_history)
     except OSError as e:
         logger.exception("read failed: %s", md_path)
         return err(f"failed to read client file: {e}", path=str(md_path))
     except Exception as e:
-        logger.exception("frontmatter parse failed: %s", md_path)
-        return err(f"failed to parse frontmatter: {e}", path=str(md_path))
-
-    sections = extract_sections(body)
-
-    # Risks — section title is in Chinese in the existing dossiers; also
-    # accept English/Italian variants so future files don't need a code change.
-    risks_md = find_section(sections, "已识别风险", "Risks", "Rischi")
-    risks_table = parse_md_table(risks_md)
-    risks = _filter_risks(risks_table, include_history)
-
-    # Next actions — same multi-language tolerance.
-    actions_md = find_section(sections, "下一步动作", "Next actions", "Next Actions", "Prossime azioni")
-    next_actions = parse_checkboxes(actions_md)
-    next_action = _next_action(next_actions)
-
-    data: Dict[str, Any] = {
-        # Identity
-        "client_id": fm.get("client_id") or md_path.stem.upper(),
-        "codename": fm.get("codename"),
-        "country": fm.get("country"),
-        "contact_lang": fm.get("contact_lang", []),
-        "file_path": str(md_path),
-        # Regulatory state
-        "ivdr_class": fm.get("ivd_class"),
-        "product_type": fm.get("product_type"),
-        "indication": fm.get("indication"),
-        "nb": fm.get("nb"),
-        "current_phase": fm.get("current_phase"),
-        "green_lights_passed": fm.get("green_lights_passed", []),
-        # Timeline
-        "opened": fm.get("opened"),
-        "last_contact": fm.get("last_contact"),
-        "day_in_journey": days_between(fm.get("opened")),
-        "days_since_contact": days_between(fm.get("last_contact")),
-        # Risk
-        "risk_flags": fm.get("risk_flags", []),
-        "risks": risks,
-        "risk_level": _derive_risk_level(risks),
-        # Forward-looking
-        "next_actions": next_actions,
-        "next_action": next_action,
-        # Lifecycle
-        "status": fm.get("status"),
-    }
+        logger.exception("parse failed: %s", md_path)
+        return err(f"failed to parse client file: {e}", path=str(md_path))
 
     audit_log(
         tool="conformly_get_client_status",
