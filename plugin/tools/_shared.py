@@ -1,4 +1,4 @@
-"""Shared helpers for all firsteck tools.
+"""Shared helpers for all conformly tools.
 
 Kept intentionally small. Anything that grows beyond ~200 lines belongs
 in its own module.
@@ -22,27 +22,27 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def vault_path() -> Path:
-    """Resolve the Firsteck Vault root.
+    """Resolve the Conformly Vault root.
 
-    Order: $FIRSTECK_VAULT > ~/firsteck-vault > <plugin>/../firsteck-vault.
+    Order: $CONFORMLY_VAULT > ~/conformly/vault > <plugin>/../conformly/vault.
     Does NOT verify existence — callers use require_vault() for that.
     """
-    env = os.environ.get("FIRSTECK_VAULT")
+    env = os.environ.get("CONFORMLY_VAULT")
     if env:
         return Path(env).expanduser().resolve()
-    default = Path.home() / "firsteck-vault"
+    default = Path.home() / "conformly/vault"
     if default.exists():
         return default
     # dev fallback: sibling directory next to the plugin source
-    return (Path(__file__).resolve().parent.parent.parent / "firsteck-vault").resolve()
+    return (Path(__file__).resolve().parent.parent.parent / "conformly/vault").resolve()
 
 
 def require_vault() -> Path:
     p = vault_path()
     if not p.exists():
         raise FileNotFoundError(
-            f"FIRSTECK_VAULT not found at {p}. "
-            "Set the FIRSTECK_VAULT env var or create the directory."
+            f"CONFORMLY_VAULT not found at {p}. "
+            "Set the CONFORMLY_VAULT env var or create the directory."
         )
     return p
 
@@ -60,7 +60,7 @@ def ok(data: Any, **extra) -> str:
 
 
 def err(msg: str, **extra) -> str:
-    logger.warning("firsteck tool error: %s", msg)
+    logger.warning("conformly tool error: %s", msg)
     return json.dumps(
         {"success": False, "error": msg, **extra},
         ensure_ascii=False,
@@ -81,7 +81,7 @@ def _json_default(o: Any) -> Any:
 # Audit log — single source of truth for every tool invocation
 # ---------------------------------------------------------------------------
 
-_AUDIT_LOG = Path.home() / ".firsteck" / "audit.log"
+_AUDIT_LOG = Path.home() / ".conformly" / "audit.log"
 
 
 def audit_log(tool: str, args: Dict[str, Any], status: str, **extra) -> None:

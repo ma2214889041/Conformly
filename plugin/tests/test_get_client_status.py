@@ -1,6 +1,6 @@
-"""Tests for firsteck_get_client_status.
+"""Tests for conformly_get_client_status.
 
-Run with: pytest firsteck-plugin/tests -q
+Run with: pytest conformly/tests -q
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 # Import the tool module directly by adding the plugin root to sys.path.
-# We can't use the Hermes-loader path (hermes_plugins.firsteck) outside the
+# We can't use the Hermes-loader path (hermes_plugins.conformly) outside the
 # CLI, and the plugin directory uses a dash which isn't a valid module name —
 # so treat the plugin dir as a package root and import its `tools` subpackage.
 _PLUGIN_ROOT = Path(__file__).resolve().parent.parent
@@ -20,7 +20,7 @@ sys.path.insert(0, str(_PLUGIN_ROOT))
 
 from tools.get_client_status import (  # noqa: E402
     GET_CLIENT_STATUS_SCHEMA,
-    check_firsteck_vault,
+    check_conformly_vault,
     handle_get_client_status,
 )
 
@@ -72,7 +72,7 @@ def vault(tmp_path, monkeypatch):
     v = tmp_path / "vault"
     (v / "clients").mkdir(parents=True)
     (v / "clients" / "client-a.md").write_text(CLIENT_A_FIXTURE, encoding="utf-8")
-    monkeypatch.setenv("FIRSTECK_VAULT", str(v))
+    monkeypatch.setenv("CONFORMLY_VAULT", str(v))
     return v
 
 
@@ -185,10 +185,10 @@ def test_unknown_client_returns_candidates(vault):
 
 
 def test_no_vault(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIRSTECK_VAULT", str(tmp_path / "missing"))
+    monkeypatch.setenv("CONFORMLY_VAULT", str(tmp_path / "missing"))
     res = json.loads(handle_get_client_status({"client_id": "CLIENT-A"}))
     assert res["success"] is False
-    assert "FIRSTECK_VAULT" in res["error"]
+    assert "CONFORMLY_VAULT" in res["error"]
 
 
 def test_handler_never_raises_on_bad_input(vault):
@@ -211,12 +211,12 @@ def test_handler_never_raises_on_bad_input(vault):
 # ---------------------------------------------------------------------------
 
 def test_check_fn_true_when_vault_exists(vault):
-    assert check_firsteck_vault() is True
+    assert check_conformly_vault() is True
 
 
 def test_check_fn_false_when_missing(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIRSTECK_VAULT", str(tmp_path / "does-not-exist"))
-    assert check_firsteck_vault() is False
+    monkeypatch.setenv("CONFORMLY_VAULT", str(tmp_path / "does-not-exist"))
+    assert check_conformly_vault() is False
 
 
 # ---------------------------------------------------------------------------
@@ -225,7 +225,7 @@ def test_check_fn_false_when_missing(tmp_path, monkeypatch):
 
 def test_schema_shape():
     s = GET_CLIENT_STATUS_SCHEMA
-    assert s["name"] == "firsteck_get_client_status"
+    assert s["name"] == "conformly_get_client_status"
     assert "description" in s and len(s["description"]) > 80
     assert s["parameters"]["required"] == ["client_id"]
     assert "client_id" in s["parameters"]["properties"]

@@ -1,4 +1,4 @@
-# Firsteck Plugin — 研究阶段遗留问题清单
+# Conformly Plugin — 研究阶段遗留问题清单
 
 > 在写业务工具代码前需要你拍板的不确定点。按 "需要回答的紧迫性" 排序。
 
@@ -27,15 +27,15 @@
 ### Q2. Plugin 怎么物理放置 + Python import path?
 
 **研究结论:**
-- 当前我们用符号链接 `~/.hermes/plugins/firsteck → ai-week/firsteck-plugin`
+- 当前我们用符号链接 `~/.hermes/plugins/conformly → ai-week/conformly`
 - Hermes plugin loader 已识别,`hermes plugins list` 能看到
-- **但是** Python 内部 import 路径是 `plugins.firsteck.tools.xxx`,这要求 `hermes-agent/plugins/firsteck/` 也存在(或 `sys.path` 注入)
-- 模板里写的 `from plugins.firsteck.tools.get_client_status import ...` 在我们当前 symlink 布局下能不能跑通,**没验证**
+- **但是** Python 内部 import 路径是 `plugins.conformly.tools.xxx`,这要求 `hermes-agent/plugins/conformly/` 也存在(或 `sys.path` 注入)
+- 模板里写的 `from plugins.conformly.tools.get_client_status import ...` 在我们当前 symlink 布局下能不能跑通,**没验证**
 
 **待你拍板:**
-- (a) **保持当前布局**(`ai-week/firsteck-plugin/`),我去找 Hermes plugin loader 的 sys.path 注入点,验证或修复
-- (b) **直接放进 `hermes-agent/plugins/firsteck/`** — 破坏你"不改 upstream"的洁癖,但 import 路径 100% 干净
-- (c) **重命名为顶层包** `firsteck_plugin/`,用 setup.py 安装到 venv → 最干净但最重
+- (a) **保持当前布局**(`ai-week/conformly/`),我去找 Hermes plugin loader 的 sys.path 注入点,验证或修复
+- (b) **直接放进 `hermes-agent/plugins/conformly/`** — 破坏你"不改 upstream"的洁癖,但 import 路径 100% 干净
+- (c) **重命名为顶层包** `conformly_plugin/`,用 setup.py 安装到 venv → 最干净但最重
 
 **推荐:** (a) — 先验证 symlink import 是否工作,如果不行降到 (c)。
 
@@ -98,7 +98,7 @@
 - Hermes 有 **两层**记忆:
   - **MEMORY.md + USER.md**(`~/.hermes/memories/`):markdown 文件,Agent 写入,system prompt 始终带入。**容量受限**(几千 token)
   - **Session DB**(`~/.hermes/sessions/`):SQLite + FTS5 全文索引,完整保留每条消息;可搜索/恢复
-- 对超长 / 跨年的项目,真正的"项目状态"应该存在 `firsteck-vault/clients/<id>.md` 和 `projects/<id>/`(已建),而不是依赖 Hermes 的 memory
+- 对超长 / 跨年的项目,真正的"项目状态"应该存在 `conformly/vault/clients/<id>.md` 和 `projects/<id>/`(已建),而不是依赖 Hermes 的 memory
 - Hermes 自带 context compression,长 turn 会自动压缩
 
 **待你拍板:**
@@ -128,10 +128,10 @@
 
 ### Q8. 工具暴露给哪些 toolset?
 
-Hermes 默认开了 `firsteck` toolset 后,5 个工具会一起进 LLM 的 schema 列表。但 LLM 看的工具越多,token 浪费越多。
+Hermes 默认开了 `conformly` toolset 后,5 个工具会一起进 LLM 的 schema 列表。但 LLM 看的工具越多,token 浪费越多。
 
 要不要做 **profile 切分**:
-- "PM 模式":`firsteck_get_client_status / list_clients`(2 个)
+- "PM 模式":`conformly_get_client_status / list_clients`(2 个)
 - "RA 模式":再加 `search_regulation / parse_nb_letter`(4 个)
 - "顾问模式":全开(5 个)
 
@@ -143,7 +143,7 @@ Hermes 默认开了 `firsteck` toolset 后,5 个工具会一起进 LLM 的 schem
 
 Hermes 默认 SOUL.md 是通用助理。要不要改造成:
 
-> "You are Firsteck Hermes — a compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR. You speak Chinese, English, and Italian fluently. You always cite IVDR articles when answering regulatory questions, and you never give legal advice — you defer to the user's RA lead."
+> "You are Conformly — a compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR. You speak Chinese, English, and Italian fluently. You always cite IVDR articles when answering regulatory questions, and you never give legal advice — you defer to the user's RA lead."
 
 **待你拍板:** 同意改吗?用上面这版还是你另写?
 
@@ -155,7 +155,7 @@ Hermes 默认 SOUL.md 是通用助理。要不要改造成:
 
 `hermes tools list` 默认会启用 spotify, gif, apple-reminders 等几十个 toolset。LLM token 浪费,而且演示时让面板看着乱。
 
-**待你拍板:** demo 前是否裁剪到 `firsteck + terminal + read_file + write_file + web_search` 这 5 个核心 toolset?
+**待你拍板:** demo 前是否裁剪到 `conformly + terminal + read_file + write_file + web_search` 这 5 个核心 toolset?
 
 **推荐:** 是。
 
@@ -179,7 +179,7 @@ Hermes 默认 SOUL.md 是通用助理。要不要改造成:
 
 ### Q12. Hermes plugin 怎么 reload 不重启?
 
-写工具时改 `tools/get_client_status.py` 是否要重启 hermes 进程?有没有 `hermes plugins reload firsteck`?
+写工具时改 `tools/get_client_status.py` 是否要重启 hermes 进程?有没有 `hermes plugins reload conformly`?
 
 研究结论:**没有 hot-reload**。每次改 Python 要 Ctrl+C → 重新 `hermes` 启动。
 开发体感会有点慢,但模板里的 pytest 让我们至少能离线测试 handler 逻辑。
@@ -192,7 +192,7 @@ Hermes 默认 SOUL.md 是通用助理。要不要改造成:
 
 ```python
 from agent.plugin_llm import PluginLlm
-llm = PluginLlm(plugin_id="firsteck")
+llm = PluginLlm(plugin_id="conformly")
 res = llm.chat(messages=[{"role":"user","content":"..."}])
 ```
 
@@ -200,7 +200,7 @@ res = llm.chat(messages=[{"role":"user","content":"..."}])
 
 ### Q14. 一个 ctx.register_tool 调用能不能注册"动态 schema"的工具?
 
-例如 `firsteck_get_client_status` 的 `client_id` 应该是个枚举(只能是当前已存在的客户)。
+例如 `conformly_get_client_status` 的 `client_id` 应该是个枚举(只能是当前已存在的客户)。
 能不能让 LLM 看到的 schema 自动列出 `["CLIENT-A", "CLIENT-B", "CLIENT-C"]`?
 
 研究结论:**可以** — `registry.register()` 接受 `dynamic_schema_overrides: Callable`(`tools/registry.py:246`)。每次 LLM 拉 schema 时调用,可以动态填枚举值。**对 demo 体验有正向加成,但不是 P0。**

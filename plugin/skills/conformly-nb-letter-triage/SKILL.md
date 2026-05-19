@@ -1,16 +1,16 @@
 ---
-name: firsteck-nb-letter-triage
+name: conformly-nb-letter-triage
 description: "Parse a Notified Body letter (BSI, TÜV SÜD, DEKRA, etc.) and produce a structured response plan: deficiencies list, severity, clock-stop status, required evidence, and a draft reply skeleton."
 version: 0.1.0
-author: Firsteck Bio
+author: Conformly
 license: Proprietary
 metadata:
   hermes:
-    tags: [firsteck, notified-body, deficiency, ivdr, response]
+    tags: [conformly, notified-body, deficiency, ivdr, response]
     vault_required: true
 ---
 
-# firsteck-nb-letter-triage — Process incoming Notified Body correspondence
+# conformly-nb-letter-triage — Process incoming Notified Body correspondence
 
 Use when the user provides (or points to) a letter from a Notified Body, e.g.:
 
@@ -22,8 +22,8 @@ Use when the user provides (or points to) a letter from a Notified Body, e.g.:
 
 1. **Ingest**
    - If user pasted text → work directly.
-   - If user gave a file path → read `$FIRSTECK_VAULT/raw/nb_letters/<file>` (PDF or text).
-   - Save a copy to `$FIRSTECK_VAULT/raw/nb_letters/<date>-<NB>-<client-id>.pdf` if not already there.
+   - If user gave a file path → read `$CONFORMLY_VAULT/raw/nb_letters/<file>` (PDF or text).
+   - Save a copy to `$CONFORMLY_VAULT/raw/nb_letters/<date>-<NB>-<client-id>.pdf` if not already there.
 
 2. **Extract these fields** (always populate; mark TBD if absent):
 
@@ -49,7 +49,7 @@ Use when the user provides (or points to) a letter from a Notified Body, e.g.:
    For each deficiency, suggest WHERE the response evidence lives or will live:
    - existing study report? → cite `projects/<id>/submissions/<doc>`
    - missing data? → add to `projects/<id>/gaps.md`
-   - regulation interpretation? → invoke `firsteck-regulation-lookup`
+   - regulation interpretation? → invoke `conformly-regulation-lookup`
 
 5. **Update client file**
    Append to `clients/<client-id>.md` § "关键沟通记录":
@@ -71,7 +71,7 @@ Use when the user provides (or points to) a letter from a Notified Body, e.g.:
 
    ## D1 — <issue title>
    **NB finding:** <verbatim>
-   **Firsteck response:** [DRAFT — fill in]
+   **Conformly response:** [DRAFT — fill in]
    **Supporting evidence:** [attach: <filename>]
 
    ## D2 — …

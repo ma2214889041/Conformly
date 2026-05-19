@@ -1,4 +1,4 @@
-# Firsteck Plugin — Tool 注册标准模板
+# Conformly Plugin — Tool 注册标准模板
 
 > 基于 Hermes Agent v0.14.0 (commit `378bca1d2`) 的内部 API 研究产出。
 > 所有路径相对于 `hermes-agent/`。
@@ -26,7 +26,7 @@
 把每个工具拆成 4 个文件(参考 `plugins/google_meet/`):
 
 ```
-firsteck-plugin/
+conformly/
 ├── plugin.yaml              # 已存在
 ├── __init__.py              # 调 ctx.register_tool() 注册所有工具
 ├── tools/                   # 工具 Python 实现
@@ -47,16 +47,16 @@ firsteck-plugin/
 
 ```python
 GET_CLIENT_STATUS_SCHEMA: Dict[str, Any] = {
-    "name": "firsteck_get_client_status",            # snake_case, 必须全局唯一
+    "name": "conformly_get_client_status",            # snake_case, 必须全局唯一
     "description": (
         # ↓ LLM 读这个决定要不要调。写清楚:能做什么 / 何时用 / 限制 / 返回什么
-        "Return the current IVDR submission status for a single Firsteck client. "
-        "Reads the markdown dossier at $FIRSTECK_VAULT/clients/<client_id>.md, "
+        "Return the current IVDR submission status for a single Conformly client. "
+        "Reads the markdown dossier at $CONFORMLY_VAULT/clients/<client_id>.md, "
         "parses its YAML frontmatter and section headers, and returns a "
         "structured dict with phase, GREEN LIGHTs passed, current blockers, "
         "and the immediate next deliverable. "
         "Use this when the user asks 'where is client X' or 'what's blocking X'. "
-        "Do NOT use it for cross-client overviews — use firsteck_list_clients."
+        "Do NOT use it for cross-client overviews — use conformly_list_clients."
     ),
     "parameters": {
         "type": "object",
@@ -85,14 +85,14 @@ GET_CLIENT_STATUS_SCHEMA: Dict[str, Any] = {
 2. 参数名用 snake_case
 3. `required` 数组只放真正必须的参数,其余给 `default`
 4. 不要在 description 里塞 emoji 或 markdown — 容易把 token 浪费在 LLM 本不需要的格式上
-5. 工具名前缀 `firsteck_`,避免和 builtin / 其他 plugin 撞名
+5. 工具名前缀 `conformly_`,避免和 builtin / 其他 plugin 撞名
 
 ---
 
 ## 4. Handler 标准模板
 
 ```python
-"""firsteck_get_client_status — fetch a client's IVDR status."""
+"""conformly_get_client_status — fetch a client's IVDR status."""
 
 from __future__ import annotations
 
@@ -100,7 +100,7 @@ import json
 import logging
 from typing import Any, Dict
 
-from plugins.firsteck.tools._shared import (
+from plugins.conformly.tools._shared import (
     audit_log,
     err,
     ok,
@@ -111,8 +111,8 @@ from plugins.firsteck.tools._shared import (
 logger = logging.getLogger(__name__)
 
 
-def check_firsteck_vault() -> bool:
-    """Runtime gate: return True when FIRSTECK_VAULT exists.
+def check_conformly_vault() -> bool:
+    """Runtime gate: return True when CONFORMLY_VAULT exists.
 
     Hermes calls this every ~30s when assembling the tool list for the LLM.
     If it returns False the tool stays registered but is filtered out of
@@ -161,7 +161,7 @@ def handle_get_client_status(args: Dict[str, Any], **_kw) -> str:
         return err(f"failed to parse client file: {e}", path=str(md_path))
 
     audit_log(
-        tool="firsteck_get_client_status",
+        tool="conformly_get_client_status",
         args={"client_id": client_id, "include_risk_history": include_history},
         status="ok",
     )
@@ -182,7 +182,7 @@ def handle_get_client_status(args: Dict[str, Any], **_kw) -> str:
 ## 5. `_shared.py` 公共工具
 
 ```python
-"""Shared helpers for all firsteck tools."""
+"""Shared helpers for all conformly tools."""
 
 from __future__ import annotations
 
@@ -201,26 +201,26 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def vault_path() -> Path:
-    """Resolve the Firsteck Vault root.
+    """Resolve the Conformly Vault root.
 
-    Order: $FIRSTECK_VAULT > ~/firsteck-vault > <plugin>/../firsteck-vault.
+    Order: $CONFORMLY_VAULT > ~/conformly/vault > <plugin>/../conformly/vault.
     Does NOT verify existence — callers use require_vault() for that.
     """
-    env = os.environ.get("FIRSTECK_VAULT")
+    env = os.environ.get("CONFORMLY_VAULT")
     if env:
         return Path(env).expanduser().resolve()
-    default = Path.home() / "firsteck-vault"
+    default = Path.home() / "conformly/vault"
     if default.exists():
         return default
-    return (Path(__file__).resolve().parent.parent.parent / "firsteck-vault").resolve()
+    return (Path(__file__).resolve().parent.parent.parent / "conformly/vault").resolve()
 
 
 def require_vault() -> Path:
     p = vault_path()
     if not p.exists():
         raise FileNotFoundError(
-            f"FIRSTECK_VAULT not found at {p}. "
-            "Set the FIRSTECK_VAULT env var or create the directory."
+            f"CONFORMLY_VAULT not found at {p}. "
+            "Set the CONFORMLY_VAULT env var or create the directory."
         )
     return p
 
@@ -234,7 +234,7 @@ def ok(data: Any, **extra) -> str:
 
 
 def err(msg: str, **extra) -> str:
-    logger.warning("firsteck tool error: %s", msg)
+    logger.warning("conformly tool error: %s", msg)
     return json.dumps({"success": False, "error": msg, **extra}, ensure_ascii=False, default=str)
 
 
@@ -242,7 +242,7 @@ def err(msg: str, **extra) -> str:
 # Audit log — single source of truth for every tool invocation
 # ---------------------------------------------------------------------------
 
-_AUDIT_LOG = Path.home() / ".firsteck" / "audit.log"
+_AUDIT_LOG = Path.home() / ".conformly" / "audit.log"
 
 
 def audit_log(tool: str, args: Dict[str, Any], status: str, **extra) -> None:
@@ -308,7 +308,7 @@ def parse_client_md(path: Path, include_history: bool = False) -> Dict[str, Any]
 
 ## 6. HITL(人在回路审批)集成点
 
-Hermes 的内建 HITL 在 `tools/approval.py`,**主要面向危险 shell 命令**,而不是任意工具。但 Firsteck 的写操作(改 client.md、写 NB letter response 草稿)需要审批,我们用 **混合策略**:
+Hermes 的内建 HITL 在 `tools/approval.py`,**主要面向危险 shell 命令**,而不是任意工具。但 Conformly 的写操作(改 client.md、写 NB letter response 草稿)需要审批,我们用 **混合策略**:
 
 ### 策略 A — 借 `prompt_dangerous_approval` 复用 CLI/Gateway 弹窗(推荐)
 
@@ -321,7 +321,7 @@ def handle_write_nb_response_draft(args: Dict, **_kw) -> str:
     description = f"Write NB response draft for {client_id} to {target_path}"
 
     choice = prompt_dangerous_approval(
-        command=f"firsteck.write_nb_response({client_id})",
+        command=f"conformly.write_nb_response({client_id})",
         description=description,
         allow_permanent=False,   # 此类写操作不要"永久允许"
     )
@@ -363,7 +363,7 @@ def handle_write_nb_response_draft(args: Dict, **_kw) -> str:
 
 ### 策略 C — 关键决定:不交给 LLM,**写专门的 CLI 命令**
 
-例如"批准 NB 响应函发出"这种不可逆动作,**不应该**让 LLM 直接调工具,应该走 `hermes firsteck approve-nb-response <client_id>` 这样的 CLI(用 `ctx.register_cli_command` 注册)。LLM 只能输出"草稿已准备好,运行命令 X 来批准发送"。
+例如"批准 NB 响应函发出"这种不可逆动作,**不应该**让 LLM 直接调工具,应该走 `hermes conformly approve-nb-response <client_id>` 这样的 CLI(用 `ctx.register_cli_command` 注册)。LLM 只能输出"草稿已准备好,运行命令 X 来批准发送"。
 
 ### 决策表
 
@@ -388,9 +388,9 @@ from pathlib import Path
 
 import pytest
 
-from plugins.firsteck.tools.get_client_status import (
+from plugins.conformly.tools.get_client_status import (
     handle_get_client_status,
-    check_firsteck_vault,
+    check_conformly_vault,
 )
 
 
@@ -405,7 +405,7 @@ def vault(tmp_path, monkeypatch):
         "green_lights_passed: []\nrisk_flags: [R1]\n---\n# body\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("FIRSTECK_VAULT", str(v))
+    monkeypatch.setenv("CONFORMLY_VAULT", str(v))
     return v
 
 
@@ -429,45 +429,45 @@ def test_missing_client_id(vault):
 
 
 def test_check_fn(vault):
-    assert check_firsteck_vault() is True
+    assert check_conformly_vault() is True
 
 
 def test_check_fn_when_missing(tmp_path, monkeypatch):
-    monkeypatch.setenv("FIRSTECK_VAULT", str(tmp_path / "does-not-exist"))
-    assert check_firsteck_vault() is False
+    monkeypatch.setenv("CONFORMLY_VAULT", str(tmp_path / "does-not-exist"))
+    assert check_conformly_vault() is False
 ```
 
-跑测试:`cd hermes-agent && venv/bin/pytest plugins/firsteck/tests/ -q`(plugin 必须先 symlink 到 hermes-agent 的 `plugins/` 或者 `~/.hermes/plugins/`,且 `sys.path` 能找到)。
+跑测试:`cd hermes-agent && venv/bin/pytest plugins/conformly/tests/ -q`(plugin 必须先 symlink 到 hermes-agent 的 `plugins/` 或者 `~/.hermes/plugins/`,且 `sys.path` 能找到)。
 
 ---
 
 ## 8. `__init__.py`(plugin 主入口)最终形态
 
 ```python
-"""Firsteck plugin entrypoint."""
+"""Conformly plugin entrypoint."""
 
 from __future__ import annotations
 
 import logging
 
-from plugins.firsteck.tools.get_client_status import (
+from plugins.conformly.tools.get_client_status import (
     GET_CLIENT_STATUS_SCHEMA,
     handle_get_client_status,
-    check_firsteck_vault,
+    check_conformly_vault,
 )
-from plugins.firsteck.tools.list_clients import (
+from plugins.conformly.tools.list_clients import (
     LIST_CLIENTS_SCHEMA,
     handle_list_clients,
 )
-from plugins.firsteck.tools.search_regulation import (
+from plugins.conformly.tools.search_regulation import (
     SEARCH_REGULATION_SCHEMA,
     handle_search_regulation,
 )
-from plugins.firsteck.tools.gspr_gap_analyzer import (
+from plugins.conformly.tools.gspr_gap_analyzer import (
     GSPR_GAP_ANALYZER_SCHEMA,
     handle_gspr_gap_analyzer,
 )
-from plugins.firsteck.tools.parse_nb_letter import (
+from plugins.conformly.tools.parse_nb_letter import (
     PARSE_NB_LETTER_SCHEMA,
     handle_parse_nb_letter,
 )
@@ -475,30 +475,30 @@ from plugins.firsteck.tools.parse_nb_letter import (
 logger = logging.getLogger(__name__)
 
 _TOOLS = (
-    ("firsteck_get_client_status",  GET_CLIENT_STATUS_SCHEMA,  handle_get_client_status,  "📋"),
-    ("firsteck_list_clients",       LIST_CLIENTS_SCHEMA,       handle_list_clients,       "👥"),
-    ("firsteck_search_regulation",  SEARCH_REGULATION_SCHEMA,  handle_search_regulation,  "📚"),
-    ("firsteck_gspr_gap_analyzer",  GSPR_GAP_ANALYZER_SCHEMA,  handle_gspr_gap_analyzer,  "🧭"),
-    ("firsteck_parse_nb_letter",    PARSE_NB_LETTER_SCHEMA,    handle_parse_nb_letter,    "✉️"),
+    ("conformly_get_client_status",  GET_CLIENT_STATUS_SCHEMA,  handle_get_client_status,  "📋"),
+    ("conformly_list_clients",       LIST_CLIENTS_SCHEMA,       handle_list_clients,       "👥"),
+    ("conformly_search_regulation",  SEARCH_REGULATION_SCHEMA,  handle_search_regulation,  "📚"),
+    ("conformly_gspr_gap_analyzer",  GSPR_GAP_ANALYZER_SCHEMA,  handle_gspr_gap_analyzer,  "🧭"),
+    ("conformly_parse_nb_letter",    PARSE_NB_LETTER_SCHEMA,    handle_parse_nb_letter,    "✉️"),
 )
 
 
 def register(ctx) -> None:
-    """Called once by Hermes when the firsteck plugin is enabled."""
+    """Called once by Hermes when the conformly plugin is enabled."""
     for name, schema, handler, emoji in _TOOLS:
         ctx.register_tool(
             name=name,
-            toolset="firsteck",
+            toolset="conformly",
             schema=schema,
             handler=handler,
-            check_fn=check_firsteck_vault,
+            check_fn=check_conformly_vault,
             emoji=emoji,
             description=schema["description"][:200],
         )
-    logger.info("Firsteck plugin registered %d tools", len(_TOOLS))
+    logger.info("Conformly plugin registered %d tools", len(_TOOLS))
 ```
 
-启用方法:`hermes plugins enable firsteck` → 工具会出现在 `hermes tools list` 的 `firsteck` 工具集里。
+启用方法:`hermes plugins enable conformly` → 工具会出现在 `hermes tools list` 的 `conformly` 工具集里。
 
 ---
 
@@ -510,7 +510,7 @@ def register(ctx) -> None:
 
 ```python
 # gspr_gap_analyzer.py
-from plugins.firsteck.tools.search_regulation import handle_search_regulation
+from plugins.conformly.tools.search_regulation import handle_search_regulation
 
 def handle_gspr_gap_analyzer(args, **_kw):
     # 直接调,绕过 LLM
@@ -527,7 +527,7 @@ if entry:
     result = entry.handler({...})
 ```
 
-跨 plugin 直调能用,但**绕过了 LLM 的可观察性**(用户看不到中间调了什么)。Firsteck 内部 5 个工具之间允许直调;调外部 plugin 工具时优先让 LLM 自己 orchestrate。
+跨 plugin 直调能用,但**绕过了 LLM 的可观察性**(用户看不到中间调了什么)。Conformly 内部 5 个工具之间允许直调;调外部 plugin 工具时优先让 LLM 自己 orchestrate。
 
 ---
 
@@ -536,7 +536,7 @@ if entry:
 | 用途 | 路径 |
 |------|------|
 | Plugin 业务日志 | 用 `logging.getLogger(__name__)`,出现在 `~/.hermes/logs/agent.log` |
-| 工具调用审计 | `~/.firsteck/audit.log`(自建,JSON Lines) |
+| 工具调用审计 | `~/.conformly/audit.log`(自建,JSON Lines) |
 | Plugin 加载错误 | `hermes plugins list` 显示 `error` 列;详情在 `~/.hermes/logs/agent.log` |
 | 工具不可用原因 | `hermes tools list --verbose`(check_fn 失败原因) |
 

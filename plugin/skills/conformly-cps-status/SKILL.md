@@ -1,16 +1,16 @@
 ---
-name: firsteck-cps-status
-description: "Report a client's Clinical Performance Study (CPS) status against Firsteck's 6-phase / 60+ step workflow. Tells the user where the client currently is, which GREEN LIGHT gates are passed, what blockers exist, and the immediate next deliverables."
+name: conformly-cps-status
+description: "Report a client's Clinical Performance Study (CPS) status against the 6-phase / 60+ step workflow. Tells the user where the client currently is, which GREEN LIGHT gates are passed, what blockers exist, and the immediate next deliverables."
 version: 0.1.0
-author: Firsteck Bio
+author: Conformly
 license: Proprietary
 metadata:
   hermes:
-    tags: [firsteck, cps, ivdr, client-status]
+    tags: [conformly, cps, ivdr, client-status]
     vault_required: true
 ---
 
-# firsteck-cps-status — Client CPS Progress Report
+# conformly-cps-status — Client CPS Progress Report
 
 Use this skill whenever the user asks about a specific client's progress, e.g.:
 
@@ -22,12 +22,12 @@ Use this skill whenever the user asks about a specific client's progress, e.g.:
 ## Procedure
 
 1. **Resolve client file**
-   Read `$FIRSTECK_VAULT/clients/<client-id>.md`.
+   Read `$CONFORMLY_VAULT/clients/<client-id>.md`.
    The frontmatter contains: `current_phase`, `green_lights_passed`, `risk_flags`, `nb`, `ivd_class`.
-   If the file doesn't exist, list `$FIRSTECK_VAULT/clients/*.md` and ask the user which one they mean.
+   If the file doesn't exist, list `$CONFORMLY_VAULT/clients/*.md` and ask the user which one they mean.
 
 2. **Cross-reference the workflow**
-   Read `$FIRSTECK_VAULT/notes/procedures/cps-workflow.md`.
+   Read `$CONFORMLY_VAULT/notes/procedures/cps-workflow.md`.
    Match `current_phase` to the Phase section to enumerate remaining sub-steps and the next GREEN LIGHT gate.
 
 3. **Compose the report — use exactly this structure:**

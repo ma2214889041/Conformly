@@ -1,11 +1,11 @@
-name: firsteck
+name: conformly
 version: 0.1.0
-description: "Firsteck Hermes — medical-compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR. Ships CPS workflow tracking, regulation lookup, and client/NB-letter triage skills backed by the Firsteck Vault."
-author: "Firsteck Bio"
+description: "Conformly — medical-compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR. Ships CPS workflow tracking, regulation lookup, and client/NB-letter triage skills backed by the Conformly Vault."
+author: "Conformly"
 license: "Proprietary"
 metadata:
   hermes:
     tags: [medical, ivdr, ivd, compliance, regulatory-affairs, cps, eu]
-    vault_path_env: FIRSTECK_VAULT
-    default_vault_path: "~/firsteck-vault"
+    vault_path_env: CONFORMLY_VAULT
+    default_vault_path: "~/conformly/vault"
 hooks: []

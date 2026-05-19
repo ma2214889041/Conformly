@@ -1,16 +1,16 @@
 ---
-name: firsteck-regulation-lookup
-description: "Answer IVDR / MDCG / ISO / CLSI regulatory questions by retrieving from the Firsteck Vault's regulation library. Cites the source document and section number; refuses to fabricate when sources are silent."
+name: conformly-regulation-lookup
+description: "Answer IVDR / MDCG / ISO / CLSI regulatory questions by retrieving from the Conformly Vault's regulation library. Cites the source document and section number; refuses to fabricate when sources are silent."
 version: 0.1.0
-author: Firsteck Bio
+author: Conformly
 license: Proprietary
 metadata:
   hermes:
-    tags: [firsteck, ivdr, mdcg, iso, regulation, rag]
+    tags: [conformly, ivdr, mdcg, iso, regulation, rag]
     vault_required: true
 ---
 
-# firsteck-regulation-lookup — Regulation Q&A with citations
+# conformly-regulation-lookup — Regulation Q&A with citations
 
 Use this skill when the user asks substantive regulatory questions, e.g.:
 
@@ -30,8 +30,8 @@ Use this skill when the user asks substantive regulatory questions, e.g.:
    - `general` (no clear category — ask user)
 
 2. **Locate sources**
-   - Primary: `$FIRSTECK_VAULT/raw/regulations/` (PDF + markdown summaries)
-   - Curated notes: `$FIRSTECK_VAULT/notes/regulations/<topic>.md` (if exists, prefer these — they're already Firsteck-vetted)
+   - Primary: `$CONFORMLY_VAULT/raw/regulations/` (PDF + markdown summaries)
+   - Curated notes: `$CONFORMLY_VAULT/notes/regulations/<topic>.md` (if exists, prefer these — they're already Conformly-vetted)
    - For PDFs (e.g. `IVDR-2017-746.pdf`): use the `read_pdf` or `pdf_text` tool. If unavailable, tell the user PDF parsing is needed and suggest they run a pdf-to-text extraction first.
 
 3. **Retrieve & synthesize**
@@ -73,4 +73,4 @@ Use this skill when the user asks substantive regulatory questions, e.g.:
 When you successfully answer a question, suggest to the user:
 > "Want me to save this Q&A as a curated note in `notes/regulations/`? That way next time the answer is cached."
 
-If the user agrees, write to `$FIRSTECK_VAULT/notes/regulations/<slug>.md` with frontmatter `{type: qa_note, question: ..., last_verified: <date>, sources: [...]}`.
+If the user agrees, write to `$CONFORMLY_VAULT/notes/regulations/<slug>.md` with frontmatter `{type: qa_note, question: ..., last_verified: <date>, sources: [...]}`.

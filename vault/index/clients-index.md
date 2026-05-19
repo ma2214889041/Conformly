@@ -6,7 +6,7 @@ last_updated: 2026-05-19
 
 # Clients Index
 
-Active clients tracked in the Firsteck Vault.
+Active clients tracked in the Conformly Vault.
 
 | Client ID | Codename | Class | Phase | NB | Next milestone |
 |-----------|----------|-------|-------|----|----|

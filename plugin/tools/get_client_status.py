@@ -1,6 +1,6 @@
-"""firsteck_get_client_status — IVDR status for a single client.
+"""conformly_get_client_status — IVDR status for a single client.
 
-Reads $FIRSTECK_VAULT/clients/<client_id>.md, parses the YAML frontmatter
+Reads $CONFORMLY_VAULT/clients/<client_id>.md, parses the YAML frontmatter
 plus a small set of canonical body sections (risks, next actions), and
 returns a structured dict the LLM can quote or further reason over.
 
@@ -35,17 +35,17 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 GET_CLIENT_STATUS_SCHEMA: Dict[str, Any] = {
-    "name": "firsteck_get_client_status",
+    "name": "conformly_get_client_status",
     "description": (
-        "Return the current IVDR submission status for a single Firsteck "
+        "Return the current IVDR submission status for a single Conformly "
         "client. Reads the markdown dossier at "
-        "$FIRSTECK_VAULT/clients/<client_id>.md, parses its YAML frontmatter "
+        "$CONFORMLY_VAULT/clients/<client_id>.md, parses its YAML frontmatter "
         "and section headers, and returns a structured dict with the IVDR "
         "class, current CPS phase, Notified Body, days since project opened, "
         "open risks, and the immediate next deliverables. "
         "Use this when the user asks 'where is client X', 'what's blocking "
         "X', or wants the next action for one specific client. "
-        "Do NOT use it for cross-client overviews — use firsteck_list_clients."
+        "Do NOT use it for cross-client overviews — use conformly_list_clients."
     ),
     "parameters": {
         "type": "object",
@@ -54,7 +54,7 @@ GET_CLIENT_STATUS_SCHEMA: Dict[str, Any] = {
                 "type": "string",
                 "description": (
                     "Client identifier matching the filename "
-                    "$FIRSTECK_VAULT/clients/<client_id>.md (e.g. "
+                    "$CONFORMLY_VAULT/clients/<client_id>.md (e.g. "
                     "'CLIENT-A' or 'client-a'). Case-insensitive."
                 ),
             },
@@ -77,7 +77,7 @@ GET_CLIENT_STATUS_SCHEMA: Dict[str, Any] = {
 # Runtime gate
 # ---------------------------------------------------------------------------
 
-def check_firsteck_vault() -> bool:
+def check_conformly_vault() -> bool:
     """Hermes calls this every ~30s to decide whether to expose the tool.
 
     Keep it cheap and silent. Returning False filters the tool out of that
@@ -255,7 +255,7 @@ def handle_get_client_status(args: Dict[str, Any], **_kw) -> str:
     }
 
     audit_log(
-        tool="firsteck_get_client_status",
+        tool="conformly_get_client_status",
         args={"client_id": client_id, "include_risk_history": include_history},
         status="ok",
         path=str(md_path),

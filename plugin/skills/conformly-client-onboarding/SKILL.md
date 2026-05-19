@@ -1,16 +1,16 @@
 ---
-name: firsteck-client-onboarding
-description: "Onboard a new IVD-manufacturer client by collecting required intake information, classifying the device under IVDR, and generating a starter client file + project log in the Firsteck Vault."
+name: conformly-client-onboarding
+description: "Onboard a new IVD-manufacturer client by collecting required intake information, classifying the device under IVDR, and generating a starter client file + project log in the Conformly Vault."
 version: 0.1.0
-author: Firsteck Bio
+author: Conformly
 license: Proprietary
 metadata:
   hermes:
-    tags: [firsteck, onboarding, ivdr, classification]
+    tags: [conformly, onboarding, ivdr, classification]
     vault_required: true
 ---
 
-# firsteck-client-onboarding — Add a new IVD-manufacturer client
+# conformly-client-onboarding — Add a new IVD-manufacturer client
 
 Use when the user says:
 
@@ -48,7 +48,7 @@ Record the rule applied AND the rationale.
 
 ### Phase 3 — Generate client file
 
-Write to `$FIRSTECK_VAULT/clients/<client-id>.md` using this exact frontmatter schema:
+Write to `$CONFORMLY_VAULT/clients/<client-id>.md` using this exact frontmatter schema:
 
 ```yaml
 ---
@@ -74,14 +74,14 @@ Then populate the 8 standard sections (company / product / regulatory path / cur
 
 ### Phase 4 — Spin up project log
 
-Create `$FIRSTECK_VAULT/projects/<client-id>-cps-<year>/README.md` with:
+Create `$CONFORMLY_VAULT/projects/<client-id>-cps-<year>/README.md` with:
 - Project kickoff date
 - Estimated milestones (Phase 1 → Phase 6) using the CPS workflow as backbone
 - Empty `meetings/`, `submissions/`, `monitoring/` subfolders
 
 ### Phase 5 — Commit
 
-Run `cd $FIRSTECK_VAULT && git add -A && git commit -m "onboard: <client-id>"`.
+Run `cd $CONFORMLY_VAULT && git add -A && git commit -m "onboard: <client-id>"`.
 
 ## Hard rules
 

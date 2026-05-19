@@ -1,18 +1,18 @@
-# Firsteck Hermes Plugin
+# Conformly Plugin
 
 A Hermes Agent plugin that turns the agent into a medical-compliance co-pilot for Chinese IVD manufacturers entering the EU under IVDR (Regulation 2017/746).
 
 ## What's inside
 
 ```
-firsteck-plugin/
+conformly/
 ├── plugin.yaml                # Hermes plugin manifest
 ├── __init__.py                # Vault path resolution
 └── skills/
-    ├── firsteck-cps-status/         # "Where is client X in CPS?"
-    ├── firsteck-regulation-lookup/  # IVDR/MDCG/ISO/CLSI Q&A with citations
-    ├── firsteck-client-onboarding/  # New client intake + IVDR classification
-    └── firsteck-nb-letter-triage/   # NB deficiency letter triage + response draft
+    ├── conformly-cps-status/         # "Where is client X in CPS?"
+    ├── conformly-regulation-lookup/  # IVDR/MDCG/ISO/CLSI Q&A with citations
+    ├── conformly-client-onboarding/  # New client intake + IVDR classification
+    └── conformly-nb-letter-triage/   # NB deficiency letter triage + response draft
 ```
 
 ## Installation (after Hermes is installed)
@@ -20,20 +20,20 @@ firsteck-plugin/
 ```bash
 # 1. Symlink this plugin into Hermes user-plugin dir
 mkdir -p ~/.hermes/plugins
-ln -s "$(pwd)/firsteck-plugin" ~/.hermes/plugins/firsteck
+ln -s "$(pwd)/conformly" ~/.hermes/plugins/conformly
 
 # 2. Point the plugin at the vault
-export FIRSTECK_VAULT="$(pwd)/firsteck-vault"
-echo 'export FIRSTECK_VAULT="'$(pwd)'/firsteck-vault"' >> ~/.zshrc
+export CONFORMLY_VAULT="$(pwd)/conformly/vault"
+echo 'export CONFORMLY_VAULT="'$(pwd)'/conformly/vault"' >> ~/.zshrc
 
 # 3. Verify
 hermes doctor
-hermes /firsteck-cps-status
+hermes /conformly-cps-status
 ```
 
 ## Vault contract
 
-The plugin reads (and selectively writes to) `$FIRSTECK_VAULT/`:
+The plugin reads (and selectively writes to) `$CONFORMLY_VAULT/`:
 
 | Path | Read | Write | Owner |
 |------|------|-------|-------|
