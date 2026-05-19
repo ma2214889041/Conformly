@@ -15,7 +15,6 @@ import {
   Gauge,
   Layers,
   Library,
-  MessagesSquare,
   Microscope,
   Quote,
   ShieldCheck,
@@ -55,13 +54,13 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link href="/dashboard" className="btn-lg btn-primary shadow-lg shadow-accent/20">
-              Open the product
-              <ArrowRight className="h-4 w-4" />
+            <Link href="/analysis" className="btn-lg btn-primary shadow-lg shadow-accent/20">
+              <Zap className="h-4 w-4" />
+              Run live GSPR analysis
             </Link>
             <Link href="/nb-simulation" className="btn-lg btn-secondary">
               <Zap className="h-4 w-4" />
-              See Gemini 3 in action
+              Simulate the NB verdict
             </Link>
           </div>
 
@@ -447,48 +446,25 @@ export default function LandingPage() {
       </section>
 
       {/* =============================================================== */}
-      {/* TRY IT — 3 demo paths                                            */}
+      {/* TRY IT — two live AI entry points                                */}
       {/* =============================================================== */}
       <section className="border-t border-ink-200 bg-white">
-        <div className="container-narrow py-20">
-          <header className="mb-10 text-center">
-            <p className="eyebrow mb-3">try it</p>
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
-              Three things to do in the next 60 seconds.
-            </h2>
-          </header>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            <TryCard
-              n="01"
-              icon={<Gauge className="h-5 w-5" />}
-              title="Run Gemini 3 live"
-              body="Open /nb-simulation, press 'Run live'. Gemini 3 reads a real TÜV SÜD letter in ~10 seconds and returns 4 structured findings."
-              href="/nb-simulation"
-              cta="Open NB simulator"
-            />
-            <TryCard
-              n="02"
-              icon={<MessagesSquare className="h-5 w-5" />}
-              title="Ask anything"
-              body="Open /chat in Live mode. Ask 'is my device Class B or Class C?' — Gemini answers in ~5 seconds, citing IVDR Rule 3 and your vault."
-              href="/chat"
-              cta="Open chat"
-            />
-            <TryCard
-              n="03"
-              icon={<Layers className="h-5 w-5" />}
-              title="Explore the library"
-              body="Open /knowledge — 27 regulatory sources, each with its own indexed content. Click any source to see what the agent reads."
-              href="/knowledge"
-              cta="Open library"
-            />
-          </div>
-
-          <div className="mt-10 text-center">
-            <Link href="/dashboard" className="btn-lg btn-primary">
-              Or go straight to the product
-              <ArrowRight className="h-4 w-4" />
+        <div className="container-narrow py-20 text-center">
+          <p className="eyebrow mb-3">try it live</p>
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
+            Two pages run real Gemini 3 calls.
+          </h2>
+          <p className="mt-3 text-ink-600 max-w-xl mx-auto">
+            Press "Run live" on either page — Gemini reads our vault and returns a structured, cited result in under 10&nbsp;seconds.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link href="/analysis" className="btn-lg btn-primary shadow-lg shadow-accent/20">
+              <Zap className="h-4 w-4" />
+              Run live GSPR analysis
+            </Link>
+            <Link href="/nb-simulation" className="btn-lg btn-secondary">
+              <Zap className="h-4 w-4" />
+              Simulate the NB verdict
             </Link>
           </div>
         </div>
@@ -1042,34 +1018,6 @@ function Tech({
       </div>
       <p className="text-[12.5px] text-ink-600 leading-snug">{detail}</p>
     </a>
-  );
-}
-
-function TryCard({
-  n, icon, title, body, href, cta,
-}: {
-  n: string;
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-  href: string;
-  cta: string;
-}) {
-  return (
-    <article className="card p-6 flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 border border-sky-200 text-accent">
-          {icon}
-        </span>
-        <span className="text-xl font-mono text-ink-300 font-display">{n}</span>
-      </div>
-      <h3 className="font-semibold text-ink-900 text-[16px]">{title}</h3>
-      <p className="mt-2 text-[13.5px] text-ink-600 leading-relaxed flex-1">{body}</p>
-      <Link href={href} className="btn-md btn-primary mt-4 self-start">
-        {cta}
-        <ArrowRight className="h-3.5 w-3.5" />
-      </Link>
-    </article>
   );
 }
 
