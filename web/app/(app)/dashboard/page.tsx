@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   AlertOctagon,
@@ -17,6 +19,7 @@ import {
   Badge, Button, Card, CardBody, CardHeader, CardTitle, Citation,
   PageHeader, ProgressBar, ScoreRing, SectionLabel, SeverityChip,
 } from "@/components/app/atoms";
+import { toast } from "@/components/app/toast";
 
 export default function DashboardPage() {
   return (
@@ -27,14 +30,24 @@ export default function DashboardPage() {
         subtitle={`${PROJECT.classification} · ${PROJECT.manufacturer} · Notified Body: ${PROJECT.notified_body}`}
         right={
           <>
-            <Button variant="secondary" size="md">
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() =>
+                toast({
+                  title: "Project status export queued",
+                  body: "PDF will appear in /reports → CAPA / Status report.",
+                  tone: "info",
+                })
+              }
+            >
               <Download className="h-3.5 w-3.5" />
               Export status
             </Button>
-            <Button variant="primary" size="md">
+            <Link href="/documents" className="btn-md btn-primary">
               <Plus className="h-3.5 w-3.5" />
               Upload document
-            </Button>
+            </Link>
           </>
         }
       />

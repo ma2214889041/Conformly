@@ -10,6 +10,7 @@ import {
   Badge, Button, Card, CardBody, CardHeader, CardTitle, Citation,
   PageHeader, ProgressBar,
 } from "@/components/app/atoms";
+import { toast } from "@/components/app/toast";
 
 export default function DocumentsPage() {
   const [folderId, setFolderId] = useState<string>(DOC_FOLDERS[3].id);
@@ -26,8 +27,34 @@ export default function DocumentsPage() {
         subtitle="Upload, organise and view every design file. Folders mirror IVDR Annex II. Every upload is read by the AI in seconds and mapped to the regulation clauses it touches."
         right={
           <>
-            <Button variant="secondary" size="md"><Upload className="h-3.5 w-3.5" />Drag & drop</Button>
-            <Button variant="primary"   size="md"><Plus className="h-3.5 w-3.5"   />Upload document</Button>
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() =>
+                toast({
+                  title: "Drag any file onto the drop zone below",
+                  body: "PDF, DOCX, XLSX, STEP/IGES, PNG, JPG · 200 MB per file.",
+                  tone: "info",
+                })
+              }
+            >
+              <Upload className="h-3.5 w-3.5" />
+              Drag & drop
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() =>
+                toast({
+                  title: "Upload dialog (demo)",
+                  body: "In production this opens the OS file picker.",
+                  tone: "info",
+                })
+              }
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Upload document
+            </Button>
           </>
         }
       />
@@ -259,7 +286,18 @@ function DocPreview({ d }: { d: Document }) {
             </Section>
           )}
 
-          <Button variant="primary" size="sm" className="w-full">
+          <Button
+            variant="primary"
+            size="sm"
+            className="w-full"
+            onClick={() =>
+              toast({
+                title: `Opening ${d.name}`,
+                body: "External viewer will launch in production.",
+                tone: "info",
+              })
+            }
+          >
             Open in editor
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>

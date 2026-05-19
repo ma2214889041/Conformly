@@ -8,6 +8,7 @@ import {
   Badge, Button, Card, CardBody, CardHeader, CardTitle,
   PageHeader, ProgressBar,
 } from "@/components/app/atoms";
+import { toast } from "@/components/app/toast";
 
 export default function ReportsPage() {
   return (
@@ -56,7 +57,17 @@ export default function ReportsPage() {
                   <span className="text-[10px] font-mono text-ink-500">
                     {r.last_gen ? `last ${r.last_gen}` : "never generated"}
                   </span>
-                  <Button variant="primary" size="xs">
+                  <Button
+                    variant="primary"
+                    size="xs"
+                    onClick={() =>
+                      toast({
+                        title: `${r.last_gen ? "Regenerating" : "Generating"} ${r.title}`,
+                        body: `Estimated ${r.time}. We'll notify you when the draft is ready.`,
+                        tone: "info",
+                      })
+                    }
+                  >
                     <Sparkles className="h-3 w-3" />
                     {r.last_gen ? "Regenerate" : "Generate"}
                   </Button>
@@ -112,15 +123,31 @@ export default function ReportsPage() {
                     </Td>
                     <Td className="text-right">
                       <div className="inline-flex gap-1">
-                        <Button variant="ghost" size="xs">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => toast({ title: `Opening ${r.name}`, tone: "info" })}
+                        >
                           <FileText className="h-3 w-3" />
                           View
                         </Button>
-                        <Button variant="ghost" size="xs">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() =>
+                            toast({ title: `Downloading ${r.name}.pdf`, body: "File ready in ~3 s.", tone: "success" })
+                          }
+                        >
                           <Download className="h-3 w-3" />
                           PDF
                         </Button>
-                        <Button variant="ghost" size="xs">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() =>
+                            toast({ title: `Regenerating ${r.name}`, tone: "info" })
+                          }
+                        >
                           <RefreshCcw className="h-3 w-3" />
                           Regenerate
                         </Button>

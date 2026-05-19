@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/app/sidebar";
 import { Topbar } from "@/components/app/topbar";
 import { FloatingAsk } from "@/components/app/floating-ask";
+import { ToastProvider } from "@/components/app/toast";
 
 /**
  * Product shell — every page under /(app)/* renders inside this layout.
@@ -22,6 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="min-h-[calc(100vh-4rem)]">{children}</main>
       </div>
       <FloatingAsk />
+      <ToastProvider />
     </div>
   );
 }

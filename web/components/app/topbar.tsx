@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, HelpCircle, Search, X } from "lucide-react";
 import { PROJECT, RECENT_ACTIVITY } from "@/lib/mock-project";
 import { Badge } from "./atoms";
+import { toast } from "./toast";
 
 export function Topbar({ pageTitle }: { pageTitle: string }) {
   const [query, setQuery] = useState("");
@@ -89,7 +90,17 @@ export function Topbar({ pageTitle }: { pageTitle: string }) {
           )}
         </div>
         <div className="w-px h-6 bg-ink-200 mx-1" />
-        <button className="h-9 w-9 grid place-items-center rounded-md hover:bg-ink-100 text-ink-600" aria-label="Help">
+        <button
+          className="h-9 w-9 grid place-items-center rounded-md hover:bg-ink-100 text-ink-600"
+          aria-label="Help"
+          onClick={() =>
+            toast({
+              title: "Help",
+              body: "Press ⌘K to search · click 'Ask Conformly' for live chat.",
+              tone: "info",
+            })
+          }
+        >
           <HelpCircle className="h-4 w-4" />
         </button>
       </div>

@@ -11,6 +11,7 @@ import {
   Badge, Button, Card, CardBody, CardHeader, CardTitle, Citation,
   PageHeader, SectionLabel, SeverityChip,
 } from "@/components/app/atoms";
+import { toast } from "@/components/app/toast";
 
 type TabId = "suggestions" | "mapping" | "gaps" | "risk";
 
@@ -110,11 +111,33 @@ function SuggestionRow({ s }: { s: Suggestion }) {
           <p className="text-[14px] text-ink-900 font-medium leading-snug mb-1">{s.title}</p>
           <p className="text-[13px] text-ink-600 leading-relaxed mb-3">{s.body}</p>
           <div className="flex items-center gap-2">
-            <Button variant="primary" size="sm">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() =>
+                toast({
+                  title: s.action,
+                  body: `Task assigned for ${s.title.slice(0, 80)}…`,
+                  tone: "success",
+                })
+              }
+            >
               <ArrowRight className="h-3.5 w-3.5" />
               {s.action}
             </Button>
-            <Button variant="secondary" size="sm">View source documents</Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() =>
+                toast({
+                  title: "Opening source documents",
+                  body: "Linked files: see /documents → folder 4 GSPR.",
+                  tone: "info",
+                })
+              }
+            >
+              View source documents
+            </Button>
           </div>
         </div>
       </div>
@@ -269,8 +292,32 @@ function GapsGroup({
                   <p className="text-[14px] text-ink-900 font-medium leading-snug mb-1">{g.title}</p>
                   <p className="text-[13px] text-ink-600 leading-relaxed mb-3">{g.reason}</p>
                   <div className="flex items-center gap-2">
-                    <Button variant="primary" size="sm">Request from team</Button>
-                    <Button variant="secondary" size="sm">Mark not applicable</Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() =>
+                        toast({
+                          title: `Request sent to ${g.owner}`,
+                          body: g.title,
+                          tone: "success",
+                        })
+                      }
+                    >
+                      Request from team
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() =>
+                        toast({
+                          title: "Marked not applicable",
+                          body: "Justification will be required in production.",
+                          tone: "warning",
+                        })
+                      }
+                    >
+                      Mark not applicable
+                    </Button>
                   </div>
                 </div>
               </div>

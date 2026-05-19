@@ -461,6 +461,13 @@ export const NB_SIM: NbSim = {
 // Chat history
 // ---------------------------------------------------------------------------
 
+export type ChatMsg = {
+  from: "ai" | "user";
+  text: string;
+  cites?: string[];
+  confidence?: number;
+};
+
 export const CHAT_HISTORY = [
   { id: "c1", date: "Today",     preview: "Stability claim and IVDR §12.1" },
   { id: "c2", date: "Today",     preview: "Software classification per IEC 62304" },
@@ -469,6 +476,87 @@ export const CHAT_HISTORY = [
   { id: "c5", date: "Mar 28",    preview: "IFU symbols and ISO 15223-1" },
   { id: "c6", date: "Mar 22",    preview: "Risk management file structure" },
 ];
+
+export const CHAT_THREADS: Record<string, ChatMsg[]> = {
+  c1: [
+    {
+      from: "user",
+      text: "Our IFU claims a 24-month shelf-life but real-time stability data only goes to 9 months. Are we in trouble?",
+    },
+    {
+      from: "ai",
+      text:
+        "Yes — this is a structural finding under IVDR Annex I §12.1, which requires evidence supporting the full claimed device lifetime. Real-time data alone through 9 months does not satisfy a 24-month claim.\n\nTwo standard remediation paths:\n\n1. **Extend the real-time study** to T+24 months. This is the cleanest evidence but blocks submission until the data is available.\n2. **Add accelerated stability data per CLSI EP25-A §6.2** using an appropriate Arrhenius temperature acceleration factor. Notified Bodies accept this when paired with at least 50% real-time coverage (you currently have ~37%).\n\nGiven the 12-15 month timeline pressure, path (2) is normally the better choice. Conformly has opened **gap g1** with the Stability Lab as the owner.",
+      cites: ["IVDR Annex I §12.1", "CLSI EP25-A §6.2", "STAB-003"],
+      confidence: 0.94,
+    },
+  ],
+  c2: [
+    {
+      from: "user",
+      text: "Where do we land on IEC 62304 — Class A, B, or C?",
+    },
+    {
+      from: "ai",
+      text:
+        "Based on the hazard analysis in **RA-003 v3.2** and the software architecture in **SW-DOC-001 v1.4**, the MoleQ-Analytica firmware controlling aliquot volume qualifies as **Class B per IEC 62304 §4.3**.\n\nRationale:\n\n- All hazards traceable to software failure (H-019 calibration drift, H-024 aerosol carry-over control) have a worst-case severity of **Serious** but are bounded by an external risk control (the daily QC routine + closed-loop airflow).\n- There is no plausible software-only failure pathway leading to *Critical* injury (which would force Class C).\n- The software is not a non-medical OS or library that could escape its bounds.\n\nClass B means you do not need detailed software design at unit level, but you DO need:\n\n- A documented SOUP analysis\n- Architectural design with hazard linkage\n- Verification & validation summary\n- Post-market software maintenance plan\n\nThis classification should be locked at the Q2 design review.",
+      cites: ["IEC 62304 §4.3", "RA-003 v3.2", "SW-DOC-001 v1.4", "Team-NB PP-22"],
+      confidence: 0.89,
+    },
+  ],
+  c3: [
+    {
+      from: "user",
+      text: "Why is our device Class C and not Class B?",
+    },
+    {
+      from: "ai",
+      text:
+        "Per **IVDR Annex VIII Rule 3** and **MDCG 2023-1 §4.2**, your Sample Handling Module is **Class C** because its intended purpose includes preparing samples for downstream molecular-diagnostic assays that inform management of life-threatening conditions (Influenza A/B, RSV, SARS-CoV-2).\n\nRule 3 covers IVDs whose results are used for:\n\n- detection of transmissible agents (3a)\n- genetic testing (3b)\n- management of life-threatening disease (3c)\n- cancer staging (3d)\n- neonatal screening (3e)\n- companion diagnostics (3g)\n\nClass B would only apply if your intended purpose excluded these life-threatening downstream assays — which it doesn't.\n\nThis classification has cascading consequences:\n\n- Conformity assessment is **Annex IX** (QMS + Technical Documentation review by a Notified Body) — not Annex II self-declaration\n- Clinical Performance Study (Annex XIII Part A) is mandatory\n- Summary of Safety and Performance must be published to EUDAMED\n- Software classification can stay Class B per IEC 62304",
+      cites: ["IVDR Annex VIII Rule 3", "MDCG 2023-1 §4.2", "DEV-SPEC-002", "PEP-001"],
+      confidence: 0.96,
+    },
+  ],
+  c4: [
+    {
+      from: "user",
+      text: "What does CLSI EP09 actually require for our predicate comparison?",
+    },
+    {
+      from: "ai",
+      text:
+        "CLSI EP09-A3 specifies the following design for measurement-procedure comparison:\n\n- **Minimum 40 patient samples** spanning your analytical measuring range\n- **Duplicates** on both methods (candidate and comparator), processed within the same day\n- Samples should **not** be biased toward the centre of the range; include relevant pathologies\n- **Avoid pre-selecting** samples for agreement\n\nRequired statistical outputs:\n\n- **Bland-Altman difference plot** with limits of agreement (95% CI)\n- **Deming regression** — slope + intercept + their CIs (errors-in-both-axes)\n- **Passing-Bablok regression** as a non-parametric backup when residuals are non-normal\n\nAcceptance criteria (manufacturer-defined, justified):\n\n- Slope CI should include 1.0\n- Intercept CI should include 0\n- Mean bias within manufacturer-set limits at each medical decision point\n\nFor your project (SHM-7300), VAL-204 covers linearity but I don't see a dedicated method-comparison study against the predicate K2150. This is likely to be flagged in NB review (see predicted finding **F-007**).",
+      cites: ["CLSI EP09-A3", "VAL-204", "PEP-001"],
+      confidence: 0.92,
+    },
+  ],
+  c5: [
+    {
+      from: "user",
+      text: "Our IFU uses 6 symbols. Anything we need to add for ISO 15223-1?",
+    },
+    {
+      from: "ai",
+      text:
+        "Yes — **ISO 15223-1:2021 §5** requires that any IFU using symbols include a **reference table** listing each symbol used, its meaning, and the standard reference.\n\nOmitting this table is one of the most common minor deficiencies cited by Notified Bodies during pre-submission review.\n\nFor your 6 symbols (assuming IVD use, temperature limitation, keep dry, use-by date, caution, consult IFU), the required reference table looks like:\n\n| Symbol | Meaning | Standard ref |\n|--------|---------|--------------|\n| ⚕ | In vitro diagnostic medical device | ISO 15223-1 §5.5.1 |\n| 🌡 | Temperature limitation | ISO 15223-1 §5.3.7 |\n| ☂ | Keep dry | ISO 15223-1 §5.3.4 |\n| 📅 | Use by date | ISO 15223-1 §5.1.4 |\n| ⚠ | Caution | ISO 15223-1 §5.4.4 |\n| 📖 | Consult instructions for use | ISO 15223-1 §5.4.3 |\n\nI can draft this as an IFU appendix. Conformly has opened **gap g7** (minor) for this.",
+      cites: ["ISO 15223-1:2021 §5", "IFU-001"],
+      confidence: 0.95,
+    },
+  ],
+  c6: [
+    {
+      from: "user",
+      text: "How should we structure the Risk Management File for the NB review?",
+    },
+    {
+      from: "ai",
+      text:
+        "Per **ISO 14971:2019**, your Risk Management File should contain (and your **RA-003 v3.2** already does, mostly):\n\n1. **Risk management plan** (§4) — scope, responsibilities, risk acceptability criteria, verification activities. ✅ present\n\n2. **Risk analysis** (§5)\n   - Intended use & reasonably foreseeable misuse identification\n   - Hazard identification — your hazard register has 6 entries today (H-001, H-008, H-012, H-019, H-024, H-031)\n   - Estimation of risk for each hazardous situation\n\n3. **Risk evaluation** (§6) — decision on whether risk reduction is required for each hazardous situation.\n\n4. **Risk control** (§7)\n   - §7.1 Hierarchy: inherently safe design > protective measures > information for safety\n   - §7.3 **Verification of control measures** — ⚠ H-024 (aerosol carry-over) currently has a defined control but no verification record.\n\n5. **Evaluation of overall residual risk** (§8) — pending H-024 closure.\n\n6. **Risk management review** (§9) — needs to happen before commercial release.\n\n7. **Production and post-production activities** (§10) — collect and review information; update risk file as new hazards emerge.\n\nMain gap: complete the H-024 verification protocol so the §8 evaluation can close.",
+      cites: ["ISO 14971:2019 §4-§10", "RA-003 v3.2", "PP-19"],
+      confidence: 0.93,
+    },
+  ],
+};
 
 // ---------------------------------------------------------------------------
 // Knowledge base

@@ -10,13 +10,26 @@ import {
   Badge, Button, Card, CardBody, CardHeader, CardTitle, Citation,
   PageHeader, ProgressBar, ScoreRing, SectionLabel, SeverityChip,
 } from "@/components/app/atoms";
+import { toast } from "@/components/app/toast";
 
 export default function NbSimulationPage() {
   const [running, setRunning] = useState(false);
 
   function runSim() {
     setRunning(true);
-    setTimeout(() => setRunning(false), 2200);
+    toast({
+      title: "Notified Body review simulation started",
+      body: "Gemini 3 Pro is re-reading every document in your vault.",
+      tone: "info",
+    });
+    setTimeout(() => {
+      setRunning(false);
+      toast({
+        title: "Simulation complete · score 58",
+        body: "3 critical + 4 major + 1 minor finding. Review below.",
+        tone: "warning",
+      });
+    }, 2200);
   }
 
   return (
@@ -129,22 +142,30 @@ function FindingsCard() {
       </CardHeader>
       <CardBody>
         <ul className="space-y-2.5">
-          {NB_SIM.findings.map((f) => <FindingRow key={f.id} f={f} />)}
+          {NB_SIM.findings.map((f, i) => (
+            <FindingRow key={f.id} f={f} defaultOpen={i === 0} />
+          ))}
         </ul>
+        <p className="text-[11px] text-ink-500 mt-4 font-mono">
+          Click any finding row to expand. Generate / mark / ignore actions write to the audit log.
+        </p>
       </CardBody>
     </Card>
   );
 }
 
-function FindingRow({ f }: { f: NbFinding }) {
-  const [open, setOpen] = useState(false);
+function FindingRow({ f, defaultOpen = false }: { f: NbFinding; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   const ring =
     f.severity === "critical" ? "border-l-danger"  :
     f.severity === "major"    ? "border-l-warning" :
     "border-l-success";
   return (
-    <li className={clsx("rounded-lg border border-ink-200 bg-white border-l-4", ring)}>
-      <button onClick={() => setOpen((o) => !o)} className="w-full text-left p-4">
+    <li className={clsx("rounded-lg border border-ink-200 bg-white border-l-4 transition-shadow", ring, open && "shadow-sm")}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full text-left p-4 hover:bg-surface-subtle/40 transition-colors cursor-pointer rounded-r-lg"
+      >
         <div className="flex items-start gap-3">
           <span className="h-7 w-7 shrink-0 rounded-md grid place-items-center bg-surface-subtle border border-ink-200 text-ink-700">
             <AlertOctagon className="h-3.5 w-3.5" />
@@ -156,29 +177,68 @@ function FindingRow({ f }: { f: NbFinding }) {
               <Citation>{f.reg}</Citation>
             </div>
             <p className="text-[14px] text-ink-900 font-medium leading-snug">{f.title}</p>
+            {!open && (
+              <p className="text-[11px] text-ink-500 font-mono mt-1.5">click to expand · {f.docs.length} affected doc{f.docs.length === 1 ? "" : "s"}</p>
+            )}
           </div>
-          {open ? <ChevronUp className="h-4 w-4 text-ink-400" /> : <ChevronDown className="h-4 w-4 text-ink-400" />}
+          <span className="shrink-0 inline-flex items-center justify-center h-6 w-6 rounded-md bg-ink-100 text-ink-500">
+            {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          </span>
         </div>
       </button>
       {open && (
-        <div className="px-4 pb-4 pt-0 border-t border-ink-100">
+        <div className="px-4 pb-4 pt-0 border-t border-ink-100 animate-fade-in">
           <p className="text-[13px] text-ink-700 leading-relaxed mt-3">{f.desc}</p>
           <p className="text-[11px] mt-3 flex flex-wrap gap-1.5 items-center">
             <span className="text-ink-500 mr-1">Affected:</span>
             {f.docs.map((d) => (
-              <span key={d} className="font-mono text-ink-700 bg-surface-subtle border border-ink-200 rounded px-1.5 py-0.5">{d}</span>
+              <span key={d} className="font-mono text-ink-700 bg-surface-subtle border border-ink-200 rounded px-1.5 py-0.5">
+                {d}
+              </span>
             ))}
           </p>
-          <div className="flex items-center gap-2 mt-4">
-            <Button variant="primary" size="sm">
+          <div className="flex flex-wrap items-center gap-2 mt-4">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() =>
+                toast({
+                  title: `Generating CAPA draft for ${f.id}`,
+                  body: "Draft will land in /reports under CAPA Response Draft.",
+                  tone: "info",
+                })
+              }
+            >
               <Sparkles className="h-3.5 w-3.5" />
               Generate CAPA response draft
             </Button>
-            <Button variant="secondary" size="sm">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() =>
+                toast({
+                  title: `${f.id} marked as addressed`,
+                  body: "It will not appear in the next NB simulation run.",
+                  tone: "success",
+                })
+              }
+            >
               <CheckCircle2 className="h-3.5 w-3.5" />
               Mark addressed
             </Button>
-            <Button variant="ghost" size="sm">Ignore (with justification)</Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                toast({
+                  title: `${f.id} dismissed`,
+                  body: "Justification required — opens a form in production.",
+                  tone: "warning",
+                })
+              }
+            >
+              Ignore (with justification)
+            </Button>
           </div>
         </div>
       )}

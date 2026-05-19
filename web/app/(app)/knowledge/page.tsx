@@ -9,6 +9,7 @@ import {
   Badge, Button, Card, CardBody, CardHeader, CardTitle,
   PageHeader, SectionLabel,
 } from "@/components/app/atoms";
+import { toast } from "@/components/app/toast";
 
 export default function KnowledgePage() {
   const [open, setOpen] = useState<Record<string, boolean>>({ "kb-ivdr": true });
@@ -224,9 +225,45 @@ function DocBody({ doc }: { doc: KnowledgeDoc }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="primary" size="sm">View analyses that cite this</Button>
-        <Button variant="secondary" size="sm">Annotate</Button>
-        <Button variant="ghost" size="sm">Open raw markdown</Button>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() =>
+            toast({
+              title: `${doc.citations_from} analyses cite this document`,
+              body: "Opens the citation index in /analysis.",
+              tone: "info",
+            })
+          }
+        >
+          View analyses that cite this
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() =>
+            toast({
+              title: "Annotation mode",
+              body: "Highlight any passage to add a note.",
+              tone: "info",
+            })
+          }
+        >
+          Annotate
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() =>
+            toast({
+              title: "Opening raw markdown",
+              body: `vault/raw/regulations/${doc.title.split(" ")[0]}.md`,
+              tone: "info",
+            })
+          }
+        >
+          Open raw markdown
+        </Button>
       </div>
     </div>
   );

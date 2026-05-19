@@ -3,17 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp, Plus, Sparkles } from "lucide-react";
 import clsx from "clsx";
-import { CHAT_HISTORY, CHAT_SUGGESTED } from "@/lib/mock-project";
+import { CHAT_HISTORY, CHAT_SUGGESTED, CHAT_THREADS, type ChatMsg } from "@/lib/mock-project";
 import { Card, CardBody, Citation, PageHeader } from "@/components/app/atoms";
+import { toast } from "@/components/app/toast";
 
-type Msg = {
-  from: "ai" | "user";
-  text: string;
-  cites?: string[];
-  confidence?: number;
-};
-
-const SEED: Msg[] = [
+const NEW_THREAD_SEED: ChatMsg[] = [
   {
     from: "ai",
     text:
@@ -22,31 +16,49 @@ const SEED: Msg[] = [
 ];
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Msg[]>(SEED);
+  const [threadId, setThreadId] = useState<string>(CHAT_HISTORY[0].id);
+  const [drafts, setDrafts] = useState<Record<string, ChatMsg[]>>({});
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement | null>(null);
 
+  // Resolve messages for the active thread: stored mocks first, then any
+  // live drafts the user has built up by typing.
+  const baseMessages = CHAT_THREADS[threadId] ?? NEW_THREAD_SEED;
+  const liveExtras = drafts[threadId] ?? [];
+  const messages = [...baseMessages, ...liveExtras];
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages.length]);
+  }, [messages.length, threadId]);
 
-  function send(t?: string) {
-    const text = (t ?? input).trim();
-    if (!text) return;
-    setMessages((m) => [...m, { from: "user", text }]);
+  function send(text?: string) {
+    const t = (text ?? input).trim();
+    if (!t) return;
+    setDrafts((d) => ({ ...d, [threadId]: [...(d[threadId] ?? []), { from: "user", text: t }] }));
     setInput("");
     setTimeout(() => {
-      setMessages((m) => [
-        ...m,
-        {
-          from: "ai",
-          text:
-            "Based on your dossier (DEV-SPEC-002 and PEP-001) and IVDR Annex VIII Rule 3, your sample-handling module qualifies as **Class C IVD** because it produces information used for the management of life-threatening conditions when integrated with a downstream molecular assay. The class is also consistent with MDCG 2023-1 §4.2.\n\nA Class B determination would only apply if the device's intended purpose excluded life-threatening downstream assays — which is not the case in your current intended-purpose statement.",
-          cites: ["IVDR Annex VIII Rule 3", "MDCG 2023-1 §4.2", "DEV-SPEC-002", "PEP-001"],
-          confidence: 0.91,
-        },
-      ]);
-    }, 800);
+      setDrafts((d) => ({
+        ...d,
+        [threadId]: [
+          ...(d[threadId] ?? []),
+          {
+            from: "ai",
+            text:
+              "I've pulled the relevant evidence from your vault and cross-checked it against the regulation. The most relevant clause to your question is below — I've cited both the regulatory source and the document in your project that supports it.",
+            cites: ["IVDR Annex I §1", "IVDR Annex VIII Rule 3", "DEV-SPEC-001"],
+            confidence: 0.87,
+          },
+        ],
+      }));
+    }, 700);
+  }
+
+  function newThread() {
+    toast({ title: "New conversation started", tone: "success" });
+    // We don't persist new threads in mock mode — point at the first thread
+    // and clear local drafts so the seed message renders cleanly.
+    setThreadId("c1");
+    setDrafts({});
   }
 
   return (
@@ -65,23 +77,29 @@ export default function ChatPage() {
               <p className="text-[11px] tracking-[0.18em] uppercase text-ink-500 font-medium">
                 Conversations
               </p>
-              <button className="btn-xs btn-secondary">
+              <button onClick={newThread} className="btn-xs btn-secondary">
                 <Plus className="h-3 w-3" />
                 New
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
-              {CHAT_HISTORY.map((c, i) => (
+              {CHAT_HISTORY.map((c) => (
                 <button
                   key={c.id}
+                  onClick={() => setThreadId(c.id)}
                   className={clsx(
-                    "w-full text-left rounded-md px-3 py-2 transition-colors",
-                    i === 0
+                    "w-full text-left rounded-md px-3 py-2 transition-colors cursor-pointer",
+                    c.id === threadId
                       ? "bg-accent/10 border border-accent/30"
                       : "border border-transparent hover:bg-surface-subtle",
                   )}
                 >
-                  <p className={clsx("text-[12.5px] leading-tight truncate", i === 0 ? "text-ink-900 font-medium" : "text-ink-700")}>
+                  <p
+                    className={clsx(
+                      "text-[12.5px] leading-tight truncate",
+                      c.id === threadId ? "text-ink-900 font-medium" : "text-ink-700",
+                    )}
+                  >
                     {c.preview}
                   </p>
                   <p className="text-[10px] font-mono text-ink-500 mt-0.5">{c.date}</p>
@@ -105,14 +123,13 @@ export default function ChatPage() {
               <div ref={endRef} />
             </CardBody>
 
-            {/* Composer */}
             <div className="border-t border-ink-200 p-4">
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {CHAT_SUGGESTED.map((q) => (
                   <button
                     key={q}
                     onClick={() => send(q)}
-                    className="text-[12px] text-ink-600 hover:text-ink-900 border border-ink-200 hover:border-ink-300 rounded-full px-3 py-1 transition-colors"
+                    className="text-[12px] text-ink-600 hover:text-ink-900 border border-ink-200 hover:border-ink-300 rounded-full px-3 py-1 transition-colors cursor-pointer"
                   >
                     {q}
                   </button>
@@ -126,11 +143,7 @@ export default function ChatPage() {
                   placeholder="Ask anything regulatory…"
                   className="flex-1 h-11 px-4 rounded-md bg-surface-subtle border border-ink-200 text-[14px] text-ink-900 placeholder:text-ink-400 focus:outline-none focus:border-accent focus:bg-white"
                 />
-                <button
-                  onClick={() => send()}
-                  className="btn-lg btn-primary"
-                  aria-label="Send"
-                >
+                <button onClick={() => send()} className="btn-lg btn-primary" aria-label="Send">
                   <ArrowUp className="h-4 w-4" />
                   Send
                 </button>
@@ -143,7 +156,7 @@ export default function ChatPage() {
   );
 }
 
-function AiMessage({ m }: { m: Msg }) {
+function AiMessage({ m }: { m: ChatMsg }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
@@ -169,7 +182,7 @@ function AiMessage({ m }: { m: Msg }) {
   );
 }
 
-function UserMessage({ m }: { m: Msg }) {
+function UserMessage({ m }: { m: ChatMsg }) {
   return (
     <div className="flex justify-end">
       <div className="max-w-[80%] rounded-lg bg-sky-50 border border-sky-200 px-4 py-2.5 text-[14px] text-ink-900 leading-relaxed">
@@ -180,10 +193,60 @@ function UserMessage({ m }: { m: Msg }) {
 }
 
 function renderInline(text: string) {
+  // Support **bold** plus pipe-tables (re-rendered as preformatted)
+  const lines = text.split("\n");
+  const blocks: React.ReactNode[] = [];
+  let buffer: string[] = [];
+  let inTable = false;
+  let tableLines: string[] = [];
+
+  function flushBuffer(key: string) {
+    if (!buffer.length) return;
+    const para = buffer.join("\n");
+    blocks.push(
+      <p key={key} className="whitespace-pre-line">
+        {renderBold(para)}
+      </p>,
+    );
+    buffer = [];
+  }
+  function flushTable(key: string) {
+    if (!tableLines.length) return;
+    blocks.push(
+      <pre key={key} className="font-mono text-[12px] bg-ink-50 border border-ink-200 rounded p-3 overflow-x-auto whitespace-pre">
+        {tableLines.join("\n")}
+      </pre>,
+    );
+    tableLines = [];
+  }
+
+  lines.forEach((line, i) => {
+    if (line.trim().startsWith("|")) {
+      if (!inTable) {
+        flushBuffer(`p${i}`);
+        inTable = true;
+      }
+      tableLines.push(line);
+    } else {
+      if (inTable) {
+        flushTable(`t${i}`);
+        inTable = false;
+      }
+      buffer.push(line);
+    }
+  });
+  flushBuffer("p-end");
+  flushTable("t-end");
+  return <div className="space-y-2">{blocks}</div>;
+}
+
+function renderBold(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((p, i) =>
     p.startsWith("**") && p.endsWith("**") ? (
-      <strong key={i} className="font-semibold text-ink-900">{p.slice(2, -2)}</strong>
+      <strong key={i} className="font-semibold text-ink-900">
+        {p.slice(2, -2)}
+      </strong>
     ) : (
       <span key={i}>{p}</span>
     ),
