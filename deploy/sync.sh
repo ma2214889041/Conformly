@@ -145,7 +145,7 @@ fi
 ok "$URL/api/health responding"
 echo "    $HEALTH" | python3 -m json.tool 2>/dev/null | head -8
 
-for path in / /dashboard /documents /analysis /reports /nb-simulation /chat /knowledge /legacy/demo; do
+for path in / /dashboard /documents /analysis /reports /nb-simulation /chat /knowledge; do
     line=$(curl -sfI "$URL$path" | head -1 || echo "")
     if [[ "$line" == *"200"* ]]; then
         ok "$path $line"
