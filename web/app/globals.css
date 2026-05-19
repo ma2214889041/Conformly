@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-ink-950 text-ink-100 antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection { background: rgba(34, 211, 238, 0.25); }
+}
+
+@layer components {
+  .container-narrow { @apply max-w-5xl mx-auto px-6; }
+  .container-wide   { @apply max-w-7xl mx-auto px-6; }
+
+  .card {
+    @apply rounded-2xl border border-ink-700/60 bg-ink-900/70 backdrop-blur
+           shadow-[0_1px_0_0_rgba(255,255,255,0.04)_inset];
+  }
+  .card-hover { @apply hover:border-ink-600 transition-colors; }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium
+           text-sm transition-all focus:outline-none focus:ring-2
+           focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-ink-950;
+  }
+  .btn-primary   { @apply btn bg-accent text-ink-950 hover:bg-accent/90; }
+  .btn-secondary { @apply btn border border-ink-700 text-ink-100 hover:bg-ink-800; }
+  .btn-ghost     { @apply btn text-ink-300 hover:text-ink-50; }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5
+           text-xs font-medium border;
+  }
+  .badge-cyan   { @apply badge border-cyan-400/40 text-cyan-300 bg-cyan-400/10; }
+  .badge-amber  { @apply badge border-amber-400/40 text-amber-300 bg-amber-400/10; }
+  .badge-rose   { @apply badge border-rose-400/40 text-rose-300 bg-rose-400/10; }
+  .badge-emerald{ @apply badge border-emerald-400/40 text-emerald-300 bg-emerald-400/10; }
+  .badge-slate  { @apply badge border-ink-600 text-ink-300 bg-ink-800/50; }
+
+  .code-block {
+    @apply font-mono text-[12.5px] leading-relaxed text-ink-200
+           bg-ink-950/70 border border-ink-700/60 rounded-lg p-4 overflow-x-auto;
+  }
+}
+
+/* Subtle radial highlight behind the hero */
+.hero-glow {
+  background:
+    radial-gradient(800px 380px at 50% -120px, rgba(34, 211, 238, 0.15), transparent 60%),
+    radial-gradient(600px 320px at 80% 20%, rgba(251, 146, 60, 0.07), transparent 60%);
+}
