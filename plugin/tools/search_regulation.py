@@ -129,14 +129,30 @@ _FILENAME_FALLBACK = [
 
 
 def _classify(fm: Dict[str, Any], path: Path) -> str:
+    # Step 1 — explicit, specific frontmatter wins. These types are precise
+    # enough to override any filename heuristic.
     declared = (fm.get("type") or "").lower()
-    for bucket, members in _TYPE_MAP.items():
-        if declared in members:
-            return bucket
-    # Try filename prefix
+    _SPECIFIC = {
+        "qa_note": "qa_note",
+        "note": "qa_note",
+        "iso_summary": "standard",
+        "clsi_summary": "standard",
+        "iec_summary": "standard",
+        "standard": "standard",
+        "regulation_text": "regulation",
+        "regulation": "regulation",
+    }
+    if declared in _SPECIFIC:
+        return _SPECIFIC[declared]
+    # Step 2 — filename prefix. Handles the common case where ISO/CLSI mock
+    # files share the generic ``regulation_summary`` frontmatter type.
     stem_upper = path.stem.upper()
     for prefix, bucket in _FILENAME_FALLBACK:
         if stem_upper.startswith(prefix):
+            return bucket
+    # Step 3 — fall back to the broader frontmatter buckets.
+    for bucket, members in _TYPE_MAP.items():
+        if declared in members:
             return bucket
     return "regulation"  # safe default
 
