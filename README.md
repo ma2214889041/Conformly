@@ -49,13 +49,15 @@ conformly/
 
 ## Status (2026-05-19)
 
-| Tool | Status |
-|------|--------|
-| `conformly_get_client_status(client_id)` | ✅ shipped — 16 unit tests pass |
-| `conformly_list_clients()` | ⬜ next |
-| `conformly_search_regulation(query)` | ⬜ |
-| `conformly_gspr_gap_analyzer(client_id)` | ⬜ (demo hero #2) |
-| `conformly_parse_nb_letter(pdf_path)` | ⬜ (demo hero #1) |
+| Tool | Tests | Notes |
+|------|-------|-------|
+| `conformly_get_client_status(client_id)` | ✅ 16 | Reads `clients/<id>.md`, parses frontmatter + risk table + next-actions checklist |
+| `conformly_list_clients(status, sort_by, ivdr_class)` | ✅ 18 | Portfolio overview — feeds the 20-client dashboard |
+| `conformly_search_regulation(query, doc_type)` | ✅ 21 | Returns the regulation catalog (LLM-Wiki style — no embeddings) |
+| `conformly_parse_nb_letter(letter_path or letter_text)` | ✅ 16 | LLM-backed extraction; demo hero #1 |
+| `conformly_gspr_gap_analyzer(client_id, focus_clauses)` | ✅ 19 | LLM-backed Annex I check; demo hero #2 |
+
+**Total: 90 tests passing.** All five tools register cleanly with Hermes Agent v0.14.0.
 
 Web UI and Vultr deployment land on Day 4 of the hackathon — see `docs/OPEN_QUESTIONS.md`.
 
