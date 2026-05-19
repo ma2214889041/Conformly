@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  AlignLeft,
   ArrowRight,
   BookOpen,
   BookOpenCheck,
@@ -18,13 +17,9 @@ import {
   Library,
   MessagesSquare,
   Microscope,
-  Network,
   Quote,
-  Repeat,
-  Search,
   ShieldCheck,
   Sparkles,
-  TrendingDown,
   Upload,
   Users,
   Workflow,
