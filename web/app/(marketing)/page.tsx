@@ -304,6 +304,158 @@ export default function LandingPage() {
       </section>
 
       {/* =============================================================== */}
+      {/* MARKET SCOPE                                                     */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-gradient-to-b from-white to-surface-subtle">
+        <div className="container-narrow py-20">
+          <header className="mb-12">
+            <p className="eyebrow mb-3">market scope</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
+              A €2.4B compliance market — forced to re-buy under IVDR.
+            </h2>
+            <p className="mt-3 text-ink-600 max-w-2xl">
+              The IVDR transition is a once-in-a-generation forced upgrade for every IVD on the EU market. ~9,800 manufacturers must re-certify; ~2,300 active Notified Body assessments per year; €350-800k average legacy consulting spend per Class C device.
+            </p>
+          </header>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="rounded-2xl border border-ink-200 bg-white p-6">
+              <p className="eyebrow mb-2">TAM</p>
+              <p className="text-3xl font-semibold text-ink-900 font-display">€2.4B<span className="text-base text-ink-500">/yr</span></p>
+              <p className="mt-2 text-sm text-ink-600">Global IVD regulatory compliance spend (2024) growing 14% YoY through 2030.</p>
+            </div>
+            <div className="rounded-2xl border border-ink-200 bg-white p-6">
+              <p className="eyebrow mb-2">SAM</p>
+              <p className="text-3xl font-semibold text-ink-900 font-display">€720M<span className="text-base text-ink-500">/yr</span></p>
+              <p className="mt-2 text-sm text-ink-600">EU-bound Class B/C/D IVDs needing Clinical Performance Studies. ~1,400 submissions/year.</p>
+            </div>
+            <div className="rounded-2xl border border-ink-200 bg-white p-6">
+              <p className="eyebrow mb-2">SOM (Y3)</p>
+              <p className="text-3xl font-semibold text-ink-900 font-display">€3.5M<span className="text-base text-ink-500"> ARR</span></p>
+              <p className="mt-2 text-sm text-ink-600">~70 active engagements by 2028 via Bologna CRO dogfooding → external beta → multi-tenant SaaS.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* REVENUE STREAMS                                                  */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-white">
+        <div className="container-narrow py-20">
+          <header className="mb-12">
+            <p className="eyebrow mb-3">revenue streams</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
+              Five ways Conformly makes money.
+            </h2>
+            <p className="mt-3 text-ink-600 max-w-2xl">
+              Target gross margin <strong>78%+</strong>. Gemini run-cost is ~€2.50/tool-call; Vultr hosting €15/month per instance; the rest is salary.
+            </p>
+          </header>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <Revenue title="Per-project subscription" price="€4,000 / month" body="One device project = one subscription. Core stream. Most clients run 1-3 projects in parallel." icon={<Workflow className="h-5 w-5" />} />
+            <Revenue title="Per-seat add-ons" price="€200 / seat / month" body="Owner included; additional QA / RA reviewers are seats. Drives team expansion." icon={<Users className="h-5 w-5" />} />
+            <Revenue title="NB simulation runs" price="€450 / run" body="Pre-submission audit. Many manufacturers buy this without subscribing — one-shot value gate." icon={<Gauge className="h-5 w-5" />} />
+            <Revenue title="Knowledge-base licensing" price="€30k / yr / firm" body="CROs license Conformly's curated 27-source vault to use across all their clients." icon={<Library className="h-5 w-5" />} />
+            <Revenue title="Implementation & onboarding" price="€15-40k one-time" body="Vault migration from legacy QMS, training, custom procedure import." icon={<Wrench className="h-5 w-5" />} wide />
+          </div>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* COMPETITORS + USP                                                */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-gradient-to-b from-white to-surface-subtle">
+        <div className="container-narrow py-20">
+          <header className="mb-12">
+            <p className="eyebrow mb-3">competitors &amp; usp</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
+              Everyone else is a template library or a billable hour.
+            </h2>
+            <p className="mt-3 text-ink-600 max-w-2xl">
+              The QMS incumbents sell document workflows; Big-4 consultants sell hours. Nobody continuously reads the regulation against your design while you're still designing.
+            </p>
+          </header>
+
+          <div className="overflow-hidden rounded-2xl border border-ink-200 bg-white">
+            <table className="w-full text-sm">
+              <thead className="bg-surface-subtle text-ink-700">
+                <tr>
+                  <th className="text-left px-4 py-3 font-medium">Competitor</th>
+                  <th className="text-left px-4 py-3 font-medium">Approach</th>
+                  <th className="text-left px-4 py-3 font-medium">Where they're weak</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink-100">
+                <tr>
+                  <td className="px-4 py-3 font-medium text-ink-900">Greenlight Guru</td>
+                  <td className="px-4 py-3 text-ink-700">eQMS with workflow templates</td>
+                  <td className="px-4 py-3 text-ink-600">Static templates · no AI analysis · no NB prediction</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium text-ink-900">MasterControl</td>
+                  <td className="px-4 py-3 text-ink-700">Enterprise QMS suite</td>
+                  <td className="px-4 py-3 text-ink-600">Heavy · weeks to implement · no native LLM</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium text-ink-900">Qualio</td>
+                  <td className="px-4 py-3 text-ink-700">SaaS QMS for SMEs</td>
+                  <td className="px-4 py-3 text-ink-600">SOP management only · no regulatory reading · no GSPR mapping</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium text-ink-900">ChatGPT / Claude (raw)</td>
+                  <td className="px-4 py-3 text-ink-700">Free-form Q&amp;A</td>
+                  <td className="px-4 py-3 text-ink-600">No vault grounding · hallucinates clauses · no NB simulator</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-medium text-ink-900">Big-4 consultants</td>
+                  <td className="px-4 py-3 text-ink-700">Manual human review</td>
+                  <td className="px-4 py-3 text-ink-600">€350-800k · slow (months) · not scalable</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-10">
+            <p className="eyebrow mb-4">our usp</p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <Usp icon={<Repeat className="h-5 w-5" />} title="Continuous, not gate-based" body="Re-reads the full regulation on every commit." />
+              <Usp icon={<Gauge className="h-5 w-5" />} title="Pre-submission NB simulator" body="Predicts the actual deficiency letter before you file." />
+              <Usp icon={<GitBranch className="h-5 w-5" />} title="Multi-version control" body="Git-versioned vault — reproducible audits, one click." />
+              <Usp icon={<Quote className="h-5 w-5" />} title="Cite-or-refuse" body="Every claim carries clause + document. Source silent? Agent says so." />
+              <Usp icon={<BookOpenCheck className="h-5 w-5" />} title="Long-context, no RAG" body="Whole corpus + dossier in one prompt. No vector DB, no drift." />
+              <Usp icon={<Brain className="h-5 w-5" />} title="Specialized agent" body="5 tools, 27 regulatory sources, IVDR-tuned prompts. Not generic ChatGPT." />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* FUTURE PROSPECTS                                                 */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-white">
+        <div className="container-narrow py-20">
+          <header className="mb-12">
+            <p className="eyebrow mb-3">future prospects</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
+              Same architecture extends to MDR, MHRA, FDA.
+            </h2>
+            <p className="mt-3 text-ink-600 max-w-2xl">
+              Markdown vault + specialized agent + long-context LLM is a pattern, not a one-off. Each new market is another curated knowledge layer + a new tool family.
+            </p>
+          </header>
+
+          <div className="grid md:grid-cols-4 gap-3">
+            <Horizon when="Hackathon" tone="now" items={["5 specialist tools shipped", "90 unit tests passing", "HTTPS live on conformly.gopromp.com", "Real Gemini on /chat, /analysis, /nb-simulation"]} />
+            <Horizon when="Q3 2026" tone="next" items={["Internal dogfooding · 20+ engagements", "Full multimodal PDF ingestion", "Slack + Telegram gateway for HITL"]} />
+            <Horizon when="Q4 2026" tone="next" items={["Open beta · external CROs", "EUDAMED integration", "MDCG 2022-9 SSP generator", "Cybersecurity per MDCG 2019-16"]} />
+            <Horizon when="2027" tone="future" items={["Multi-tenant SaaS", "MDR (2017/745) extension", "UK / MHRA + FDA bridges", "CRO playbook marketplace"]} />
+          </div>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
       {/* SPONSOR TECH STACK                                               */}
       {/* =============================================================== */}
       <section className="border-t border-ink-200">
@@ -782,6 +934,70 @@ function TryCard({
         {cta}
         <ArrowRight className="h-3.5 w-3.5" />
       </Link>
+    </article>
+  );
+}
+
+// ===========================================================================
+// Revenue card
+// ===========================================================================
+
+function Revenue({
+  icon, title, price, body, wide,
+}: {
+  icon: React.ReactNode; title: string; price: string; body: string; wide?: boolean;
+}) {
+  return (
+    <article className={`rounded-2xl border border-ink-200 bg-white p-5 ${wide ? "md:col-span-2" : ""}`}>
+      <div className="flex items-center gap-3 mb-3">
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600">{icon}</span>
+        <h3 className="font-semibold text-ink-900">{title}</h3>
+      </div>
+      <p className="text-xl font-semibold text-ink-900 font-display">{price}</p>
+      <p className="mt-2 text-[13px] text-ink-600 leading-relaxed">{body}</p>
+    </article>
+  );
+}
+
+// ===========================================================================
+// USP card
+// ===========================================================================
+
+function Usp({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
+  return (
+    <article className="rounded-xl border border-ink-200 bg-white p-4">
+      <div className="flex items-start gap-3">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 border border-sky-200 text-accent shrink-0">{icon}</span>
+        <div>
+          <h3 className="font-semibold text-ink-900 text-sm">{title}</h3>
+          <p className="mt-1 text-[12.5px] text-ink-600 leading-relaxed">{body}</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// ===========================================================================
+// Horizon column for the roadmap
+// ===========================================================================
+
+function Horizon({ when, tone, items }: { when: string; tone: "now" | "next" | "future"; items: string[] }) {
+  const ring = tone === "now" ? "border-emerald-200 bg-emerald-50/40" : tone === "next" ? "border-sky-200 bg-sky-50/40" : "border-ink-200 bg-surface-subtle";
+  const dot = tone === "now" ? "bg-emerald-500" : tone === "next" ? "bg-sky-500" : "bg-ink-400";
+  return (
+    <article className={`rounded-2xl border ${ring} p-5`}>
+      <div className="flex items-center gap-2 mb-3">
+        <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
+        <h3 className="font-semibold text-ink-900 text-sm font-display">{when}</h3>
+      </div>
+      <ul className="space-y-2">
+        {items.map((it, i) => (
+          <li key={i} className="text-[12.5px] text-ink-700 leading-relaxed flex gap-2">
+            <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-ink-400 shrink-0" />
+            <span>{it}</span>
+          </li>
+        ))}
+      </ul>
     </article>
   );
 }
