@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp, Plus, Sparkles } from "lucide-react";
+import { ArrowUp, Loader2, Plus, RadioTower, Sparkles, Zap } from "lucide-react";
 import clsx from "clsx";
 import { CHAT_HISTORY, CHAT_SUGGESTED, CHAT_THREADS, type ChatMsg } from "@/lib/mock-project";
-import { Card, CardBody, Citation, PageHeader } from "@/components/app/atoms";
+import { Badge, Card, CardBody, Citation, PageHeader } from "@/components/app/atoms";
 import { toast } from "@/components/app/toast";
 
 const NEW_THREAD_SEED: ChatMsg[] = [
@@ -19,24 +19,82 @@ export default function ChatPage() {
   const [threadId, setThreadId] = useState<string>(CHAT_HISTORY[0].id);
   const [drafts, setDrafts] = useState<Record<string, ChatMsg[]>>({});
   const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [liveMode, setLiveMode] = useState(true);
   const endRef = useRef<HTMLDivElement | null>(null);
 
-  // Resolve messages for the active thread: stored mocks first, then any
-  // live drafts the user has built up by typing.
   const baseMessages = CHAT_THREADS[threadId] ?? NEW_THREAD_SEED;
   const liveExtras = drafts[threadId] ?? [];
   const messages = [...baseMessages, ...liveExtras];
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages.length, threadId]);
+  }, [messages.length, threadId, sending]);
 
-  function send(text?: string) {
+  async function send(text?: string) {
     const t = (text ?? input).trim();
-    if (!t) return;
+    if (!t || sending) return;
     setDrafts((d) => ({ ...d, [threadId]: [...(d[threadId] ?? []), { from: "user", text: t }] }));
     setInput("");
-    setTimeout(() => {
+    setSending(true);
+
+    if (!liveMode) {
+      // Scripted reply (offline mode)
+      setTimeout(() => {
+        setDrafts((d) => ({
+          ...d,
+          [threadId]: [
+            ...(d[threadId] ?? []),
+            {
+              from: "ai",
+              text:
+                "I've pulled the relevant evidence from your vault and cross-checked it against the regulation. The most relevant clause to your question is below — I've cited both the regulatory source and the document in your project that supports it.",
+              cites: ["IVDR Annex I §1", "IVDR Annex VIII Rule 3", "DEV-SPEC-001"],
+              confidence: 0.87,
+            },
+          ],
+        }));
+        setSending(false);
+      }, 700);
+      return;
+    }
+
+    try {
+      // Live Gemini call via /api/chat
+      const history = [...baseMessages, ...liveExtras].map((m) => ({
+        role: m.from === "ai" ? "assistant" : "user",
+        content: m.text,
+      }));
+      const r = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ message: t, history }),
+      });
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error || "Unknown error");
+      setDrafts((d) => ({
+        ...d,
+        [threadId]: [
+          ...(d[threadId] ?? []),
+          {
+            from: "ai",
+            text: j.data.text,
+            cites: j.data.cites,
+            confidence: j.data.confidence,
+          },
+        ],
+      }));
+      toast({
+        title: `Reply from ${j.data.model || "Gemini 3 Pro"}`,
+        body: `${j.data.duration_ms} ms · ${j.data.cites?.length ?? 0} citations`,
+        tone: "success",
+      });
+    } catch (e: any) {
+      toast({
+        title: "Live chat failed — falling back to scripted reply",
+        body: e?.message ?? String(e),
+        tone: "warning",
+      });
       setDrafts((d) => ({
         ...d,
         [threadId]: [
@@ -44,13 +102,15 @@ export default function ChatPage() {
           {
             from: "ai",
             text:
-              "I've pulled the relevant evidence from your vault and cross-checked it against the regulation. The most relevant clause to your question is below — I've cited both the regulatory source and the document in your project that supports it.",
-            cites: ["IVDR Annex I §1", "IVDR Annex VIII Rule 3", "DEV-SPEC-001"],
-            confidence: 0.87,
+              "I couldn't reach the live Gemini endpoint just now. Showing a scripted reference reply instead. Your previous answer is still in this thread's history.",
+            cites: ["IVDR Annex I"],
+            confidence: 0.5,
           },
         ],
       }));
-    }, 700);
+    } finally {
+      setSending(false);
+    }
   }
 
   function newThread() {
@@ -67,6 +127,27 @@ export default function ChatPage() {
         eyebrow="Ask Conformly"
         title="Regulatory chat — every answer cites its source"
         subtitle="A persistent conversation. Ask anything about IVDR, ISO, IEC or CLSI requirements. Conformly cross-references your uploaded documents, then answers in plain language with the regulation clauses and document IDs that support the answer."
+        right={
+          <button
+            onClick={() => {
+              setLiveMode((m) => !m);
+              toast({
+                title: liveMode ? "Switched to scripted replies" : "Switched to live Gemini replies",
+                body: liveMode ? "Faster but stub responses." : "Real Gemini 3 Pro · ~8-14 s per turn.",
+                tone: "info",
+              });
+            }}
+            className={clsx(
+              "inline-flex items-center gap-2 px-3 h-9 rounded-md text-[13px] font-medium transition-colors border",
+              liveMode
+                ? "bg-success/10 text-success border-success/30"
+                : "bg-ink-100 text-ink-700 border-ink-200",
+            )}
+          >
+            {liveMode ? <Zap className="h-3.5 w-3.5" /> : <RadioTower className="h-3.5 w-3.5" />}
+            {liveMode ? "Live · Gemini 3 Pro" : "Scripted mode"}
+          </button>
+        }
       />
 
       <div className="grid grid-cols-12 gap-4 h-[calc(100vh-15rem)] min-h-[560px]">
@@ -119,6 +200,12 @@ export default function ChatPage() {
                 ) : (
                   <UserMessage key={i} m={m} />
                 ),
+              )}
+              {sending && (
+                <div className="inline-flex items-center gap-2 text-[12px] font-mono text-ink-500 pl-1">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Conformly is thinking…
+                </div>
               )}
               <div ref={endRef} />
             </CardBody>

@@ -328,6 +328,135 @@ _LIVE_SCENARIOS: Dict[str, list[Dict[str, Any]]] = {
 
 
 # ---------------------------------------------------------------------------
+# Conversational chat — backed by Gemini via Hermes PluginLlm
+# ---------------------------------------------------------------------------
+
+@app.post("/api/chat")
+async def chat(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Single-turn conversational endpoint backed by Gemini 3 Pro through Hermes.
+
+    Body: { "message": str, "history"?: [{role, content}], "thread_id"?: str }
+    Returns: { success, data: { text, cites[], confidence, model, duration_ms } }
+    """
+    message = (payload.get("message") or "").strip()
+    if not message:
+        raise HTTPException(status_code=400, detail="message is required")
+    history = payload.get("history") or []
+    if not isinstance(history, list):
+        raise HTTPException(status_code=400, detail="history must be a list")
+
+    try:
+        return await asyncio.to_thread(_run_chat, message, history)
+    except Exception as e:
+        logger.exception("chat call failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def _run_chat(message: str, history: list) -> Dict[str, Any]:
+    """Synchronous chat implementation. Called in a thread by /api/chat."""
+    import time
+    t0 = time.monotonic()
+
+    # Build the system prompt that gives Conformly its persona + citation rules
+    system = (
+        "You are Conformly, an autonomous AI co-pilot for medical-device "
+        "engineers entering the EU under IVDR (Regulation 2017/746). "
+        "Your audience: a single product engineer or compliance lead working "
+        "on one Class C IVD device project named SHM-7300 (Sample Handling "
+        "Module, Acme Diagnostics GmbH, Notified Body TÜV SÜD NB 0123).\n\n"
+        "Rules every reply MUST follow:\n"
+        "1. Answer in plain regulatory English. No technical jargon.\n"
+        "2. End EVERY substantive answer with a list of citations: regulation "
+        "   clauses (e.g. 'IVDR Annex I §12.1'), standards (e.g. 'CLSI EP05-A3'), "
+        "   and document IDs from the user's vault (e.g. 'STAB-003', 'PEP-001', "
+        "   'RA-003 v3.2', 'DEV-SPEC-002'). At least 2 citations per answer.\n"
+        "3. If you genuinely don't know, say so — do NOT invent regulations.\n"
+        "4. Keep answers under 200 words unless the user asks for depth.\n"
+        "5. Use **bold** for the load-bearing finding or recommendation.\n\n"
+        "Project context you may quote:\n"
+        " - Real-time stability documented to 9 months against 24-month IFU claim (gap).\n"
+        " - PMMA sample chamber, biocompatibility plan present, test report absent.\n"
+        " - Software MoleQ-Analytica v2.3, IEC 62304 Class B provisional.\n"
+        " - Hazard H-024 (aerosol carry-over) has a control but no verification record.\n"
+        " - PEP-001 v0.9 cites internal SOP, not CLSI EP05-A3.\n"
+    )
+
+    # Compose messages (last 6 history turns + current user message)
+    messages = [{"role": "system", "content": system}]
+    for h in history[-6:]:
+        role = h.get("role")
+        content = h.get("content")
+        if role in {"user", "assistant"} and isinstance(content, str):
+            messages.append({"role": role, "content": content})
+    messages.append({"role": "user", "content": message})
+
+    # Call Hermes' PluginLlm
+    from agent.plugin_llm import PluginLlm  # type: ignore
+    llm = PluginLlm(plugin_id="conformly")
+    result = llm.complete(
+        messages=messages,
+        temperature=0.3,
+        max_tokens=600,
+        timeout=60.0,
+        purpose="conformly.chat",
+    )
+    text = (getattr(result, "text", None) or "").strip()
+    provider = getattr(result, "provider", "") or ""
+    model = getattr(result, "model", "") or ""
+
+    # Pull obvious citation tokens out of the text — coarse but deterministic.
+    cites = _extract_citations(text)
+
+    return {
+        "success": True,
+        "data": {
+            "text": text,
+            "cites": cites,
+            "confidence": 0.9,  # placeholder; in production this is provider-grounded
+            "provider": provider,
+            "model": model,
+            "duration_ms": int((time.monotonic() - t0) * 1000),
+        },
+    }
+
+
+_CITATION_PATTERNS = [
+    # IVDR / MDR-style references
+    r"IVDR (?:Article|Art\.) \d+(?:\([a-z0-9]+\))?",
+    r"IVDR Annex [IVX]+(?: [A-Z][a-z]*)?(?: §[\d.]+)?",
+    # ISO / IEC / CLSI standards
+    r"ISO \d{4,5}(?:-\d+)?(?::\d{4})?(?: §[\d.]+)?",
+    r"IEC \d{4,5}(?:-\d+)?(?::\d{4})?(?: §[\d.]+)?",
+    r"CLSI EP\d{2}(?:-A\d)?",
+    r"MDCG \d{4}-\d+",
+    # In-vault doc IDs (uppercase letter prefix + dash + digits)
+    r"[A-Z]{2,6}-\d{2,4}(?: v\d+(?:\.\d+)?)?",
+    r"DEV-SPEC-\d+",
+    r"PEP-\d+",
+    r"STAB-\d+",
+    r"VAL-\d+",
+    r"SW-DOC-\d+",
+    r"BIO-\d+",
+    r"MAT-\d+",
+    r"RA-\d+(?: v\d+(?:\.\d+)?)?",
+    r"IFU-\d+",
+    r"Team-NB PP-\d+",
+]
+
+
+def _extract_citations(text: str) -> List[str]:
+    import re
+    found: List[str] = []
+    seen = set()
+    for pat in _CITATION_PATTERNS:
+        for m in re.findall(pat, text):
+            if m not in seen:
+                seen.add(m)
+                found.append(m)
+    return found[:12]  # cap so the UI badge row stays clean
+
+
+# ---------------------------------------------------------------------------
 # Convenience: load the BSI letter contents so the front-end can show it
 # in a "drop the letter on the agent" affordance.
 # ---------------------------------------------------------------------------

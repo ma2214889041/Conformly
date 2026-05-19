@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { AlertOctagon, ArrowRight, Sparkles, TriangleAlert } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { AlertOctagon, ArrowRight, Loader2, RefreshCcw, Sparkles, TriangleAlert, Zap } from "lucide-react";
 import clsx from "clsx";
 import {
   GAPS, GSPR_CHAPTERS, HAZARDS, SUGGESTIONS,
@@ -66,24 +66,210 @@ export default function AnalysisPage() {
 // Tab 1 — Design suggestions
 // ===========================================================================
 
+type LiveItem = {
+  clause_id: string;
+  clause_title?: string;
+  status: "addressed" | "partial" | "open" | "n/a";
+  evidence?: string;
+  gap?: string;
+  recommended_action?: string;
+  priority?: "high" | "medium" | "low";
+};
+
+type LiveGspr = {
+  client_id: string;
+  ivdr_class?: string;
+  current_phase?: string;
+  headline?: string;
+  top_risks?: string[];
+  summary?: { addressed: number; partial: number; open: number; n_a: number; total: number };
+  items?: LiveItem[];
+  __durationMs?: number;
+};
+
 function SuggestionsTab() {
+  const [running, setRunning] = useState(false);
+  const [live, setLive] = useState<LiveGspr | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  const startedAt = useRef(0);
+
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setElapsed(Date.now() - startedAt.current), 100);
+    return () => clearInterval(t);
+  }, [running]);
+
+  async function runLive() {
+    setRunning(true);
+    setElapsed(0);
+    startedAt.current = Date.now();
+    toast({
+      title: "Calling Gemini 3 Pro",
+      body: "Benching the GSPR checklist against the SHM-7300 dossier…",
+      tone: "info",
+    });
+    try {
+      const t0 = Date.now();
+      const r = await fetch("/api/tools/gspr_gap_analyzer", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ client_id: "CLIENT-A" }),
+      });
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error || "Unknown error");
+      setLive({ ...j.data, __durationMs: Date.now() - t0 });
+      toast({
+        title: `GSPR analysis in ${((Date.now() - t0) / 1000).toFixed(1)} s`,
+        body: `${j.data.summary?.total ?? 0} clauses · ${j.data.summary?.open ?? 0} open`,
+        tone: "success",
+      });
+    } catch (e: any) {
+      toast({ title: "Live call failed", body: e?.message ?? String(e), tone: "warning" });
+    } finally {
+      setRunning(false);
+    }
+  }
+
   return (
-    <Card>
+    <div className="space-y-4">
+      <Card className="border-accent/30 bg-accent/[0.03]">
+        <CardBody>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="max-w-2xl">
+              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                <Badge tone="sky">
+                  <Sparkles className="h-3 w-3" />
+                  Gemini 3 Pro
+                </Badge>
+                <Badge tone={live ? "green" : "neutral"}>
+                  <Zap className="h-3 w-3" />
+                  {live ? `live · ${live.summary?.total ?? 0} clauses scored` : "scripted preview"}
+                </Badge>
+                <span className="text-[11px] font-mono text-ink-500">
+                  {running ? `running · ${(elapsed / 1000).toFixed(1)} s`
+                    : live ? `${((live.__durationMs ?? 0) / 1000).toFixed(1)} s`
+                    : "refreshed 11 min ago"}
+                </span>
+              </div>
+              <p className="text-[13px] text-ink-600 leading-relaxed">
+                Press <strong>Run live GSPR analysis</strong> to call Gemini 3 Pro through the FastAPI sidecar. It reads the full GSPR checklist and the project dossier in one prompt, scores every clause, and returns a typed gap report — typically in 12-16 seconds.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 shrink-0">
+              <Button variant="primary" size="lg" onClick={runLive} disabled={running}>
+                {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+                {running ? `Calling Gemini · ${(elapsed / 1000).toFixed(1)} s` : "Run live GSPR analysis"}
+              </Button>
+              {live && (
+                <Button variant="secondary" size="sm" onClick={() => setLive(null)}>
+                  <RefreshCcw className="h-3.5 w-3.5" />
+                  Reset to scripted suggestions
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
+      {live ? <LiveGsprReport live={live} /> : (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>{SUGGESTIONS.length} suggestions · refreshed 11 min ago</CardTitle>
+              <Badge tone="sky">
+                <Sparkles className="h-3 w-3" />
+                Cached
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardBody>
+            <ul className="space-y-3">
+              {SUGGESTIONS.map((s) => <SuggestionRow key={s.id} s={s} />)}
+            </ul>
+          </CardBody>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function LiveGsprReport({ live }: { live: LiveGspr }) {
+  const total = live.summary?.total ?? 0;
+  const pct = (n: number) => (total > 0 ? (n / total) * 100 : 0);
+  return (
+    <Card className="border-success/40 bg-emerald-50/30">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>{SUGGESTIONS.length} suggestions · refreshed 11 min ago</CardTitle>
-          <Badge tone="sky">
-            <Sparkles className="h-3 w-3" />
-            Gemini 3 Pro
-          </Badge>
+          <div>
+            <CardTitle>Live Gemini gap analysis · {live.client_id}</CardTitle>
+            {live.headline && (
+              <p className="text-[13.5px] text-ink-900 mt-2">{live.headline}</p>
+            )}
+          </div>
+          <Badge tone="green">{((live.__durationMs ?? 0) / 1000).toFixed(1)} s</Badge>
         </div>
       </CardHeader>
       <CardBody>
-        <ul className="space-y-3">
-          {SUGGESTIONS.map((s) => <SuggestionRow key={s.id} s={s} />)}
+        <div className="flex h-2 rounded-full overflow-hidden bg-ink-200 mb-2">
+          <div className="bg-success" style={{ width: `${pct(live.summary?.addressed ?? 0)}%` }} />
+          <div className="bg-warning" style={{ width: `${pct(live.summary?.partial ?? 0)}%` }} />
+          <div className="bg-danger"  style={{ width: `${pct(live.summary?.open ?? 0)}%` }} />
+          <div className="bg-ink-400" style={{ width: `${pct(live.summary?.n_a ?? 0)}%` }} />
+        </div>
+        <div className="grid grid-cols-4 gap-2 mb-5 text-[11px] font-mono">
+          <Chip label="addressed" n={live.summary?.addressed ?? 0} tone="green" />
+          <Chip label="partial"   n={live.summary?.partial ?? 0}   tone="amber" />
+          <Chip label="open"      n={live.summary?.open ?? 0}      tone="rose" />
+          <Chip label="n/a"       n={live.summary?.n_a ?? 0}       tone="slate" />
+        </div>
+
+        <ul className="space-y-2">
+          {(live.items ?? []).map((it) => (
+            <li key={it.clause_id} className="rounded-lg border border-ink-200 bg-white p-4">
+              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                <code className="font-mono text-[12px] text-ink-500">{it.clause_id}</code>
+                <span className="text-[13.5px] text-ink-900 font-medium">{it.clause_title ?? it.clause_id}</span>
+                <span className={clsx(
+                  "text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ml-auto",
+                  it.status === "addressed" && "bg-emerald-50 text-emerald-700",
+                  it.status === "partial"   && "bg-amber-50 text-amber-700",
+                  it.status === "open"      && "bg-rose-50 text-rose-700",
+                  it.status === "n/a"       && "bg-ink-100 text-ink-500",
+                )}>
+                  {it.status}
+                </span>
+                {it.priority === "high" && <Badge tone="red">priority high</Badge>}
+              </div>
+              {it.evidence && <p className="text-[12.5px] text-ink-700"><span className="text-success font-mono mr-1.5">evidence:</span>{it.evidence}</p>}
+              {it.gap && <p className="text-[12.5px] text-ink-700 mt-1"><span className="text-danger font-mono mr-1.5">gap:</span>{it.gap}</p>}
+              {it.recommended_action && <p className="text-[12.5px] text-ink-700 mt-1"><span className="text-accent font-mono mr-1.5">next:</span>{it.recommended_action}</p>}
+            </li>
+          ))}
         </ul>
+
+        {live.top_risks && live.top_risks.length > 0 && (
+          <p className="text-[12px] text-ink-500 mt-4">
+            <span className="text-ink-700 font-mono mr-2">top risks:</span>
+            {live.top_risks.map((r) => <span key={r} className="font-mono text-danger mr-2">{r}</span>)}
+          </p>
+        )}
       </CardBody>
     </Card>
+  );
+}
+
+function Chip({ label, n, tone }: { label: string; n: number; tone: "green" | "amber" | "rose" | "slate" }) {
+  return (
+    <div className={clsx(
+      "px-2 py-1 rounded text-center",
+      tone === "green" && "bg-emerald-50 text-emerald-700",
+      tone === "amber" && "bg-amber-50 text-amber-700",
+      tone === "rose"  && "bg-rose-50 text-rose-700",
+      tone === "slate" && "bg-ink-100 text-ink-500",
+    )}>
+      <span>{label}</span>
+      <span className="ml-1 font-semibold">{n}</span>
+    </div>
   );
 }
 
