@@ -284,3 +284,232 @@ export const USER = {
   role: "Compliance Lead",
   initials: "EM",
 };
+
+// ---------------------------------------------------------------------------
+// Documents (Annex II folder tree)
+// ---------------------------------------------------------------------------
+
+export const DOC_FOLDERS: DocFolder[] = [
+  { id: "f1", num: "1", name: "Device Description and Specification",         count: 18, required: 22, status: "ok"    },
+  { id: "f2", num: "2", name: "Information to be Supplied by the Manufacturer", count: 9,  required: 12, status: "warn"  },
+  { id: "f3", num: "3", name: "Design and Manufacturing Information",          count: 31, required: 34, status: "ok"    },
+  { id: "f4", num: "4", name: "General Safety and Performance Requirements",   count: 27, required: 48, status: "warn"  },
+  { id: "f5", num: "5", name: "Benefit-Risk Analysis and Risk Management",     count: 14, required: 16, status: "ok"    },
+  { id: "f6", num: "6", name: "Verification and Validation of the Device",     count: 32, required: 44, status: "warn"  },
+  { id: "f7", num: "7", name: "Post-Market Surveillance Plan",                 count: 11, required: 18, status: "alert" },
+];
+
+export const DOCUMENTS: Record<string, Document[]> = {
+  f1: [
+    { id: "d-101", name: "DEV-SPEC-001 Device Description v2.3.pdf",   uploaded: "Apr 02, 2026", status: "analyzed",  score: 94, kind: "pdf" },
+    { id: "d-102", name: "DEV-SPEC-002 Intended Purpose Statement.docx", uploaded: "Mar 28, 2026", status: "analyzed",  score: 88, kind: "doc" },
+    { id: "d-103", name: "DEV-CAD-014 Sample Chamber Assembly.step",    uploaded: "Mar 21, 2026", status: "analyzed",  score: 76, kind: "cad" },
+    { id: "d-104", name: "DEV-BOM-007 Bill of Materials v1.8.xlsx",     uploaded: "Mar 18, 2026", status: "analyzing", score: null, kind: "xlsx" },
+    { id: "d-105", name: "DEV-IMG-022 Optical Path Diagram.png",        uploaded: "Mar 10, 2026", status: "analyzed",  score: 90, kind: "img" },
+  ],
+  f4: [
+    { id: "d-401", name: "GSPR-MAP-001 Conformity Matrix v1.4.xlsx",     uploaded: "Apr 14, 2026", status: "analyzed",     score: 71, kind: "xlsx" },
+    { id: "d-402", name: "STAB-001 Stability Protocol v2.pdf",            uploaded: "Mar 30, 2026", status: "analyzed",     score: 52, kind: "pdf", flagged: true },
+    { id: "d-403", name: "STAB-003 Interim Stability Report (9 mo).pdf", uploaded: "Apr 06, 2026", status: "analyzed",     score: 58, kind: "pdf", flagged: true },
+    { id: "d-404", name: "ISO10993-5 Cytotoxicity Test Plan.docx",        uploaded: "Mar 24, 2026", status: "needs-review", score: 41, kind: "doc", flagged: true },
+    { id: "d-405", name: "BIO-001 Biological Evaluation Plan v0.6.docx", uploaded: "Mar 02, 2026", status: "analyzed",     score: 68, kind: "doc" },
+  ],
+  f6: [
+    { id: "d-601", name: "PEP-001 Performance Evaluation Plan v0.9.docx", uploaded: "Apr 10, 2026", status: "analyzed", score: 64, kind: "doc" },
+    { id: "d-602", name: "VAL-203 Analytical Specificity Report.pdf",      uploaded: "Apr 03, 2026", status: "analyzed", score: 86, kind: "pdf" },
+    { id: "d-603", name: "VAL-204 Linearity Study (CLSI EP06).pdf",        uploaded: "Mar 25, 2026", status: "analyzed", score: 92, kind: "pdf" },
+    { id: "d-604", name: "VAL-205 Precision Study (CLSI EP05-A3).xlsx",    uploaded: "Mar 12, 2026", status: "analyzed", score: 79, kind: "xlsx" },
+    { id: "d-605", name: "SW-DOC-001 Software Architecture v1.4.pdf",      uploaded: "Mar 05, 2026", status: "analyzed", score: 81, kind: "pdf" },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Analysis — suggestions / GSPR mapping / gaps / hazards
+// ---------------------------------------------------------------------------
+
+export const SUGGESTIONS: Suggestion[] = [
+  { id: "s1", severity: "high",   title: "PMMA sample chamber requires ISO 10993 biocompatibility evidence",     reg: "ISO 10993-1 §6 · ISO 10993-5 · ISO 10993-10", action: "Request biocompatibility test report",
+    body: "Your sample chamber material (PMMA, MAT-002) is patient-contacting via aerosol path. ISO 10993-1 §6 requires biological evaluation including cytotoxicity (10993-5), sensitization (10993-10), and irritation. Only a test plan is currently uploaded — no test report." },
+  { id: "s2", severity: "medium", title: "Software safety classification suggests Class B per IEC 62304",         reg: "IEC 62304 §4.3 · §B.4.2",                     action: "Confirm software safety class",
+    body: "Hazard analysis (RA-003) shows injury severity at most 'minor reversible' from any single software failure. This places the device at Class B. Confirm intended use does not introduce serious injury pathways before locking deliverables." },
+  { id: "s3", severity: "high",   title: "Stability data does not cover claimed 24-month shelf-life",             reg: "IVDR Annex I §12.1 · CLSI EP25-A",            action: "Add accelerated stability data",
+    body: "Real-time stability is documented to 9 months (STAB-003). Accelerated stability is not present. IVDR Annex I §12.1 requires evidence supporting the full claimed shelf-life; partial coverage is consistently cited as a deficiency by NBs." },
+  { id: "s4", severity: "medium", title: "Precision study should reference CLSI EP05-A3, not internal SOP",       reg: "CLSI EP05-A3 · IVDR Annex I §9.1(a)",         action: "Update protocol reference",
+    body: "PEP-001 §4.3 cites an internal SOP for repeatability and reproducibility. Notified Bodies expect alignment to CLSI EP05-A3 (3×5×5 design over 20 days). Internal SOP appears equivalent but should be cross-referenced." },
+  { id: "s5", severity: "low",    title: "Symbols in IFU draft missing ISO 15223-1:2021 cross-reference",         reg: "ISO 15223-1:2021 §5",                         action: "Insert symbols reference table",
+    body: "The IFU draft uses six symbols. Their meaning is correct, but the IFU does not include the standard reference table required by ISO 15223-1:2021 §5." },
+  { id: "s6", severity: "medium", title: "Risk control verification missing for hazard H-024 (aerosol carry-over)", reg: "ISO 14971 §7.3",                              action: "Create verification protocol",
+    body: "Risk file v3.2 introduces hazard H-024. A control measure is defined (closed-loop airflow), but no verification protocol confirms its effectiveness. ISO 14971 §7.3 requires verification of every implemented control." },
+];
+
+export const GSPR_CHAPTERS: GsprChapter[] = [
+  { id: "ch1", name: "Chapter I — General Requirements", items: [
+    { id: "1.1", title: "Achieve performance during normal conditions of use", state: "green",  evidence: 4 },
+    { id: "1.2", title: "Reduce risks as far as possible (state of the art)",  state: "green",  evidence: 6 },
+    { id: "1.3", title: "Risk management system established and maintained",    state: "green",  evidence: 8 },
+    { id: "1.4", title: "Risk control measures verified",                       state: "yellow", evidence: 5 },
+    { id: "1.5", title: "Residual risks reduced and disclosed",                 state: "green",  evidence: 3 },
+    { id: "1.6", title: "Devices designed for users without specialist knowledge", state: "yellow", evidence: 2 },
+  ]},
+  { id: "ch2", name: "Chapter II — Design and Manufacturing", items: [
+    { id: "8.1",  title: "Analytical performance — accuracy, trueness, precision",     state: "green",  evidence: 7 },
+    { id: "8.2",  title: "Analytical sensitivity and specificity",                     state: "green",  evidence: 4 },
+    { id: "9.1",  title: "Clinical performance — diagnostic sensitivity/specificity",  state: "yellow", evidence: 2 },
+    { id: "10.1", title: "Devices that contain measuring function",                    state: "green",  evidence: 3 },
+    { id: "12.1", title: "Performance maintained during claimed lifetime/shelf-life",  state: "red",    evidence: 1 },
+    { id: "12.2", title: "Transport and storage conditions specified",                 state: "yellow", evidence: 1 },
+  ]},
+  { id: "ch3", name: "Chapter III — Information Supplied with the Device", items: [
+    { id: "20.1", title: "Label content — identification, intended purpose",  state: "green",  evidence: 2 },
+    { id: "20.2", title: "Symbols comply with harmonised standards",          state: "yellow", evidence: 1 },
+    { id: "20.4", title: "Instructions for use content and accessibility",    state: "green",  evidence: 3 },
+    { id: "20.5", title: "IFU for self-testing/near-patient testing",         state: "red",    evidence: 0 },
+  ]},
+];
+
+export const GAPS: Gap[] = [
+  { id: "g1", category: "critical",  title: "Real-time stability data covering full shelf-life", reason: "IVDR Annex I §12.1 requires evidence supporting the full claimed lifetime. Current data covers only 9 of 24 months.", reg: "IVDR Annex I §12.1", owner: "Stability lab" },
+  { id: "g2", category: "critical",  title: "Cytotoxicity test report (ISO 10993-5)",            reason: "Patient-contacting material PMMA requires completed biological evaluation. Test plan exists; report missing.",     reg: "ISO 10993-5",        owner: "Biocompatibility partner" },
+  { id: "g3", category: "critical",  title: "IFU for near-patient testing scenarios",             reason: "Annex I §20.5 requires self/near-patient IFU sections. Currently the IFU only addresses professional use.",        reg: "IVDR Annex I §20.5", owner: "Regulatory" },
+  { id: "g4", category: "important", title: "Verification protocol for hazard control H-024",     reason: "Closed-loop airflow control measure has no verification record.",                                                     reg: "ISO 14971 §7.3",     owner: "V&V team" },
+  { id: "g5", category: "important", title: "Software hazard traceability matrix",                reason: "IEC 62304 §5.7 requires traceability from software requirement to hazard. Current matrix covers 71% of requirements.", reg: "IEC 62304 §5.7",     owner: "Software" },
+  { id: "g6", category: "important", title: "Usability validation under simulated use",           reason: "IEC 62366-1 §5.9 — summative evaluation not yet performed.",                                                          reg: "IEC 62366-1 §5.9",   owner: "Human factors" },
+  { id: "g7", category: "minor",     title: "ISO 15223-1 symbols reference table in IFU",         reason: "Symbols used are correct, but their reference table is not embedded in the IFU.",                                     reg: "ISO 15223-1:2021 §5",owner: "Technical writer" },
+  { id: "g8", category: "minor",     title: "Post-market clinical follow-up plan v0",             reason: "PMCF plan can be drafted in parallel with submission preparation.",                                                    reg: "IVDR Annex XIII Part B", owner: "Regulatory" },
+];
+
+export const HAZARDS: Hazard[] = [
+  { id: "H-001", category: "Energy",      hazard: "Electrical shock from power supply fault", severity: "Serious",  probability: "Remote",   risk: "Medium", control: "Reinforced insulation; IEC 61010 verified",          residual: "Acceptable" },
+  { id: "H-008", category: "Biological",  hazard: "Patient sample cross-contamination",        severity: "Serious",  probability: "Possible", risk: "High",   control: "Single-use cartridges; automated wash cycle",       residual: "Acceptable" },
+  { id: "H-012", category: "Information", hazard: "Misinterpretation of qualitative result",   severity: "Serious",  probability: "Possible", risk: "High",   control: "Result interpretation guide in IFU; training video",residual: "Acceptable" },
+  { id: "H-019", category: "Software",    hazard: "Calibration drift undetected by software",  severity: "Critical", probability: "Remote",   risk: "Medium", control: "Daily QC routine; automatic flagging",              residual: "Acceptable" },
+  { id: "H-024", category: "Chemical",    hazard: "Aerosol carry-over between samples",        severity: "Serious",  probability: "Possible", risk: "High",   control: "Closed-loop airflow",                                residual: "Unverified", flagged: true },
+  { id: "H-031", category: "Use-related", hazard: "Operator omits sample volume verification", severity: "Moderate", probability: "Possible", risk: "Medium", control: "Software prompt with confirmation step",            residual: "Acceptable" },
+];
+
+// ---------------------------------------------------------------------------
+// Reports
+// ---------------------------------------------------------------------------
+
+export const REPORT_CATALOG: ReportCatalogEntry[] = [
+  { id: "r-gspr",  title: "GSPR Checklist",                    annex: "IVDR Annex I",          time: "~6 min",  completeness: 71, last_gen: "Apr 14, 2026" },
+  { id: "r-tf",    title: "Technical File",                    annex: "IVDR Annex II + III",   time: "~22 min", completeness: 58, last_gen: "Apr 10, 2026" },
+  { id: "r-per",   title: "Performance Evaluation Report",     annex: "IVDR Annex XIII",       time: "~14 min", completeness: 64, last_gen: "Apr 09, 2026" },
+  { id: "r-rmf",   title: "Risk Management File",              annex: "ISO 14971",             time: "~10 min", completeness: 88, last_gen: "Apr 12, 2026" },
+  { id: "r-pms",   title: "Post-Market Surveillance Plan",     annex: "IVDR Article 79",       time: "~7 min",  completeness: 32, last_gen: null },
+  { id: "r-cps",   title: "Clinical Performance Study Report", annex: "IVDR Annex XIII",       time: "~18 min", completeness: 47, last_gen: "Mar 21, 2026" },
+  { id: "r-ssp",   title: "Summary of Safety and Performance", annex: "IVDR Article 29",       time: "~9 min",  completeness: 55, last_gen: "Apr 02, 2026" },
+  { id: "r-capa",  title: "CAPA Response Draft",               annex: "ISO 13485 §8.5.2",      time: "~5 min",  completeness: 80, last_gen: "Apr 13, 2026" },
+];
+
+export const REPORT_LIBRARY: ReportLibEntry[] = [
+  { id: "rL-1", name: "GSPR Checklist v1.4",                  type: "GSPR", date: "Apr 14, 2026", version: "v1.4", status: "draft" },
+  { id: "rL-2", name: "Risk Management File v2.1",            type: "RMF",  date: "Apr 12, 2026", version: "v2.1", status: "reviewed" },
+  { id: "rL-3", name: "Technical File §4 (Performance)",      type: "TF",   date: "Apr 10, 2026", version: "v0.8", status: "draft" },
+  { id: "rL-4", name: "Performance Evaluation Report v0.6",   type: "PER",  date: "Apr 09, 2026", version: "v0.6", status: "draft" },
+  { id: "rL-5", name: "SSP v0.4",                             type: "SSP",  date: "Apr 02, 2026", version: "v0.4", status: "draft" },
+  { id: "rL-6", name: "Risk Management File v2.0",            type: "RMF",  date: "Mar 18, 2026", version: "v2.0", status: "final" },
+];
+
+// ---------------------------------------------------------------------------
+// NB Simulation
+// ---------------------------------------------------------------------------
+
+export const NB_SIM: NbSim = {
+  run_date: "Apr 14, 2026 · 09:14 CET",
+  score: 58,
+  verdict: "Likely to receive deficiencies",
+  verdict_detail:
+    "Submission contains 3 critical and 5 major findings that would, with high probability, generate a deficiency letter from the Notified Body.",
+  confidence: 0.84,
+  sources: ["IVDR Annex I", "MDCG 2022-9", "Team-NB Position Paper PP-19", "Historic deficiency patterns from 7 IVDR NBs"],
+  findings: [
+    { id: "F-001", severity: "critical", reg: "IVDR Annex I §12.1", title: "Stability data does not cover claimed shelf-life",
+      desc: "Real-time stability is documented to 9 months against a 24-month claim. No accelerated stability data is provided. Notified Body would request full lifetime evidence before certification.",
+      docs: ["STAB-001", "STAB-003"] },
+    { id: "F-002", severity: "critical", reg: "ISO 10993-5",         title: "Cytotoxicity test report missing",
+      desc: "Patient-contacting material (PMMA, MAT-002) has a biological evaluation plan but no completed test report. Plan alone is insufficient evidence.",
+      docs: ["MAT-002", "BIO-001"] },
+    { id: "F-003", severity: "critical", reg: "IVDR Annex I §20.5",  title: "IFU does not address near-patient use case",
+      desc: "Intended use statement includes near-patient testing in decentralised settings, but IFU is written for professional laboratory use only.",
+      docs: ["IFU-001", "DEV-SPEC-002"] },
+    { id: "F-004", severity: "major",    reg: "ISO 14971 §7.3",      title: "Risk control verification missing for hazard H-024",
+      desc: "Closed-loop airflow control for aerosol carry-over has no verification record. Control measure existence is not equivalent to verification.",
+      docs: ["RA-003"] },
+    { id: "F-005", severity: "major",    reg: "IEC 62304 §5.7",      title: "Software requirement-to-hazard traceability incomplete",
+      desc: "29% of software requirements have no documented link to a hazard. NB will request a complete traceability matrix.",
+      docs: ["SW-DOC-001"] },
+    { id: "F-006", severity: "major",    reg: "CLSI EP05-A3",        title: "Precision protocol does not cite CLSI EP05-A3",
+      desc: "Internal SOP is used. Method appears equivalent, but explicit standard cross-reference is expected.",
+      docs: ["PEP-001", "VAL-205"] },
+    { id: "F-007", severity: "major",    reg: "IVDR Annex I §9.1",   title: "Diagnostic sensitivity/specificity evidence thin",
+      desc: "Single 96-sample study provided; NB will likely request multi-site confirmatory data per MDCG 2022-2.",
+      docs: ["PEP-001"] },
+    { id: "F-008", severity: "minor",    reg: "ISO 15223-1 §5",      title: "Symbols reference table absent from IFU",
+      desc: "Symbols are used correctly but the standard cross-reference table is missing.",
+      docs: ["IFU-001"] },
+  ],
+  history: [
+    { run: 1, date: "Jan 18, 2026", score: 31, critical: 6, major: 9, minor: 4 },
+    { run: 2, date: "Feb 24, 2026", score: 44, critical: 5, major: 7, minor: 5 },
+    { run: 3, date: "Mar 22, 2026", score: 51, critical: 4, major: 6, minor: 4 },
+    { run: 4, date: "Apr 14, 2026", score: 58, critical: 3, major: 5, minor: 3 },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Chat history
+// ---------------------------------------------------------------------------
+
+export const CHAT_HISTORY = [
+  { id: "c1", date: "Today",     preview: "Stability claim and IVDR §12.1" },
+  { id: "c2", date: "Today",     preview: "Software classification per IEC 62304" },
+  { id: "c3", date: "Yesterday", preview: "Difference between Class B and C IVD" },
+  { id: "c4", date: "Yesterday", preview: "What CLSI EP09 actually requires" },
+  { id: "c5", date: "Mar 28",    preview: "IFU symbols and ISO 15223-1" },
+  { id: "c6", date: "Mar 22",    preview: "Risk management file structure" },
+];
+
+// ---------------------------------------------------------------------------
+// Knowledge base
+// ---------------------------------------------------------------------------
+
+export const KNOWLEDGE_TREE: KnowledgeNode[] = [
+  { id: "kb-ivdr", name: "IVDR (Regulation 2017/746)", count: 12, children: [
+    { id: "kb-ivdr-full",    name: "Full regulation text",              used: 142 },
+    { id: "kb-ivdr-ax1",     name: "Annex I — GSPR",                    used: 88, selected: true },
+    { id: "kb-ivdr-ax2",     name: "Annex II — Technical Documentation",used: 64 },
+    { id: "kb-ivdr-ax3",     name: "Annex III — Post-Market Surveillance", used: 19 },
+    { id: "kb-ivdr-ax13",    name: "Annex XIII — Performance Evaluation", used: 41 },
+    { id: "kb-ivdr-axOther", name: "Annexes IV–XII, XIV–XV",            used: 22 },
+  ]},
+  { id: "kb-mdcg", name: "MDCG Guidance", count: 18, children: [
+    { id: "kb-mdcg-22-2", name: "MDCG 2022-2 — Performance evaluation guidance", used: 31 },
+    { id: "kb-mdcg-22-9", name: "MDCG 2022-9 — Summary of Safety and Performance", used: 14 },
+    { id: "kb-mdcg-23-1", name: "MDCG 2023-1 — Classification rules",             used: 22 },
+    { id: "kb-mdcg-24-2", name: "MDCG 2024-2 — IVD intended purpose",             used: 9  },
+  ]},
+  { id: "kb-iso", name: "ISO Standards", count: 6, children: [
+    { id: "kb-iso-13485", name: "ISO 13485 — QMS",                                used: 38 },
+    { id: "kb-iso-14971", name: "ISO 14971 — Risk Management",                    used: 56 },
+    { id: "kb-iso-62366", name: "ISO 62366-1 — Usability",                        used: 19 },
+    { id: "kb-iso-15223", name: "ISO 15223-1 — Symbols",                          used: 11 },
+    { id: "kb-iso-10993", name: "ISO 10993-1/-5/-10 — Biocompatibility",          used: 27 },
+  ]},
+  { id: "kb-iec", name: "IEC Standards", count: 4, children: [
+    { id: "kb-iec-62304", name: "IEC 62304 — Software Lifecycle", used: 33 },
+    { id: "kb-iec-61010", name: "IEC 61010 — Electrical Safety",  used: 14 },
+    { id: "kb-iec-60601", name: "IEC 60601 — Medical Electrical", used: 6  },
+  ]},
+  { id: "kb-clsi", name: "CLSI EP Series", count: 7, children: [
+    { id: "kb-clsi-ep05", name: "EP05-A3 — Precision",          used: 18 },
+    { id: "kb-clsi-ep06", name: "EP06   — Linearity",           used: 12 },
+    { id: "kb-clsi-ep09", name: "EP09-A3 — Method Comparison",  used: 9 },
+    { id: "kb-clsi-ep17", name: "EP17-A2 — Detection Capability", used: 8 },
+    { id: "kb-clsi-ep25", name: "EP25-A  — Stability",          used: 14 },
+  ]},
+  { id: "kb-tnb", name: "Team-NB Position Papers", count: 9, children: [
+    { id: "kb-tnb-19", name: "PP-19 — Common IVDR deficiencies",            used: 21 },
+    { id: "kb-tnb-22", name: "PP-22 — Software documentation expectations", used: 11 },
+  ]},
+];
