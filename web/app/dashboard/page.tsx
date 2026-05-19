@@ -60,11 +60,18 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "ro
 }
 
 function ClientCard({ c }: { c: ClientSummary }) {
+  const phasePct = phaseProgress(c.current_phase);
   return (
     <Link
       href={`/clients/${c.client_id.toLowerCase()}`}
-      className="card card-hover p-5 group flex flex-col gap-3"
+      className="card card-hover p-5 group flex flex-col gap-3 relative overflow-hidden"
     >
+      {/* subtle accent ribbon scaled by phase progress */}
+      <div
+        className="absolute left-0 top-0 h-[3px] bg-accent/70"
+        style={{ width: `${phasePct}%`, transition: "width 360ms ease-out" }}
+      />
+
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-mono text-[11px] text-ink-500">{c.client_id}</p>
@@ -79,7 +86,18 @@ function ClientCard({ c }: { c: ClientSummary }) {
         <Metric label="Risks" value={String(c.risks.length)} />
       </div>
 
-      <p className="text-sm text-ink-300 truncate">{c.current_phase ?? "—"}</p>
+      <div>
+        <p className="text-sm text-ink-300 truncate" title={c.current_phase ?? ""}>
+          {c.current_phase ?? "—"}
+        </p>
+        <div className="mt-2 h-1.5 rounded-full bg-ink-800/80 overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-accent/60 to-accent"
+            style={{ width: `${phasePct}%`, transition: "width 600ms ease-out" }}
+          />
+        </div>
+        <p className="text-[10px] font-mono text-ink-500 mt-1">{phasePct}% through the program</p>
+      </div>
 
       {c.next_action ? (
         <div className="rounded-lg border border-ink-700/60 bg-ink-950/50 px-3 py-2 text-[12.5px]">
@@ -98,11 +116,25 @@ function ClientCard({ c }: { c: ClientSummary }) {
       )}
 
       <div className="mt-auto flex items-center justify-between pt-2 text-[12px] text-ink-400">
-        <span>{c.nb ?? "—"}</span>
-        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+        <span className="truncate">{c.nb ?? "—"}</span>
+        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform shrink-0" />
       </div>
     </Link>
   );
+}
+
+// Map "Phase 0 — Evaluation" / "Phase 3 — SUBMISSION" etc. to a 0..100
+// progress estimate. The 7 phase buckets in the CPS workflow are evenly
+// spaced for a quick visual; the dashboard isn't trying to be auditor-grade.
+function phaseProgress(phase: string | null): number {
+  if (!phase) return 0;
+  const order = ["Phase 0", "Phase 1", "Phase 2", "Phase 2.5", "Phase 3", "Phase 4", "Phase 5", "Phase 6"];
+  for (let i = 0; i < order.length; i++) {
+    if (phase.startsWith(order[i])) {
+      return Math.round(((i + 0.5) / order.length) * 100);
+    }
+  }
+  return 0;
 }
 
 function Metric({ label, value }: { label: string; value: string }) {

@@ -24,14 +24,16 @@ export default function LandingPage() {
       {/* Hero                                                              */}
       {/* ----------------------------------------------------------------- */}
       <section className="hero-glow">
-        <div className="container-narrow pt-20 pb-16 text-center">
+        <div className="container-narrow pt-20 pb-20 text-center">
           <div className="inline-flex items-center gap-2 mb-6 badge-cyan">
             <Sparkles className="h-3 w-3" />
             <span>Built on Hermes Agent · 90 unit tests · LLM-Wiki architecture</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-ink-50 leading-[1.05]">
             The IVDR submission package
-            <span className="block text-accent">your team never has time to finish.</span>
+            <span className="block bg-gradient-to-r from-accent via-cyan-300 to-accent bg-clip-text text-transparent">
+              your team never has time to finish.
+            </span>
           </h1>
           <p className="mt-6 text-lg text-ink-300 max-w-2xl mx-auto leading-relaxed">
             Conformly is an AI co-pilot for in-vitro diagnostic manufacturers entering the EU.
@@ -40,7 +42,7 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link href="/demo" className="btn-primary text-base px-6 py-3">
+            <Link href="/demo" className="btn-primary text-base px-6 py-3 shadow-lg shadow-accent/10 hover:shadow-accent/20">
               Try the live demo
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -48,6 +50,11 @@ export default function LandingPage() {
               See the 20-client dashboard
             </Link>
           </div>
+
+          <p className="mt-8 text-xs text-ink-500 font-mono">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-soft mr-1.5 align-middle" />
+            no demo trick: the dashboard reads live markdown from this repo's <code>vault/</code>
+          </p>
 
           {/* Vital signs */}
           <dl className="mt-16 grid grid-cols-3 gap-px bg-ink-800/40 rounded-2xl overflow-hidden border border-ink-800/60">
