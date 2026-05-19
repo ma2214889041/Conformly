@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import clsx from "clsx";
 import { SCENARIOS } from "@/lib/demos";
 import { ConversationPlayer } from "@/components/conversation-player";
+import { getHealth } from "@/lib/api";
 
 export default function DemoPage() {
   const [activeId, setActiveId] = useState<string>(SCENARIOS[0].id);
+  const [liveAvailable, setLiveAvailable] = useState(false);
   const scenario = SCENARIOS.find((s) => s.id === activeId)!;
+
+  useEffect(() => {
+    let cancelled = false;
+    getHealth().then((h) => {
+      if (!cancelled) setLiveAvailable(Boolean(h?.vault_exists));
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="container-wide pt-10 pb-24">
@@ -74,12 +84,12 @@ export default function DemoPage() {
 
         {/* Main — conversation player */}
         <div>
-          <ConversationPlayer scenario={scenario} />
+          <ConversationPlayer scenario={scenario} liveAvailable={liveAvailable} />
 
           <p className="mt-4 text-xs font-mono text-ink-500">
-            All payloads in this demo are the literal JSON returned by the production tools
-            — see <code className="text-ink-300">plugin/tests/</code> for the same shapes
-            under coverage.
+            <strong className="text-ink-300">Scripted</strong> = pre-recorded JSON, identical
+            shape to the real handlers. <strong className="text-ink-300">Live</strong> =
+            the FastAPI sidecar calls the actual Python tools (and the LLM, if configured).
           </p>
         </div>
       </div>

@@ -9,13 +9,16 @@ import {
   ChevronUp,
   Loader2,
   Play,
+  RadioTower,
   RotateCcw,
   ShieldAlert,
   User,
   Wrench,
+  Zap,
 } from "lucide-react";
 import clsx from "clsx";
 import type { Scenario, TimelineEvent } from "@/lib/demos";
+import { streamScenario, type StreamEvent } from "@/lib/api";
 
 // Per-event delay (ms). Tweaked so a viewer never feels stuck but also
 // notices each beat — the tool_result tile lingers longest because that's
@@ -31,56 +34,127 @@ function delayFor(ev: TimelineEvent): number {
   }
 }
 
-export function ConversationPlayer({ scenario }: { scenario: Scenario }) {
+type Mode = "scripted" | "live";
+
+export function ConversationPlayer({
+  scenario,
+  liveAvailable = false,
+}: {
+  scenario: Scenario;
+  /** Whether the API backend was reachable when the page rendered. */
+  liveAvailable?: boolean;
+}) {
+  const [mode, setMode] = useState<Mode>("scripted");
   const [step, setStep] = useState(0);
   const [running, setRunning] = useState(false);
   const [decision, setDecision] = useState<"approve" | "reject" | null>(null);
+  const [liveEvents, setLiveEvents] = useState<TimelineEvent[]>([]);
+  const [liveDone, setLiveDone] = useState(false);
+  const [liveError, setLiveError] = useState<string | null>(null);
+  const cancelRef = useRef<(() => void) | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
 
   // Auto-scroll the conversation log when new events appear.
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [step]);
+  }, [step, liveEvents.length]);
 
-  // Drive the timeline.
+  // Drive the scripted timeline.
   useEffect(() => {
-    if (!running) return;
+    if (mode !== "scripted" || !running) return;
     if (step >= scenario.timeline.length) {
       setRunning(false);
       return;
     }
     const t = setTimeout(() => setStep((s) => s + 1), delayFor(scenario.timeline[step]));
     return () => clearTimeout(t);
-  }, [running, step, scenario]);
+  }, [mode, running, step, scenario]);
+
+  // Cancel any live stream when the user switches scenario or mode.
+  useEffect(() => {
+    return () => { cancelRef.current?.(); cancelRef.current = null; };
+  }, [scenario.id, mode]);
 
   const start = () => {
     setStep(0);
     setDecision(null);
+    setLiveError(null);
+    if (mode === "live") {
+      setLiveEvents([]);
+      setLiveDone(false);
+      setRunning(true);
+      cancelRef.current = streamScenario(
+        scenario.id,
+        (e) => setLiveEvents((prev) => [...prev, e as TimelineEvent]),
+        {
+          onDone: () => { setRunning(false); setLiveDone(true); },
+          onError: () => {
+            setLiveError("Live stream lost — the API may not be reachable. Falling back to scripted mode.");
+            setRunning(false);
+            setMode("scripted");
+          },
+        },
+      );
+      return;
+    }
     setRunning(true);
   };
 
   const reset = () => {
+    cancelRef.current?.();
+    cancelRef.current = null;
     setRunning(false);
     setStep(0);
     setDecision(null);
+    setLiveEvents([]);
+    setLiveDone(false);
+    setLiveError(null);
   };
 
-  const events = scenario.timeline.slice(0, step);
-  const done = step >= scenario.timeline.length && !running;
+  const switchMode = (m: Mode) => {
+    if (m === mode) return;
+    reset();
+    setMode(m);
+  };
+
+  const events = mode === "live" ? liveEvents : scenario.timeline.slice(0, step);
+  const done =
+    mode === "live"
+      ? liveDone
+      : step >= scenario.timeline.length && !running;
 
   return (
     <div className="card overflow-hidden">
-      {/* Top bar — title + controls ----------------------------------- */}
-      <div className="flex items-center justify-between gap-4 border-b border-ink-800/60 px-6 py-4">
+      {/* Top bar — title + mode toggle + controls --------------------- */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-ink-800/60 px-6 py-4">
         <div className="min-w-0">
           <h3 className="font-semibold text-ink-50 truncate">{scenario.title}</h3>
           <p className="text-sm text-ink-400 truncate">{scenario.description}</p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {step === 0 && !running ? (
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Mode segmented switch */}
+          <div role="tablist" className="inline-flex rounded-lg border border-ink-700/80 p-0.5 bg-ink-900/70">
+            <ModeButton
+              active={mode === "scripted"}
+              onClick={() => switchMode("scripted")}
+              label="Scripted"
+              hint="Pre-recorded JSON"
+              icon={<Zap className="h-3.5 w-3.5" />}
+            />
+            <ModeButton
+              active={mode === "live"}
+              onClick={() => switchMode("live")}
+              disabled={!liveAvailable}
+              label="Live"
+              hint={liveAvailable ? "Hits the real API" : "API not reachable"}
+              icon={<RadioTower className="h-3.5 w-3.5" />}
+            />
+          </div>
+
+          {(mode === "scripted" && step === 0 && !running) || (mode === "live" && liveEvents.length === 0 && !running) ? (
             <button onClick={start} className="btn-primary">
               <Play className="h-4 w-4" />
-              Play scenario
+              {mode === "live" ? "Run live" : "Play scenario"}
             </button>
           ) : (
             <button onClick={reset} className="btn-secondary">
@@ -90,6 +164,12 @@ export function ConversationPlayer({ scenario }: { scenario: Scenario }) {
           )}
         </div>
       </div>
+
+      {liveError && (
+        <div className="px-6 py-2 text-xs text-amber-300 bg-amber-400/10 border-b border-amber-400/30">
+          {liveError}
+        </div>
+      )}
 
       {/* Conversation log --------------------------------------------- */}
       <div className="bg-ink-950/40 p-6 space-y-4 min-h-[420px] max-h-[640px] overflow-y-auto">
@@ -319,6 +399,37 @@ function EmptyState({ onStart, duration }: { onStart: () => void; duration: stri
         Play · {duration}
       </button>
     </div>
+  );
+}
+
+function ModeButton({
+  active, onClick, label, hint, icon, disabled,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  hint: string;
+  icon: React.ReactNode;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={hint}
+      className={clsx(
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors",
+        active
+          ? "bg-accent text-ink-950"
+          : "text-ink-300 hover:text-ink-50",
+        disabled && "opacity-40 cursor-not-allowed hover:text-ink-300",
+      )}
+      role="tab"
+      aria-selected={active}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }
 

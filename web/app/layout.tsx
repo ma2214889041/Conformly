@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ApiStatusPill } from "@/components/api-status-pill";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -30,10 +31,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span className="hidden sm:inline text-xs text-ink-400 ml-2 font-mono">
                 IVDR co-pilot
               </span>
+              <span className="hidden md:inline ml-3"><ApiStatusPill /></span>
             </Link>
             <div className="flex items-center gap-1 text-sm">
-              <Link href="/demo" className="btn-ghost">Live demo</Link>
+              <Link href="/demo" className="btn-ghost">Demo</Link>
               <Link href="/dashboard" className="btn-ghost">Dashboard</Link>
+              <Link href="/tools" className="btn-ghost">Tools</Link>
               <a
                 href="https://github.com/ma2214889041/Conformly"
                 target="_blank"
