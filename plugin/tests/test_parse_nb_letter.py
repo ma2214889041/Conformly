@@ -201,11 +201,22 @@ def test_missing_file(vault, mock_llm):
     assert "not found" in res["error"]
 
 
-def test_pdf_rejected_with_clear_message(vault, mock_llm):
+def test_pdf_is_now_accepted_via_multimodal(vault, monkeypatch):
+    """PDFs are sent to the LLM as a multimodal attachment.
+
+    The handler now invokes ``_llm_caller(text, source_hint, pdf_bytes)``
+    when a PDF is supplied. Tests need a 3-arg mock.
+    """
+    import copy
+    calls = []
+    def fake(text, source_hint, pdf_bytes):
+        calls.append({"text_len": len(text), "source_hint": source_hint, "pdf_len": len(pdf_bytes or b"")})
+        return copy.deepcopy(MOCK_BSI_RESPONSE)
+    monkeypatch.setattr(P, "_llm_caller", fake)
     res = json.loads(handle_parse_nb_letter({"letter_path": "raw/nb_letters/letter.pdf"}))
-    assert res["success"] is False
-    assert "PDF" in res["error"]
-    assert "Gemini" in res["error"]
+    assert res["success"] is True
+    assert calls and calls[0]["pdf_len"] > 0
+    assert calls[0]["source_hint"].endswith(".pdf")
 
 
 def test_unsupported_format(vault, mock_llm):

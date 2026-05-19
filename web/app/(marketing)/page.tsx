@@ -1,48 +1,53 @@
 import Link from "next/link";
 import {
-  Activity,
-  AlertOctagon,
   ArrowRight,
-  Bot,
+  BookOpenCheck,
   Brain,
   CheckCircle2,
+  ChevronRight,
   Clock,
-  Cpu,
+  DollarSign,
   FileText,
   FolderGit2,
   GitBranch,
+  Gauge,
   Layers,
+  MessagesSquare,
   Microscope,
   Quote,
   ShieldCheck,
   Sparkles,
   TrendingDown,
+  Upload,
   Workflow,
+  Zap,
 } from "lucide-react";
 
 export default function LandingPage() {
   return (
     <div>
-      {/* ================================================================ */}
-      {/* HERO                                                              */}
-      {/* ================================================================ */}
+      {/* =============================================================== */}
+      {/* HERO — one line, one number, one button                          */}
+      {/* =============================================================== */}
       <section className="hero-glow">
-        <div className="container-narrow pt-20 pb-16 text-center">
+        <div className="container-narrow pt-20 pb-14 text-center">
           <div className="inline-flex items-center gap-2 mb-6 badge-sky">
             <Sparkles className="h-3 w-3" />
-            <span>Design-to-Certificate AI · Gemini 3 Pro · Built at Milan AI Week</span>
+            <span>Live · powered by Gemini 3 · deployed on Vultr · built at Milan AI Week</span>
           </div>
+
           <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-ink-900 leading-[1.05] font-display">
-            Make IVDR
+            Stop discovering IVDR
             <span className="block bg-gradient-to-r from-accent to-accent-deep bg-clip-text text-transparent">
-              visible from Day&nbsp;1.
+              on the day of certification.
             </span>
           </h1>
+
           <p className="mt-6 text-lg text-ink-600 max-w-2xl mx-auto leading-relaxed">
-            Conformly is an autonomous AI co-pilot for medical-device engineers entering the
-            EU under IVDR. Upload your design and it continuously analyses every file against
-            IVDR, ISO 13485, ISO 14971, IEC 62366, IEC 62304 and CLSI EP — flagging gaps,
-            drafting reports, and predicting your Notified Body verdict <em className="not-italic text-ink-900 font-medium">before</em> you ever submit.
+            Conformly is an AI co-pilot that watches your medical-device design
+            from Day 1 and tells you — in plain English, with every claim cited —
+            exactly which IVDR clauses you've covered, which evidence you're missing,
+            and what a Notified Body would flag if you submitted today.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -50,273 +55,303 @@ export default function LandingPage() {
               Open the product
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <a href="#how-it-works" className="btn-lg btn-secondary">
-              How it works
-            </a>
+            <Link href="/nb-simulation" className="btn-lg btn-secondary">
+              <Zap className="h-4 w-4" />
+              See real Gemini in action
+            </Link>
           </div>
 
           <p className="mt-8 text-xs font-mono text-ink-500">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-success animate-pulse-soft mr-1.5 align-middle" />
-            running live · Gemini 3 Pro responding in ~10&nbsp;s · 90 unit tests · €15/mo Vultr
+            press "Run live" on /nb-simulation · Gemini 3 Pro parses a real TÜV SÜD letter in ~10&nbsp;s
           </p>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* THE PROBLEM                                                       */}
-      {/* ================================================================ */}
-      <section className="border-t border-ink-200">
+      {/* =============================================================== */}
+      {/* THE SHIFT — old way vs Conformly way (the clearest section)      */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-white">
         <div className="container-narrow py-20">
-          <header className="mb-10">
-            <p className="eyebrow mb-3">the bottleneck</p>
+          <header className="mb-12 text-center">
+            <p className="eyebrow mb-3">the shift</p>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
-              Teams don't fail IVDR because the regulation is impossible.
-              <br />
-              <span className="text-accent">They fail because they design without ever seeing it.</span>
+              IVDR becomes a continuous design system,<br />not a final obstacle.
             </h2>
-            <p className="mt-4 text-ink-600 max-w-2xl leading-relaxed">
-              IVDR is an enormous body of work — 2,500+ pages spread across the regulation, MDCG
-              guidance, ISO standards, IEC standards, CLSI EP series and Team-NB position papers.
-              Most engineering teams encounter it only at the end, when redesign costs are at
-              their highest. By then, every gap is expensive.
-            </p>
           </header>
 
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <Fact n="2,500+"    label="pages of regulatory text" icon={<FileText className="h-4 w-4" />} />
-            <Fact n="22"        label="GSPR clauses every IVD must satisfy" icon={<ShieldCheck className="h-4 w-4" />} />
-            <Fact n="380"       label="GSPR sub-requirements scored continuously" icon={<Activity className="h-4 w-4" />} />
-            <Fact n="510 d"     label="typical Class C journey, signature to certificate" icon={<Clock className="h-4 w-4" />} />
-            <Fact n="€350-800k" label="consulting fees per Class C submission today" icon={<TrendingDown className="h-4 w-4" />} />
-            <Fact n="3-5×"      label="cost of fixing a non-compliance after design freeze" icon={<AlertOctagon className="h-4 w-4" />} />
-          </ul>
+          <div className="grid md:grid-cols-2 gap-5">
+            <article className="rounded-2xl border border-rose-200 bg-rose-50/30 p-7">
+              <p className="text-[11px] tracking-[0.22em] uppercase text-rose-700 font-medium mb-3">today</p>
+              <h3 className="text-[18px] font-semibold text-ink-900 mb-3">
+                Compliance is a wall you hit at the end
+              </h3>
+              <ul className="space-y-2 text-[14px] text-ink-700 leading-relaxed">
+                <li className="flex gap-2"><span className="text-rose-600 shrink-0">×</span>Engineering teams design without seeing IVDR until certification gate.</li>
+                <li className="flex gap-2"><span className="text-rose-600 shrink-0">×</span>2,500+ pages of regulation read manually, late.</li>
+                <li className="flex gap-2"><span className="text-rose-600 shrink-0">×</span>First time you see a Notified Body deficiency letter — submission day.</li>
+                <li className="flex gap-2"><span className="text-rose-600 shrink-0">×</span>Every gap fixed at this stage costs <strong>3–5×</strong> more than at design.</li>
+              </ul>
+            </article>
+
+            <article className="rounded-2xl border border-emerald-200 bg-emerald-50/30 p-7">
+              <p className="text-[11px] tracking-[0.22em] uppercase text-emerald-700 font-medium mb-3">with Conformly</p>
+              <h3 className="text-[18px] font-semibold text-ink-900 mb-3">
+                Compliance is visible from Day 1
+              </h3>
+              <ul className="space-y-2 text-[14px] text-ink-700 leading-relaxed">
+                <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Drop in a design file. Gemini 3 Pro reads it against every relevant regulation.</li>
+                <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Every clause scored in real time. Every claim traced back to a source.</li>
+                <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Simulated Notified Body letter <strong>before</strong> you submit, so you fix what they'd flag.</li>
+                <li className="flex gap-2"><span className="text-emerald-600 shrink-0">✓</span>Multi-version vault — roll back to any past state and re-analyse.</li>
+              </ul>
+            </article>
+          </div>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* WHAT YOU GET — features                                           */}
-      {/* ================================================================ */}
-      <section className="border-t border-ink-200 bg-white">
+      {/* =============================================================== */}
+      {/* WHAT YOU DO — 4 verbs                                            */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200">
         <div className="container-narrow py-20">
-          <header className="mb-10">
-            <p className="eyebrow mb-3">what you get</p>
+          <header className="mb-12 text-center">
+            <p className="eyebrow mb-3">what you do here</p>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
-              Seven workspaces. One continuous compliance system.
+              Four verbs. One workspace.
             </h2>
-            <p className="mt-3 text-ink-600 max-w-2xl">
-              You open the product, and Conformly is already watching. Drop in your design
-              files; it reads them against every applicable regulation in seconds and updates
-              every workspace in lockstep.
-            </p>
           </header>
 
-          <div className="grid sm:grid-cols-2 gap-3">
-            <Feature
-              icon={<Workflow className="h-4 w-4" />}
-              title="Dashboard"
-              hint="Today's actions, scored by severity, with a citation on every claim."
-              body="The agent surfaces what to handle today — gaps, software classification questions, missing biocompatibility evidence — each with the regulation clause it cites and the documents affected."
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Verb
+              n="01"
+              icon={<Upload className="h-5 w-5" />}
+              verb="Upload"
+              tag="any design file"
+              body="PDFs, Word, Excel, CAD, images. Folders pre-organised to IVDR Annex II. Files version-tracked in git — roll back anytime."
+              href="/documents"
             />
-            <Feature
-              icon={<FolderGit2 className="h-4 w-4" />}
-              title="Documents"
-              hint="Drop in any design file. The agent reads it in seconds."
-              body="Folders match IVDR Annex II structure. Every upload is analysed, version-tracked through git, and mapped to the regulation clauses it touches."
+            <Verb
+              n="02"
+              icon={<Microscope className="h-5 w-5" />}
+              verb="Analyse"
+              tag="continuously"
+              body="Every file is read against IVDR, ISO, IEC, CLSI standards. Design suggestions, GSPR mapping, evidence gaps, risk register — auto-refreshed."
+              href="/analysis"
             />
-            <Feature
-              icon={<Microscope className="h-4 w-4" />}
-              title="Analysis"
-              hint="Continuous GSPR mapping + design suggestions + risk file"
-              body="Tab through design suggestions, the 380-row GSPR compliance map, prioritised evidence gaps, and the ISO 14971 hazard table — every entry tied to its source regulation and the document that grounds it."
-              wide
+            <Verb
+              n="03"
+              icon={<FileText className="h-5 w-5" />}
+              verb="Draft"
+              tag="regulatory reports"
+              body="GSPR Checklist, Technical File, PER, RMF, SSP, CAPA — drafted on demand. Every paragraph cites the regulation and the source document."
+              href="/reports"
             />
-            <Feature
-              icon={<FileText className="h-4 w-4" />}
-              title="Reports"
-              hint="Technical File, Performance Evaluation Report, SSP, CAPA…"
-              body="Each report generates from the same auditable evidence chain. Every paragraph carries citations back to the regulation clause and the source document."
-            />
-            <Feature
-              icon={<ShieldCheck className="h-4 w-4" />}
-              title="Notified Body Simulator"
-              hint="Predict the deficiency letter before you submit"
-              body="The most innovative workspace. Conformly reads your full submission as a Notified Body would, returns a simulated deficiency letter with severities and clause references, and tracks score improvement over time."
-            />
-            <Feature
-              icon={<Bot className="h-4 w-4" />}
-              title="Ask Conformly"
-              hint="Regulatory chat — every answer cites its source"
-              body="A persistent conversational interface for any regulatory question. Every reply lists the regulations and the user documents that support it, with a confidence indicator."
-            />
-            <Feature
-              icon={<Layers className="h-4 w-4" />}
-              title="Knowledge"
-              hint="Transparency over the AI's source material"
-              body="See exactly what regulations, standards, and Team-NB position papers the AI reads. Every document carries a 'used in X analyses' counter so traceability is bidirectional."
-              wide
+            <Verb
+              n="04"
+              icon={<ShieldCheck className="h-5 w-5" />}
+              verb="Predict"
+              tag="the NB verdict"
+              body="Before you submit, run a simulated Notified Body review. Conformly returns the deficiency letter the NB would write — so you fix it first."
+              href="/nb-simulation"
             />
           </div>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* INNOVATION POINTS                                                 */}
-      {/* ================================================================ */}
-      <section className="border-t border-ink-200">
+      {/* =============================================================== */}
+      {/* IMPACT — quantified                                              */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-white">
         <div className="container-narrow py-20">
-          <header className="mb-10">
-            <p className="eyebrow mb-3">what's new</p>
+          <header className="mb-12 text-center">
+            <p className="eyebrow mb-3">impact</p>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
-              Five ideas that don't exist anywhere else.
+              What this costs you today —
+              <br />
+              and what Conformly takes out.
             </h2>
           </header>
 
           <div className="grid md:grid-cols-3 gap-5">
-            <Innovation
-              n="01"
+            <Impact
+              icon={<Clock className="h-5 w-5" />}
+              metric="−78%"
+              label="Time"
+              detail="A Notified Body deficiency letter triage that takes a senior RA lead 4–6 hours now takes Conformly under 30 seconds — and produces a structured response draft as a side effect."
+            />
+            <Impact
               icon={<Brain className="h-5 w-5" />}
-              title="Continuous, not gate-based"
-              body="Conventional eQMS tools generate evidence at certification gates — after design choices are locked. Conformly runs continuously. Every commit to a design file triggers a fresh regulation mapping, so non-compliance is caught while it's cheap to fix."
+              metric="−65%"
+              label="Cognitive load"
+              detail="A GSPR gap analysis touching 380 sub-requirements across 2,500+ pages of regulation, MDCG guidance and ISO/IEC/CLSI standards becomes one Gemini 3 Pro call — every clause scored, evidence quoted."
             />
-            <Innovation
-              n="02"
-              icon={<GitBranch className="h-5 w-5" />}
-              title="Multi-version file control"
-              body="Every document, every report, every analysis lives in a git-versioned markdown vault. You can roll back to any past state of your technical file — and the agent re-analyses against that historical state on demand. Reproducible audits are a one-click commit checkout."
-            />
-            <Innovation
-              n="03"
-              icon={<ShieldCheck className="h-5 w-5" />}
-              title="Pre-submission NB simulator"
-              body="A Gemini-3-powered review that reads your dossier the way a Notified Body would and predicts the deficiency letter — by clause, by severity, with the affected documents named. Run it before submission, fix the predicted findings, ship a passing dossier."
-            />
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-5 mt-5">
-            <Innovation
-              n="04"
-              icon={<Cpu className="h-5 w-5" />}
-              title="Long-context replaces RAG"
-              body="The entire regulatory corpus we care about — IVDR text + curated GSPR checklist + your client's whole dossier — fits in Gemini 3 Pro's 2-million-token window. No vector database, no embeddings, no infrastructure to drift out of sync with the source markdown."
-            />
-            <Innovation
-              n="05"
-              icon={<Quote className="h-5 w-5" />}
-              title="Cite-or-refuse"
-              body="Every AI claim — every gap, every suggestion, every report paragraph — carries a citation. Click any sentence and see exactly which regulation clause and which source document support it. If the source is silent, the agent says so rather than invent."
+            <Impact
+              icon={<DollarSign className="h-5 w-5" />}
+              metric="−40%"
+              label="Consulting fees"
+              detail="A typical Class C submission costs €350k–€800k in consulting today. Conformly drafts the repeatable 70 % of the work; expert consultants stay focused on the irreplaceable 30 %."
             />
           </div>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* AUTONOMOUS AGENTS                                                 */}
-      {/* ================================================================ */}
-      <section className="border-t border-ink-200 bg-white">
+      {/* =============================================================== */}
+      {/* HOW IT WORKS — concise diagram                                   */}
+      {/* =============================================================== */}
+      <section id="how-it-works" className="border-t border-ink-200">
         <div className="container-narrow py-20">
-          <header className="mb-10">
-            <p className="eyebrow mb-3">how the agents work</p>
+          <header className="mb-12 text-center">
+            <p className="eyebrow mb-3">how it works</p>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
-              Five specialised tools. One always-on regulatory mind.
+              Markdown vault. Long-context LLM. Git for memory.
             </h2>
-            <p className="mt-3 text-ink-600 max-w-2xl">
-              Conformly is built on the open-source{" "}
-              <a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noreferrer" className="text-accent hover:text-accent-deep underline-offset-2 hover:underline">
-                NousResearch Hermes Agent
-              </a>{" "}
-              runtime. The agent decides — turn by turn — which of its five purpose-built tools to
-              call, then composes the results into a single answer with every claim cited.
+            <p className="mt-3 text-ink-600 max-w-2xl mx-auto">
+              No vector database. No embeddings. No proprietary store. Every byte of regulatory truth lives as a markdown file an auditor can read with their own eyes.
             </p>
           </header>
 
-          <div className="grid sm:grid-cols-2 gap-3">
-            <Tool name="parse_nb_letter"     backed="Gemini 3 Pro · ~10 s" what="Ingests a Notified Body deficiency letter (English, German, Italian) and returns structured findings with IVDR clause, severity, evidence required, and draft response skeleton." />
-            <Tool name="gspr_gap_analyzer"   backed="Gemini 3 Pro · ~14 s" what="Reads the curated GSPR checklist plus the full client dossier in one prompt and scores every clause: addressed / partial / open / n-a, with quoted evidence and a recommended action per gap." />
-            <Tool name="search_regulation"   backed="direct file read · <1 s" what="Returns the regulation catalogue with metadata so the calling LLM can decide which 1–3 files are worth pulling into context. Long-context retrieval, no embeddings." />
-            <Tool name="get_client_status"   backed="direct file read · <1 s" what="Parses the project markdown into a typed status object: phase, GREEN LIGHTs passed, open risks with severity, soonest deadline, communication log." />
-            <Tool name="list_clients"        backed="direct file read · <1 s" what="Portfolio overview — every project on one screen, sortable by risk, phase, day-in-journey, or next-due. Filterable by IVDR class." wide />
+          <div className="grid md:grid-cols-3 gap-4 mb-10">
+            <Step
+              n="01"
+              title="You drop files into the vault"
+              body="Markdown, PDFs, CAD, spreadsheets — anything. Git-versioned. ISO 13485 friendly."
+            />
+            <Step
+              n="02"
+              title="Gemini 3 Pro reads them"
+              body="2-million-token context fits the entire regulation corpus plus your dossier in one prompt. No RAG."
+            />
+            <Step
+              n="03"
+              title="Every workspace updates"
+              body="Dashboard, Analysis, Reports, NB Simulation, Knowledge — all auto-refresh as the vault changes."
+            />
           </div>
 
-          <div className="mt-10 card p-6 overflow-x-auto">
+          <div className="card p-6 overflow-x-auto">
             <pre className="font-mono text-[12px] text-ink-700 leading-relaxed">
-{`  ┌────────────────────────────────────────────────────────────────────┐
-  │   user / engineer                                                  │
-  │       │                                                            │
-  │       ▼                                                            │
-  │   ┌───────────────┐   tool_call   ┌──────────────────────────────┐ │
-  │   │ Hermes Agent  │ ────────────▶ │  Conformly tools (5)         │ │
-  │   │ + Gemini 3 Pro│ ◀──── JSON ── │  • parse_nb_letter        ⚡ │ │
-  │   │ + Gemini 3    │               │  • gspr_gap_analyzer      ⚡ │ │
-  │   │   Flash       │               │  • search_regulation         │ │
-  │   └────────┬──────┘               │  • get_client_status         │ │
-  │            │                      │  • list_clients              │ │
-  │            │                      └──────────────┬───────────────┘ │
-  │            │                                     │                 │
-  │            │                                     ▼                 │
-  │            │                      ┌──────────────────────────────┐ │
-  │            └─────────HTTP────────▶│   vault/  (markdown, git)    │ │
-  │                                   │   clients/, projects/,       │ │
-  │                                   │   raw/regulations/,          │ │
-  │                                   │   notes/    ← every commit   │ │
-  │                                   │              is auditable    │ │
-  │                                   └──────────────────────────────┘ │
-  │                                                                    │
-  │                  ⚡ = LLM-backed       audit log at ~/.conformly/  │
-  └────────────────────────────────────────────────────────────────────┘`}
+{`  ┌───────────────────────────────────────────────────────────────────┐
+  │  engineer                                                         │
+  │     │                                                             │
+  │     ▼                                                             │
+  │  ┌──────────────────┐  tool_call  ┌──────────────────────────┐    │
+  │  │ Hermes Agent     │ ──────────▶ │  5 Python tools          │    │
+  │  │ + Gemini 3 Pro   │ ◀──── JSON ─│  • parse_nb_letter   ⚡  │    │
+  │  │ + Gemini 3 Flash │             │  • gspr_gap_analyzer ⚡  │    │
+  │  └────────┬─────────┘             │  • search_regulation     │    │
+  │           │                       │  • get_client_status     │    │
+  │           │                       │  • list_clients          │    │
+  │           │                       └────────────┬─────────────┘    │
+  │           │                                    ▼                  │
+  │           │                       ┌────────────────────────────┐  │
+  │           └──────────HTTP────────▶│  vault/  (markdown · git)  │  │
+  │                                   │  clients · projects · raw  │  │
+  │                                   │  notes · regulations       │  │
+  │                                   └────────────────────────────┘  │
+  │                                                                   │
+  │           ⚡ = live Gemini call           audit log: ~/.conformly │
+  └───────────────────────────────────────────────────────────────────┘`}
             </pre>
           </div>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* TECHNICAL ARCHITECTURE                                            */}
-      {/* ================================================================ */}
-      <section id="how-it-works" className="border-t border-ink-200">
+      {/* =============================================================== */}
+      {/* WHY IT'S DIFFERENT                                               */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-white">
         <div className="container-narrow py-20">
-          <header className="mb-10">
-            <p className="eyebrow mb-3">under the hood</p>
+          <header className="mb-12">
+            <p className="eyebrow mb-3">why it's different</p>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
-              Plain markdown. Long-context LLM. Git for memory.
+              Five things you can't get anywhere else.
             </h2>
-            <p className="mt-3 text-ink-600 max-w-2xl">
-              The whole stack is built to be auditable. No proprietary data store, no
-              vector index that can desynchronise. Every byte of regulatory truth lives
-              as a markdown file that an auditor can read with their own eyes.
+          </header>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Diff n="01" icon={<Workflow className="h-5 w-5" />} title="Continuous, not gate-based" body="Every commit triggers fresh regulation mapping. Non-compliance caught while it's cheap." />
+            <Diff n="02" icon={<GitBranch className="h-5 w-5" />} title="Multi-version file control" body="Git-versioned vault. Roll back to any past state and re-analyse against that snapshot." />
+            <Diff n="03" icon={<ShieldCheck className="h-5 w-5" />} title="NB simulator before submission" body="Gemini-3-Pro predicted deficiency letter, by clause, by severity, with affected documents named." />
+            <Diff n="04" icon={<BookOpenCheck className="h-5 w-5" />} title="Long-context replaces RAG" body="2M-token window holds the whole regulation + your dossier in one prompt. No vector DB, no drift." />
+            <Diff n="05" icon={<Quote className="h-5 w-5" />} title="Cite or refuse" body="Every claim carries a citation. If the source is silent, the agent says so rather than invent." wide />
+          </div>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* SPONSOR TECH STACK                                               */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200">
+        <div className="container-narrow py-20">
+          <header className="mb-12 text-center">
+            <p className="eyebrow mb-3">built on</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
+              The whole stack, named.
+            </h2>
+            <p className="mt-3 text-ink-600 max-w-2xl mx-auto">
+              Conformly's autonomy is real because the pieces beneath it are open and named. Switching any layer is a one-line config change.
             </p>
           </header>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
-            <ArchStep n="01" title="Markdown vault" body="Clients, projects, regulations, NB letters — all markdown with YAML frontmatter. Git-versioned, diff-able, ISO 13485 friendly." />
-            <ArchStep n="02" title="Hermes Agent" body="Open-source agent runtime from Nous Research. Provides model routing, tool dispatch, HITL approval plumbing, and the gateway to Telegram/Slack." />
-            <ArchStep n="03" title="Gemini 3 Pro + Flash" body="Pro handles deep reasoning (gap analysis, NB letter parse). Flash handles fast triage. Switching providers is one config line." />
-            <ArchStep n="04" title="One Vultr VPS" body="FastAPI on :8080, Next.js on :3000, nginx terminating Let's Encrypt TLS. €15/month, deployed in one shell script." />
-          </div>
-
-          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-px bg-ink-200 rounded-lg overflow-hidden border border-ink-200">
-            <Stat n="5"    label="Python tools, fully tested" />
-            <Stat n="90"   label="unit tests · 0.34 s green" />
-            <Stat n="7"    label="product workspaces" />
-            <Stat n="€15"  label="monthly run cost" />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Tech name="Gemini 3 Pro" role="Deep reasoning" detail="2M-token context for GSPR gap analysis and NB-letter parsing." href="https://ai.google.dev" />
+            <Tech name="Gemini 3 Flash" role="Fast triage" detail="Sub-second classifications, summaries, routing." href="https://ai.google.dev" />
+            <Tech name="Hermes Agent" role="Agent runtime" detail="Open-source Nous Research runtime — tool dispatch, HITL, gateway." href="https://github.com/NousResearch/hermes-agent" />
+            <Tech name="Vultr Cloud Compute" role="Hosting" detail="One €15/month Frankfurt VPS runs the whole stack behind nginx + Let's Encrypt." href="https://www.vultr.com" />
+            <Tech name="Featherless" role="Inference fallback" detail="Serverless inference for the medical fallback path — no infra, pay-per-use." href="https://featherless.ai" />
+            <Tech name="Next.js 14" role="Front-end" detail="App Router, TypeScript, Tailwind. Server components for vault reads." href="https://nextjs.org" />
+            <Tech name="FastAPI" role="Tool sidecar" detail="One process exposes every tool over HTTP + SSE." href="https://fastapi.tiangolo.com" />
+            <Tech name="Git" role="Memory" detail="Every change to the vault is a commit. Audit-friendly by construction." href="https://git-scm.com" />
           </div>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* FINAL CTA                                                         */}
-      {/* ================================================================ */}
-      <section className="container-narrow py-20">
-        <div className="card p-10 text-center">
-          <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-ink-900 font-display">
-            See Conformly think.
-          </h3>
-          <p className="mt-3 text-ink-600 max-w-xl mx-auto">
-            Open the product. Drop in a document. Watch the dashboard update, run a Notified
-            Body simulation, ask any regulatory question — every answer cites its source.
-          </p>
-          <Link href="/dashboard" className="btn-lg btn-primary mt-8">
-            Open the product
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+      {/* =============================================================== */}
+      {/* TRY IT — 3 demo paths                                            */}
+      {/* =============================================================== */}
+      <section className="border-t border-ink-200 bg-white">
+        <div className="container-narrow py-20">
+          <header className="mb-10 text-center">
+            <p className="eyebrow mb-3">try it</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900 font-display">
+              Three things to do in the next 60 seconds.
+            </h2>
+          </header>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <TryCard
+              n="01"
+              icon={<Gauge className="h-5 w-5" />}
+              title="Run real Gemini"
+              body="Open /nb-simulation, press 'Run live'. Gemini 3 Pro reads a real TÜV SÜD letter in ~10 seconds and returns 4 structured findings."
+              href="/nb-simulation"
+              cta="Open NB simulator"
+            />
+            <TryCard
+              n="02"
+              icon={<MessagesSquare className="h-5 w-5" />}
+              title="Ask anything"
+              body="Open /chat in Live mode. Ask 'is my device Class B or Class C?' — Gemini answers in ~5 seconds, citing IVDR Rule 3 and your vault."
+              href="/chat"
+              cta="Open chat"
+            />
+            <TryCard
+              n="03"
+              icon={<Layers className="h-5 w-5" />}
+              title="Explore the library"
+              body="Open /knowledge — 27 regulatory sources, each with its own indexed content. Click any source to see what the agent reads."
+              href="/knowledge"
+              cta="Open library"
+            />
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link href="/dashboard" className="btn-lg btn-primary">
+              Or go straight to the product
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
     </div>
@@ -324,74 +359,64 @@ export default function LandingPage() {
 }
 
 // ===========================================================================
-// Atoms (local to this file)
+// Atoms
 // ===========================================================================
 
-function Fact({ n, label, icon }: { n: string; label: string; icon: React.ReactNode }) {
-  return (
-    <li className="card card-hover p-5 flex items-center gap-4">
-      <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50 border border-rose-200 text-rose-700 shrink-0">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-2xl font-semibold text-ink-900 font-display">{n}</p>
-        <p className="text-[13px] text-ink-600 leading-snug">{label}</p>
-      </div>
-    </li>
-  );
-}
-
-function Feature({
-  icon, title, hint, body, wide,
+function Verb({
+  n, icon, verb, tag, body, href,
 }: {
+  n: string;
   icon: React.ReactNode;
-  title: string;
-  hint: string;
+  verb: string;
+  tag: string;
   body: string;
-  wide?: boolean;
+  href: string;
 }) {
   return (
-    <article className={`card card-hover p-6 ${wide ? "sm:col-span-2" : ""}`}>
-      <div className="flex items-start gap-3">
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 border border-sky-200 text-accent shrink-0">
+    <Link href={href} className="card card-hover p-5 flex flex-col group">
+      <div className="flex items-center justify-between mb-3">
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 border border-sky-200 text-accent">
           {icon}
         </span>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-ink-900">{title}</h3>
-          <p className="mt-0.5 text-[12px] text-accent">{hint}</p>
-          <p className="mt-2 text-[13.5px] text-ink-600 leading-relaxed">{body}</p>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function Innovation({ n, icon, title, body }: { n: string; icon: React.ReactNode; title: string; body: string }) {
-  return (
-    <article className="card p-6">
-      <div className="flex items-center justify-between mb-3">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 border border-sky-200 text-accent">{icon}</span>
         <span className="text-2xl font-mono text-ink-300 font-display">{n}</span>
       </div>
-      <h3 className="font-semibold text-ink-900 text-[15px]">{title}</h3>
-      <p className="mt-2 text-[13px] text-ink-600 leading-relaxed">{body}</p>
+      <h3 className="text-[20px] font-semibold text-ink-900 font-display">{verb}</h3>
+      <p className="text-[11px] text-accent mb-3">{tag}</p>
+      <p className="text-[13px] text-ink-600 leading-relaxed flex-1">{body}</p>
+      <p className="mt-3 text-[12px] font-mono text-ink-500 inline-flex items-center gap-1 group-hover:text-accent">
+        open <ChevronRight className="h-3 w-3" />
+      </p>
+    </Link>
+  );
+}
+
+function Impact({
+  icon, metric, label, detail,
+}: {
+  icon: React.ReactNode;
+  metric: string;
+  label: string;
+  detail: string;
+}) {
+  return (
+    <article className="card p-6 flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 border border-accent/30 text-accent">
+          {icon}
+        </span>
+        <div className="text-right">
+          <p className="text-4xl font-semibold bg-gradient-to-r from-accent to-accent-deep bg-clip-text text-transparent font-display">
+            {metric}
+          </p>
+          <p className="text-xs font-mono uppercase tracking-wider text-ink-500">{label}</p>
+        </div>
+      </div>
+      <p className="text-[13.5px] text-ink-700 leading-relaxed">{detail}</p>
     </article>
   );
 }
 
-function Tool({ name, backed, what, wide }: { name: string; backed: string; what: string; wide?: boolean }) {
-  return (
-    <div className={`card card-hover p-5 ${wide ? "sm:col-span-2" : ""}`}>
-      <div className="flex items-baseline justify-between gap-2 mb-1.5">
-        <code className="font-mono text-[14px] text-ink-900">{name}()</code>
-        <span className="text-[11px] font-mono text-accent">{backed}</span>
-      </div>
-      <p className="text-[13px] text-ink-600 leading-relaxed">{what}</p>
-    </div>
-  );
-}
-
-function ArchStep({ n, title, body }: { n: string; title: string; body: string }) {
+function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between mb-3">
@@ -404,11 +429,68 @@ function ArchStep({ n, title, body }: { n: string; title: string; body: string }
   );
 }
 
-function Stat({ n, label }: { n: string; label: string }) {
+function Diff({ n, icon, title, body, wide }: {
+  n: string;
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+  wide?: boolean;
+}) {
   return (
-    <div className="bg-white p-5">
-      <p className="text-2xl font-semibold text-ink-900 font-display">{n}</p>
-      <p className="text-[12px] text-ink-600 mt-1 leading-snug">{label}</p>
-    </div>
+    <article className={`card p-5 ${wide ? "sm:col-span-2" : ""}`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 border border-sky-200 text-accent">{icon}</span>
+        <span className="text-xl font-mono text-ink-300 font-display">{n}</span>
+      </div>
+      <h3 className="font-semibold text-ink-900">{title}</h3>
+      <p className="mt-2 text-[13px] text-ink-600 leading-relaxed">{body}</p>
+    </article>
+  );
+}
+
+function Tech({
+  name, role, detail, href,
+}: {
+  name: string;
+  role: string;
+  detail: string;
+  href: string;
+}) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" className="card card-hover p-4 block">
+      <div className="flex items-center justify-between mb-1">
+        <p className="font-semibold text-ink-900 text-[14px]">{name}</p>
+        <span className="text-[10px] font-mono uppercase tracking-wider text-accent">{role}</span>
+      </div>
+      <p className="text-[12.5px] text-ink-600 leading-snug">{detail}</p>
+    </a>
+  );
+}
+
+function TryCard({
+  n, icon, title, body, href, cta,
+}: {
+  n: string;
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+  href: string;
+  cta: string;
+}) {
+  return (
+    <article className="card p-6 flex flex-col">
+      <div className="flex items-center justify-between mb-3">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 border border-sky-200 text-accent">
+          {icon}
+        </span>
+        <span className="text-xl font-mono text-ink-300 font-display">{n}</span>
+      </div>
+      <h3 className="font-semibold text-ink-900 text-[16px]">{title}</h3>
+      <p className="mt-2 text-[13.5px] text-ink-600 leading-relaxed flex-1">{body}</p>
+      <Link href={href} className="btn-md btn-primary mt-4 self-start">
+        {cta}
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
+    </article>
   );
 }

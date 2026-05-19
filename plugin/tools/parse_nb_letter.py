@@ -173,17 +173,22 @@ def check_conformly_vault() -> bool:
 # LLM facade — module-level so tests can monkeypatch it cleanly
 # ---------------------------------------------------------------------------
 
-# Signature: (letter_text: str, source_hint: str) -> Dict[str, Any]
+# Signature: (letter_text, source_hint, pdf_bytes=None) -> dict.
 # Returning the parsed JSON conforming to NB_LETTER_OUTPUT_SCHEMA.
-LlmCaller = Callable[[str, str], Dict[str, Any]]
+LlmCaller = Callable[..., Dict[str, Any]]
 
 
-def _real_llm_caller(letter_text: str, source_hint: str) -> Dict[str, Any]:
+def _real_llm_caller(
+    letter_text: str,
+    source_hint: str,
+    pdf_bytes: Optional[bytes] = None,
+) -> Dict[str, Any]:
     """Default implementation backed by Hermes' PluginLlm.
 
-    Kept narrow: builds a prompt, asks for a JSON object matching
-    NB_LETTER_OUTPUT_SCHEMA, parses the response. Re-raises on any error
-    so the calling handler can convert to a JSON error reply.
+    When ``pdf_bytes`` is provided, the letter is sent as a multimodal
+    PDF attachment to Gemini in addition to the system prompt — exercising
+    Gemini's native PDF understanding (no text-extraction step in between).
+    Otherwise the call is text-only.
     """
     from agent.plugin_llm import PluginLlm  # lazy: avoids importing host
 
@@ -212,15 +217,27 @@ def _real_llm_caller(letter_text: str, source_hint: str) -> Dict[str, Any]:
         f"--- BEGIN LETTER ---\n{letter_text}\n--- END LETTER ---"
     )
 
+    # Multimodal path — when we have PDF bytes, attach them as an image-typed
+    # block. PluginLlm accepts an "image" entry with raw data + mime_type;
+    # Gemini handles application/pdf natively.
+    input_blocks: list[Dict[str, Any]] = [{"type": "text", "text": user_msg}]
+    if pdf_bytes is not None:
+        input_blocks.append({
+            "type": "image",
+            "data": pdf_bytes,
+            "mime_type": "application/pdf",
+            "file_name": "nb-letter.pdf",
+        })
+
     result = llm.complete_structured(
         instructions=instructions,
-        input=[{"type": "text", "text": user_msg}],
+        input=input_blocks,
         json_schema=NB_LETTER_OUTPUT_SCHEMA,
         schema_name="ConformlyNBLetter",
         purpose="conformly.parse_nb_letter",
         temperature=0.0,
         max_tokens=4000,
-        timeout=90.0,
+        timeout=120.0,
     )
 
     # PluginLlm returns a structured result with .parsed (dict) when a
@@ -257,17 +274,29 @@ def _resolve_letter_path(raw: str) -> Path:
     return (vault_path() / raw).resolve()
 
 
-def _load_letter_text(path: Path) -> str:
-    """Read a letter file as text. Raises on unsupported formats."""
+def _load_letter_payload(path: Path) -> tuple[str, Optional[bytes]]:
+    """Load a letter file. Returns (text, pdf_bytes_or_none).
+
+    - For .md / .txt / .markdown: returns the text content, no PDF bytes.
+    - For .pdf: returns a short text placeholder plus the raw bytes; the
+      LLM caller attaches the bytes as a multimodal block so Gemini can
+      read the PDF natively.
+    """
     ext = path.suffix.lower()
     if ext in _SUPPORTED_TEXT_EXTS:
-        return path.read_text(encoding="utf-8")
+        return path.read_text(encoding="utf-8"), None
     if ext in _PDF_EXTS:
-        raise RuntimeError(
-            "PDF parsing requires a Gemini-class multimodal provider, which is "
-            "not yet wired in. Pre-convert the letter to markdown/txt and place "
-            "it next to the PDF, or paste the text directly via letter_text."
+        try:
+            data = path.read_bytes()
+        except OSError as e:
+            raise RuntimeError(f"failed to read PDF: {e}")
+        if len(data) > 20 * 1024 * 1024:
+            raise RuntimeError(f"PDF is {len(data) // (1024 * 1024)} MB — limit 20 MB")
+        placeholder = (
+            f"(PDF letter attached as multimodal input: {path.name}, "
+            f"{len(data)} bytes. Read the attached document directly.)"
         )
+        return placeholder, data
     raise RuntimeError(f"unsupported letter format: {ext!r}")
 
 
@@ -348,6 +377,7 @@ def handle_parse_nb_letter(args: Dict[str, Any], **_kw) -> str:
     except FileNotFoundError as e:
         return err(str(e))
 
+    pdf_bytes: Optional[bytes] = None
     if letter_path:
         if not isinstance(letter_path, str):
             return err("letter_path must be a string")
@@ -355,7 +385,7 @@ def handle_parse_nb_letter(args: Dict[str, Any], **_kw) -> str:
         if not path.exists():
             return err(f"letter file not found: {path}", path=str(path))
         try:
-            text = _load_letter_text(path)
+            text, pdf_bytes = _load_letter_payload(path)
         except RuntimeError as e:
             return err(str(e), path=str(path))
         source_hint = str(path)
@@ -367,7 +397,12 @@ def handle_parse_nb_letter(args: Dict[str, Any], **_kw) -> str:
         path = None
 
     try:
-        parsed = _llm_caller(text, source_hint)
+        # Pass pdf_bytes only when present, so old (text, source_hint) mocks
+        # in tests still match without an arity bump.
+        if pdf_bytes is not None:
+            parsed = _llm_caller(text, source_hint, pdf_bytes)
+        else:
+            parsed = _llm_caller(text, source_hint)
     except Exception as e:
         logger.exception("LLM extraction failed")
         audit_log(

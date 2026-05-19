@@ -144,6 +144,16 @@ Every AI claim — every gap, every suggestion, every report paragraph — carri
 
 ---
 
+## Sponsor tech matrix
+
+| Sponsor | Track | What we use | Where it shows up |
+|---------|-------|-------------|-------------------|
+| **Google Gemini** | $10k Gemini track | Gemini 3 Pro (2M-context, deep reasoning) · Gemini 3 Flash (sub-second triage) | `parse_nb_letter` · `gspr_gap_analyzer` · `/api/chat` · multimodal PDF ingestion in /nb-simulation |
+| **Vultr Cloud** | Cloud track | One Cloud Compute instance (1 vCPU · 2 GB · Frankfurt) running FastAPI + Next.js + nginx + Let's Encrypt | Whole product, €15/month — `https://conformly.gopromp.com` |
+| **Featherless** | Inference track | Serverless inference as **medical fallback** path (no infra, pay-per-use) | Hermes provider profile — kicks in when the primary Gemini route is rate-limited or returns low-confidence |
+| **Anthropic Claude** | (development) | Build-time co-pilot via Claude Code | Source-code creation only — Claude is not in the runtime product |
+| **NousResearch Hermes** | (foundation, open-source) | Agent runtime — model routing, tool dispatch, HITL, gateway | Every API call routes through the Hermes plugin layer |
+
 ## How we use sponsor tech
 
 ### Gemini 3 ($10 k Google AI track)

@@ -17,12 +17,13 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             <span className="hidden md:inline ml-3"><ApiStatusPill /></span>
           </Link>
           <div className="flex items-center gap-1 text-sm">
-            <Link href="/dashboard" className="btn-primary">Open product →</Link>
+            <Link href="/pitch" className="btn-ghost">Pitch deck</Link>
+            <Link href="/dashboard" className="btn-md btn-primary">Open product →</Link>
             <a
               href="https://github.com/ma2214889041/Conformly"
               target="_blank"
               rel="noreferrer"
-              className="btn-secondary"
+              className="btn-md btn-secondary"
             >
               GitHub
             </a>
