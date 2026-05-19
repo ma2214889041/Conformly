@@ -254,37 +254,13 @@ export default function LandingPage() {
 
           {/* The visual architecture diagram */}
           <ArchitectureDiagram />
-
-          {/* Four capability cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-16">
-            <Capability
-              icon={<Users className="h-5 w-5" />}
-              title="Multi-agent collaboration"
-              body="Five specialist tools cooperate per turn. parse_nb_letter and gspr_gap_analyzer call Gemini directly; the other three serve as fast typed read-only lenses over the vault."
-            />
-            <Capability
-              icon={<Network className="h-5 w-5" />}
-              title="Multi-document cross-linking"
-              body="A single NB letter references IVDR Annex I §12.1, CLSI EP25-A, STAB-003, and BIO-001 in one breath. The agent threads all four sources into one structured answer with citations."
-            />
-            <Capability
-              icon={<GitBranch className="h-5 w-5" />}
-              title="Git version control"
-              body="Every change to the vault is a commit. Roll back to last month's technical file and re-run the same analysis against that snapshot. Reproducible audits are a one-click checkout."
-            />
-            <Capability
-              icon={<Repeat className="h-5 w-5" />}
-              title="Autonomous multi-turn investigation"
-              body="The agent runs its own search loops. Ask 'where am I weakest?' — it pulls the GSPR map, identifies open clauses, cross-checks evidence in the documents folder, and returns a ranked answer."
-            />
-          </div>
         </div>
       </section>
 
       {/* =============================================================== */}
       {/* WHY IT'S DIFFERENT                                               */}
       {/* =============================================================== */}
-      <section className="border-t border-ink-200 bg-white">
+      <section id="why" className="border-t border-ink-200 bg-white scroll-mt-24">
         <div className="container-narrow py-20">
           <header className="mb-12">
             <p className="eyebrow mb-3">why it's different</p>
@@ -417,17 +393,9 @@ export default function LandingPage() {
             </table>
           </div>
 
-          <div className="mt-10">
-            <p className="eyebrow mb-4">our usp</p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <Usp icon={<Repeat className="h-5 w-5" />} title="Continuous, not gate-based" body="Re-reads the full regulation on every commit." />
-              <Usp icon={<Gauge className="h-5 w-5" />} title="Pre-submission NB simulator" body="Predicts the actual deficiency letter before you file." />
-              <Usp icon={<GitBranch className="h-5 w-5" />} title="Multi-version control" body="Git-versioned vault — reproducible audits, one click." />
-              <Usp icon={<Quote className="h-5 w-5" />} title="Cite-or-refuse" body="Every claim carries clause + document. Source silent? Agent says so." />
-              <Usp icon={<BookOpenCheck className="h-5 w-5" />} title="Long-context, no RAG" body="Whole corpus + dossier in one prompt. No vector DB, no drift." />
-              <Usp icon={<Brain className="h-5 w-5" />} title="Specialized agent" body="5 tools, 27 regulatory sources, IVDR-tuned prompts. Not generic ChatGPT." />
-            </div>
-          </div>
+          <p className="mt-6 text-[12.5px] text-ink-600 max-w-2xl">
+            Our differentiators are spelled out in <a href="#why" className="text-accent hover:underline">Why it's different</a> above — none of the competitors above do all five.
+          </p>
         </div>
       </section>
 
@@ -625,268 +593,440 @@ function Diff({ n, icon, title, body, wide }: {
 }
 
 // ===========================================================================
-// Capability card (multi-agent / multi-doc / git / multi-turn)
-// ===========================================================================
-
-function Capability({
-  icon, title, body,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-}) {
-  return (
-    <article className="card p-5">
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 border border-accent/30 text-accent mb-3">
-        {icon}
-      </span>
-      <h3 className="font-semibold text-ink-900 text-[15px]">{title}</h3>
-      <p className="mt-2 text-[13px] text-ink-600 leading-relaxed">{body}</p>
-    </article>
-  );
-}
-
-// ===========================================================================
 // Architecture diagram — custom-styled visual, not ASCII
 // ===========================================================================
 
 function ArchitectureDiagram() {
   return (
-    <div className="card p-6 sm:p-8 max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto">
+      {/* Header strip */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <p className="eyebrow">live architecture · every block is a real running component</p>
-        <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-ink-500">
-          <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse-soft" />
-          deployed at conformly.gopromp.com
+        <div>
+          <p className="eyebrow mb-1">live system architecture</p>
+          <p className="text-sm text-ink-600">Every block below is a real running component. Click into the product to see them in action.</p>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/60 px-3 py-1.5 text-[11px] font-mono text-emerald-700">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse-soft" />
+          conformly.gopromp.com · live
         </div>
       </div>
 
-      {/* === Engineer row === */}
-      <ArchRow label="engineer">
-        <ArchBox tone="user" icon={<Users className="h-4 w-4" />} title="Compliance lead" subtitle="asks questions · drops files · approves outbound actions" />
-      </ArchRow>
-
-      <ArchArrow direction="down" label="HTTPS · auto-refresh" />
-
-      {/* === Front-end row === */}
-      <ArchRow label="front-end">
-        <ArchBox tone="surface" icon={<Layers className="h-4 w-4" />} title="Next.js 14 · 9 product pages" subtitle="dashboard · documents · analysis · reports · NB sim · chat · knowledge · pitch · landing" />
-      </ArchRow>
-
-      <ArchArrow direction="down" label="/api/* over HTTPS" />
-
-      {/* === FastAPI sidecar row === */}
-      <ArchRow label="api sidecar">
-        <ArchBox tone="surface" icon={<Wrench className="h-4 w-4" />} title="FastAPI · :8080" subtitle="POST /api/tools/* · POST /api/chat · SSE /api/agent/run/* · GET /api/health" />
-      </ArchRow>
-
-      <ArchArrow direction="down" label="tool_call · JSON" />
-
-      {/* === Specialized agent (the centerpiece) === */}
-      <div className="relative rounded-2xl border-2 border-accent/40 bg-accent/[0.04] p-5 sm:p-6">
-        <div className="absolute -top-3 left-5 px-2 py-0.5 rounded bg-white border border-accent/40 text-[10px] font-mono uppercase tracking-wider text-accent">
-          specialized regulatory agent
-        </div>
-        <div className="flex flex-wrap items-center gap-2 mb-4 mt-1">
-          <span className="text-[13px] font-semibold text-ink-900">Hermes Agent · IVDR specialization</span>
-          <span className="badge-sky">
-            <Brain className="h-3 w-3" />
-            Gemini 3 default · Featherless fallback · Claude available
-          </span>
-        </div>
-        <p className="text-[12.5px] text-ink-600 mb-4 leading-relaxed">
-          Per-turn loop: read user message → decide which specialist tool to call → compose result with citations →
-          (if HITL gate, pause for human approval) → write to audit log → reply.
-        </p>
-
-        {/* The 5 specialist tools */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-          <SpecialistTool
-            name="parse_nb_letter"
-            llm
-            body="Reads a Notified Body letter (EN/DE/IT) and returns structured deficiencies."
-            tests="16 tests"
-          />
-          <SpecialistTool
-            name="gspr_gap_analyzer"
-            llm
-            body="Benches the technical file against IVDR Annex I clause-by-clause."
-            tests="19 tests"
-          />
-          <SpecialistTool
-            name="search_regulation"
-            body="Catalogues 27 regulatory sources by family, name, version."
-            tests="21 tests"
-          />
-          <SpecialistTool
-            name="get_client_status"
-            body="Reads a project dossier into a typed status object."
-            tests="16 tests"
-          />
-          <SpecialistTool
-            name="list_clients"
-            body="Portfolio view — sortable by phase, risk, due date."
-            tests="18 tests"
-          />
-        </div>
-        <p className="mt-4 text-[11.5px] font-mono text-ink-500">
-          ⚡ = live Gemini call · all 5 tools return a typed JSON envelope · 90 unit tests pass in 0.34 s
-        </p>
-      </div>
-
-      <ArchArrow direction="down" label="read · paths only · no embeddings" />
-
-      {/* === Knowledge layer === */}
-      <div className="rounded-2xl border-2 border-ink-200 bg-white p-5 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div>
-            <p className="eyebrow mb-1">knowledge layer</p>
-            <h3 className="text-[15px] font-semibold text-ink-900">vault/ · plain markdown · git-versioned</h3>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="badge-neutral">
-              <Database className="h-3 w-3" />
-              27 regulatory sources
-            </span>
-            <span className="badge-neutral">
-              <GitBranch className="h-3 w-3" />
-              every change is a commit
-            </span>
-          </div>
-        </div>
-
-        {/* Knowledge sub-groups */}
-        <div className="grid sm:grid-cols-3 lg:grid-cols-6 gap-2">
-          <SourceCluster icon={<BookOpen className="h-3.5 w-3.5" />} label="IVDR" detail="6 docs · regulation + annexes" tone="rose" />
-          <SourceCluster icon={<AlignLeft className="h-3.5 w-3.5" />} label="MDCG"  detail="4 guidance papers"            tone="amber" />
-          <SourceCluster icon={<Library className="h-3.5 w-3.5" />}  label="ISO"   detail="5 standards"                  tone="emerald" />
-          <SourceCluster icon={<Library className="h-3.5 w-3.5" />}  label="IEC"   detail="3 standards"                  tone="emerald" />
-          <SourceCluster icon={<Library className="h-3.5 w-3.5" />}  label="CLSI"  detail="5 EP standards"               tone="emerald" />
-          <SourceCluster icon={<FileText className="h-3.5 w-3.5" />} label="Team-NB" detail="2 position papers"          tone="sky" />
-        </div>
-
-        <div className="mt-4 pt-4 border-t border-ink-200 grid sm:grid-cols-2 gap-3">
-          <SourceCluster
-            icon={<FolderGit2 className="h-3.5 w-3.5" />}
-            label="User project (SHM-7300)"
-            detail="design specs · stability · risk file · V&V · NB letters — all uploaded by the user, all git-versioned"
-            tone="cyan"
-            wide
-          />
-          <SourceCluster
-            icon={<Workflow className="h-3.5 w-3.5" />}
-            label="Internal procedures"
-            detail="CPS 60-step workflow · NB audit prep · CAPA response playbook"
+      {/* ============ STAGE 1 · USER ============ */}
+      <ArchStage n="01" label="user" tint="slate">
+        <div className="grid sm:grid-cols-[1fr_auto] items-center gap-4">
+          <ArchPanel
             tone="slate"
-            wide
+            icon={<Users className="h-5 w-5" />}
+            title="Compliance lead"
+            tags={["asks questions", "drops design files", "approves outbound actions"]}
           />
+          <div className="hidden sm:flex flex-col items-center text-[10px] font-mono text-ink-400 uppercase tracking-wider">
+            <span>HTTPS</span>
+            <span className="text-ink-300">·</span>
+            <span>auto-refresh</span>
+          </div>
         </div>
-      </div>
+      </ArchStage>
 
-      <ArchArrow direction="down" label="every tool invocation appends one JSON line" />
+      <FlowConnector />
 
-      {/* === Audit log === */}
-      <ArchRow label="audit log">
-        <ArchBox tone="surface" icon={<FileText className="h-4 w-4" />} title="~/.conformly/audit.log" subtitle="JSON-lines · timestamp · tool · args · result · ISO 13485 evidence ready" />
-      </ArchRow>
+      {/* ============ STAGE 2 · FRONT-END ============ */}
+      <ArchStage n="02" label="front-end" tint="sky">
+        <ArchPanel
+          tone="sky"
+          icon={<Layers className="h-5 w-5" />}
+          title="Next.js 14"
+          subtitle="9 product pages · App Router · server components"
+          chips={["dashboard", "documents", "analysis", "reports", "NB sim", "chat", "knowledge", "pitch", "landing"]}
+        />
+      </ArchStage>
+
+      <FlowConnector label="/api/* over HTTPS" />
+
+      {/* ============ STAGE 3 · API SIDECAR ============ */}
+      <ArchStage n="03" label="api sidecar" tint="sky">
+        <ArchPanel
+          tone="sky"
+          icon={<Wrench className="h-5 w-5" />}
+          title="FastAPI · :8080"
+          subtitle="one process · five typed endpoints"
+          endpoints={[
+            { method: "POST", path: "/api/tools/*" },
+            { method: "POST", path: "/api/chat" },
+            { method: "SSE",  path: "/api/agent/run/*" },
+            { method: "GET",  path: "/api/health" },
+          ]}
+        />
+      </ArchStage>
+
+      <FlowConnector label="tool_call · JSON envelope" />
+
+      {/* ============ STAGE 4 · SPECIALIZED AGENT (centerpiece) ============ */}
+      <ArchStage n="04" label="specialized agent" tint="accent">
+        <div className="relative rounded-2xl border-2 border-accent/40 bg-gradient-to-br from-sky-50/60 to-white p-5 sm:p-7 shadow-sm">
+          {/* Title bar */}
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-white shadow-sm">
+                  <Brain className="h-5 w-5" />
+                </span>
+                <h3 className="text-base font-semibold text-ink-900 font-display">Hermes Agent · IVDR specialization</h3>
+              </div>
+              <p className="text-[12.5px] text-ink-600 leading-relaxed max-w-xl">
+                Per-turn loop: <strong>read</strong> → <strong>decide tool</strong> → <strong>compose with citations</strong> → <em>(optional HITL pause)</em> → <strong>write audit line</strong> → <strong>reply</strong>.
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-1.5">
+              <ModelChip primary>Gemini 3 · default</ModelChip>
+              <ModelChip>Featherless · fallback</ModelChip>
+              <ModelChip>Claude · available</ModelChip>
+            </div>
+          </div>
+
+          {/* 5 specialist tools — visually balanced grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+            <ToolCard
+              name="parse_nb_letter"
+              llm
+              tests={16}
+              body="Reads a Notified Body letter (EN/DE/IT) → structured deficiencies."
+            />
+            <ToolCard
+              name="gspr_gap_analyzer"
+              llm
+              tests={19}
+              body="Benches the technical file against IVDR Annex I clause-by-clause."
+            />
+            <ToolCard
+              name="search_regulation"
+              tests={21}
+              body="Catalogues 27 regulatory sources by family, name, version."
+            />
+            <ToolCard
+              name="get_client_status"
+              tests={16}
+              body="Reads a project dossier into a typed status object."
+            />
+            <ToolCard
+              name="list_clients"
+              tests={18}
+              body="Portfolio view — sortable by phase, risk, due date."
+            />
+          </div>
+
+          {/* Footer stat strip */}
+          <div className="mt-5 pt-4 border-t border-ink-200 grid sm:grid-cols-3 gap-3 text-[11px] font-mono">
+            <ArchStat label="LLM-backed tools" value="2 / 5" hint="⚡ = live Gemini call" />
+            <ArchStat label="Unit tests" value="90 pass" hint="0.34 s · pytest" />
+            <ArchStat label="Return type" value="typed JSON envelope" hint="schema-validated" />
+          </div>
+        </div>
+      </ArchStage>
+
+      <FlowConnector label="read · paths only · no embeddings · no vector DB" />
+
+      {/* ============ STAGE 5 · KNOWLEDGE LAYER ============ */}
+      <ArchStage n="05" label="knowledge layer" tint="emerald">
+        <div className="rounded-2xl border-2 border-emerald-200/70 bg-gradient-to-br from-emerald-50/40 to-white p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white">
+                <Database className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="text-base font-semibold text-ink-900 font-display">vault/ · plain markdown</h3>
+                <p className="text-[12px] text-ink-600">git-versioned · every change is a commit · roll back to any state</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <CountBadge value="27" label="reg sources" />
+              <CountBadge value="∞" label="commits" icon={<GitBranch className="h-3 w-3" />} />
+            </div>
+          </div>
+
+          {/* Top: 6 regulatory families */}
+          <p className="eyebrow mb-2 text-ink-500">regulatory corpus</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-5">
+            <KnowledgeChip family="IVDR"    count="6" detail="regulation + annexes"  tone="rose" />
+            <KnowledgeChip family="MDCG"    count="4" detail="guidance papers"        tone="amber" />
+            <KnowledgeChip family="ISO"     count="5" detail="quality + risk"         tone="emerald" />
+            <KnowledgeChip family="IEC"     count="3" detail="software + electrical"  tone="emerald" />
+            <KnowledgeChip family="CLSI"    count="5" detail="EP performance"         tone="emerald" />
+            <KnowledgeChip family="Team-NB" count="2" detail="position papers"        tone="sky" />
+          </div>
+
+          {/* Bottom: client + procedures */}
+          <p className="eyebrow mb-2 text-ink-500">project + procedures</p>
+          <div className="grid sm:grid-cols-2 gap-2.5">
+            <VaultPanel
+              icon={<FolderGit2 className="h-4 w-4" />}
+              tone="cyan"
+              label="User project · SHM-7300"
+              detail="design specs · stability · risk file · V&V protocols · NB correspondence"
+            />
+            <VaultPanel
+              icon={<Workflow className="h-4 w-4" />}
+              tone="slate"
+              label="Internal procedures"
+              detail="CPS 60-step workflow · NB audit prep · CAPA response playbook"
+            />
+          </div>
+        </div>
+      </ArchStage>
+
+      <FlowConnector label="every tool invocation appends one JSON line" />
+
+      {/* ============ STAGE 6 · AUDIT LOG ============ */}
+      <ArchStage n="06" label="audit log" tint="slate">
+        <ArchPanel
+          tone="slate"
+          icon={<FileText className="h-5 w-5" />}
+          title="~/.conformly/audit.log"
+          subtitle="JSON-lines · timestamp · tool · args · result"
+          chips={["ISO 13485 evidence ready", "tamper-evident via git", "exportable for NB audit"]}
+        />
+      </ArchStage>
     </div>
   );
 }
 
-function ArchRow({ label, children }: { label: string; children: React.ReactNode }) {
+// ===========================================================================
+// Architecture sub-components
+// ===========================================================================
+
+function ArchStage({
+  n, label, tint, children,
+}: {
+  n: string;
+  label: string;
+  tint: "slate" | "sky" | "accent" | "emerald";
+  children: React.ReactNode;
+}) {
+  const dot =
+    tint === "slate"   ? "bg-ink-400" :
+    tint === "sky"     ? "bg-sky-500" :
+    tint === "accent"  ? "bg-accent" :
+    "bg-emerald-500";
   return (
     <div className="relative">
-      <span className="absolute -left-1 sm:left-0 -top-2 sm:top-2 text-[9px] tracking-[0.22em] uppercase text-ink-400 font-mono">
-        {label}
-      </span>
+      <div className="flex items-center gap-2 mb-2">
+        <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full ${dot} text-white text-[10px] font-mono font-semibold`}>
+          {n}
+        </span>
+        <span className="text-[10px] tracking-[0.22em] uppercase text-ink-500 font-mono">
+          {label}
+        </span>
+      </div>
       {children}
     </div>
   );
 }
 
-function ArchBox({
-  tone, icon, title, subtitle,
+function FlowConnector({ label }: { label?: string }) {
+  return (
+    <div className="flex items-center gap-3 py-3 pl-2.5">
+      <svg width="12" height="32" viewBox="0 0 12 32" className="shrink-0">
+        <line x1="6" y1="0" x2="6" y2="24" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" className="text-ink-300" />
+        <path d="M 2 22 L 6 30 L 10 22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-ink-400" />
+      </svg>
+      {label && (
+        <span className="text-[10.5px] font-mono text-ink-500 bg-surface-subtle border border-ink-200 rounded px-2 py-0.5">
+          {label}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ArchPanel({
+  tone, icon, title, subtitle, tags, chips, endpoints,
 }: {
-  tone: "user" | "surface" | "accent";
+  tone: "slate" | "sky" | "accent";
   icon: React.ReactNode;
   title: string;
-  subtitle: string;
+  subtitle?: string;
+  tags?: string[];
+  chips?: string[];
+  endpoints?: { method: string; path: string }[];
 }) {
+  const ring =
+    tone === "slate" ? "border-ink-200 bg-white" :
+    tone === "sky"   ? "border-sky-200/70 bg-gradient-to-br from-sky-50/40 to-white" :
+    "border-accent/40 bg-accent/[0.04]";
+  const iconBg =
+    tone === "slate" ? "bg-ink-100 text-ink-700" :
+    tone === "sky"   ? "bg-sky-500 text-white" :
+    "bg-accent text-white";
   return (
-    <div className={
-      tone === "user"    ? "rounded-xl border-2 border-ink-300 bg-white p-4 flex items-center gap-3 shadow-sm" :
-      tone === "accent"  ? "rounded-xl border-2 border-accent/40 bg-accent/[0.05] p-4 flex items-center gap-3" :
-      "rounded-xl border border-ink-200 bg-white p-4 flex items-center gap-3 shadow-sm"
+    <div className={`rounded-2xl border-2 ${ring} p-4 sm:p-5 shadow-sm`}>
+      <div className="flex items-start gap-3">
+        <span className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${iconBg} shrink-0`}>
+          {icon}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[14px] font-semibold text-ink-900 font-display leading-tight">{title}</p>
+          {subtitle && <p className="text-[12px] text-ink-600 mt-0.5">{subtitle}</p>}
+          {tags && (
+            <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11.5px] text-ink-600">
+              {tags.map((t, i) => (
+                <li key={i} className="inline-flex items-center gap-1.5">
+                  <span className="h-1 w-1 rounded-full bg-ink-400" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          )}
+          {chips && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {chips.map((c, i) => (
+                <span key={i} className="inline-flex items-center rounded-md border border-ink-200 bg-white px-1.5 py-0.5 text-[10.5px] font-mono text-ink-700">
+                  {c}
+                </span>
+              ))}
+            </div>
+          )}
+          {endpoints && (
+            <div className="mt-3 grid sm:grid-cols-2 gap-1.5">
+              {endpoints.map((e, i) => (
+                <div key={i} className="flex items-center gap-2 rounded border border-ink-200 bg-white px-2 py-1 font-mono text-[11px]">
+                  <span className={
+                    "inline-block rounded px-1.5 py-0.5 text-[9.5px] font-semibold tracking-wide " +
+                    (e.method === "POST" ? "bg-emerald-100 text-emerald-700" :
+                     e.method === "GET"  ? "bg-sky-100 text-sky-700" :
+                                            "bg-violet-100 text-violet-700")
+                  }>
+                    {e.method}
+                  </span>
+                  <code className="text-ink-700">{e.path}</code>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ModelChip({ primary, children }: { primary?: boolean; children: React.ReactNode }) {
+  return (
+    <span className={
+      "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10.5px] font-mono " +
+      (primary
+        ? "bg-accent text-white border-accent"
+        : "bg-white text-ink-600 border-ink-200")
     }>
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 border border-sky-200 text-accent shrink-0">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-[13.5px] font-semibold text-ink-900 leading-tight">{title}</p>
-        <p className="text-[12px] text-ink-500 mt-0.5 leading-snug">{subtitle}</p>
-      </div>
-    </div>
+      <span className={"h-1.5 w-1.5 rounded-full " + (primary ? "bg-white" : "bg-ink-300")} />
+      {children}
+    </span>
   );
 }
 
-function ArchArrow({ direction = "down", label }: { direction?: "down" | "up"; label: string }) {
-  return (
-    <div className="flex items-center gap-3 my-2.5 pl-4">
-      <div className="flex flex-col items-center">
-        <div className="w-0.5 h-4 bg-ink-300" />
-        <div className="w-2 h-2 border-r-2 border-b-2 border-ink-300 rotate-45 -mt-1" />
-      </div>
-      <span className="text-[10.5px] font-mono text-ink-500">{label}</span>
-    </div>
-  );
-}
-
-function SpecialistTool({
+function ToolCard({
   name, llm, body, tests,
 }: {
   name: string;
   llm?: boolean;
   body: string;
-  tests: string;
+  tests: number;
 }) {
   return (
     <div className={
-      "rounded-lg border bg-white p-3 " +
-      (llm ? "border-accent/40 shadow-sm shadow-accent/10" : "border-ink-200")
+      "relative rounded-xl border bg-white p-3 transition-shadow hover:shadow-md " +
+      (llm ? "border-accent/40 ring-1 ring-accent/10" : "border-ink-200")
     }>
-      <div className="flex items-center justify-between mb-1">
-        <code className="font-mono text-[12px] text-ink-900 truncate">{name}</code>
-        {llm && <span className="text-[9px] font-mono text-accent">⚡ Gemini</span>}
+      {llm && (
+        <span className="absolute -top-2 -right-2 inline-flex items-center gap-0.5 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-mono text-white shadow-sm">
+          <Zap className="h-2.5 w-2.5" />
+          live
+        </span>
+      )}
+      <code className="block font-mono text-[11.5px] font-semibold text-ink-900 truncate mb-1.5">
+        {name}
+      </code>
+      <p className="text-[11px] text-ink-600 leading-snug min-h-[44px]">{body}</p>
+      <div className="mt-2 pt-2 border-t border-ink-100 flex items-center justify-between text-[10px] font-mono">
+        <span className="text-ink-400">{tests} tests</span>
+        <span className="text-emerald-600">● pass</span>
       </div>
-      <p className="text-[11.5px] text-ink-600 leading-snug">{body}</p>
-      <p className="mt-2 text-[10px] font-mono text-ink-400">{tests}</p>
     </div>
   );
 }
 
-function SourceCluster({
-  icon, label, detail, tone, wide,
+function ArchStat({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div className="rounded-lg border border-ink-200 bg-white px-3 py-2">
+      <p className="text-[9.5px] uppercase tracking-wider text-ink-400">{label}</p>
+      <p className="text-[13px] font-semibold text-ink-900">{value}</p>
+      <p className="text-[10px] text-ink-500 mt-0.5">{hint}</p>
+    </div>
+  );
+}
+
+function CountBadge({ value, label, icon }: { value: string; label: string; icon?: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-emerald-200 px-2.5 py-1 text-[11px] font-mono">
+      {icon && <span className="text-emerald-600">{icon}</span>}
+      <span className="font-semibold text-ink-900">{value}</span>
+      <span className="text-ink-500">{label}</span>
+    </span>
+  );
+}
+
+function KnowledgeChip({
+  family, count, detail, tone,
+}: {
+  family: string;
+  count: string;
+  detail: string;
+  tone: "rose" | "amber" | "emerald" | "sky";
+}) {
+  const ring =
+    tone === "rose"    ? "border-rose-200 bg-white"    :
+    tone === "amber"   ? "border-amber-200 bg-white"   :
+    tone === "emerald" ? "border-emerald-200 bg-white" :
+    "border-sky-200 bg-white";
+  const dot =
+    tone === "rose"    ? "bg-rose-500"    :
+    tone === "amber"   ? "bg-amber-500"   :
+    tone === "emerald" ? "bg-emerald-500" :
+    "bg-sky-500";
+  return (
+    <div className={`rounded-lg border ${ring} px-2.5 py-2`}>
+      <div className="flex items-center justify-between mb-0.5">
+        <div className="flex items-center gap-1.5">
+          <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+          <span className="text-[12px] font-semibold text-ink-900">{family}</span>
+        </div>
+        <span className="text-[10px] font-mono text-ink-500">{count}</span>
+      </div>
+      <p className="text-[10.5px] text-ink-600 leading-snug">{detail}</p>
+    </div>
+  );
+}
+
+function VaultPanel({
+  icon, label, detail, tone,
 }: {
   icon: React.ReactNode;
   label: string;
   detail: string;
-  tone: "rose" | "amber" | "emerald" | "sky" | "cyan" | "slate";
-  wide?: boolean;
+  tone: "cyan" | "slate";
 }) {
   const ring =
-    tone === "rose"    ? "border-rose-200 bg-rose-50/40" :
-    tone === "amber"   ? "border-amber-200 bg-amber-50/40" :
-    tone === "emerald" ? "border-emerald-200 bg-emerald-50/40" :
-    tone === "sky"     ? "border-sky-200 bg-sky-50/40" :
-    tone === "cyan"    ? "border-cyan-200 bg-cyan-50/40" :
-    "border-ink-200 bg-surface-subtle";
+    tone === "cyan" ? "border-cyan-200 bg-cyan-50/40" : "border-ink-200 bg-surface-subtle";
+  const iconBg =
+    tone === "cyan" ? "bg-cyan-500 text-white" : "bg-ink-200 text-ink-700";
   return (
-    <div className={`rounded-lg border p-3 ${ring} ${wide ? "" : "min-w-0"}`}>
-      <div className="flex items-center gap-1.5 mb-1 text-ink-700">
+    <div className={`rounded-xl border ${ring} p-3 flex items-start gap-2.5`}>
+      <span className={`inline-flex h-7 w-7 items-center justify-center rounded-md ${iconBg} shrink-0`}>
         {icon}
-        <p className="text-[12px] font-semibold text-ink-900">{label}</p>
+      </span>
+      <div className="min-w-0">
+        <p className="text-[12.5px] font-semibold text-ink-900">{label}</p>
+        <p className="text-[11.5px] text-ink-600 leading-snug mt-0.5">{detail}</p>
       </div>
-      <p className="text-[11.5px] text-ink-600 leading-snug">{detail}</p>
     </div>
   );
 }
@@ -955,24 +1095,6 @@ function Revenue({
       </div>
       <p className="text-xl font-semibold text-ink-900 font-display">{price}</p>
       <p className="mt-2 text-[13px] text-ink-600 leading-relaxed">{body}</p>
-    </article>
-  );
-}
-
-// ===========================================================================
-// USP card
-// ===========================================================================
-
-function Usp({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
-  return (
-    <article className="rounded-xl border border-ink-200 bg-white p-4">
-      <div className="flex items-start gap-3">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 border border-sky-200 text-accent shrink-0">{icon}</span>
-        <div>
-          <h3 className="font-semibold text-ink-900 text-sm">{title}</h3>
-          <p className="mt-1 text-[12.5px] text-ink-600 leading-relaxed">{body}</p>
-        </div>
-      </div>
     </article>
   );
 }
