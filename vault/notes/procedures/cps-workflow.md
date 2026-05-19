@@ -1,170 +1,189 @@
 ---
-title: Clinical Performance Study (CPS) — Firsteck 内部全流程
-source: Asana board "Clinical Performance Study"
+doc_id: CPS-PROCEDURE
+title: "Clinical Performance Study (CPS) — Conformly internal procedure"
+source: "Adapted from a Bologna-based CRO's Asana operations board"
 last_updated: 2026-05-19
-owner: Firsteck Operations
 status: canonical
+applicable_to: "IVDR Class B / C / D devices requiring a CPS under Annex XIII Part A"
 ---
 
-# Clinical Performance Study (CPS) Workflow
+# Clinical Performance Study (CPS) — Operational Procedure
 
-Firsteck 受 IVD 厂商委托执行 IVDR 临床性能研究 (Clinical Performance Study, CPS) 的标准操作流程。
-共 6 大阶段 + 60+ 子步骤,跨 Admin / RA / Scientific / Operational / QA / Manufacturer 多条平行 swimlane,以 4 个 "GREEN LIGHT" 关卡推进。
+This is the canonical 6-phase / 60+ step procedure Conformly uses to track
+where a project sits inside the *clinical performance evaluation* leg of an
+IVDR submission. It maps every Asana task a real Italian CRO uses today onto
+the Annex XIII Part A regulatory chain.
 
----
+It runs in parallel with the 6-phase certification journey shown on the
+dashboard — the journey is the **outer** view (Design Input → … → NB
+submission), this CPS procedure is the **inner** sequence for Phases 4–6
+(Performance Evaluation → Tech Doc → Submission).
 
-## Phase 0 — Product Evaluation & Understanding(产品评估与理解)
-
-研究启动前的可行性与对齐阶段。
-
-- Performance Indicators (Study Objectives) — 与厂商对齐性能指标与研究目的
-- Valutazione del prodotto — 产品评估
-- Incontro introduttivo con il produttore — 与厂商的启动会
-- Redazione del piano di studio — 起草研究计划
-- Selezione centro principale — 主中心选址
-- Incontro introduttivo con il centro/PI — 与中心 / 主要研究者 (PI) 的启动会
-- Incontri di follow-up con il produttore — 与厂商的跟进会
-- Incontri di follow-up con il centro — 与中心的跟进会
-- Richiesta preventivo al PI — 向 PI 索取报价
-- Quotazione per il produttore — 给厂商出报价
-- Incontro post-quotazione con il produttore — 报价后会议
-- Firma contratto con il Produttore — 与厂商签约
-- Finalizzazione del protocollo di studio — 最终化研究方案 (protocol)
-- Finalizzazione del consenso informato — 最终化知情同意书 (ICF)
-
-**对应 IVDR 触点**:Annex XIII Part A — CPS Plan 起草。
+The procedure is broken into 6 macro-phases gated by **4 GREEN LIGHT**
+checkpoints, with multiple parallel swimlanes (Admin / RA / Scientific /
+Operational / QA / Manufacturer).
 
 ---
 
-## Phase 1 — EVALUATION
+## Phase 0 — Product Evaluation & Understanding
 
-- 1.A) 同上 Phase 0 中的评估子项
-- **1.B) SITE SELECTION** — 中心选址(可包含卫星中心评估)
+Feasibility and alignment before any study activity starts.
 
-## Phase 2 — QUOTATION
+- Performance indicators — align study objectives with the manufacturer
+- Product evaluation — *Valutazione del prodotto*
+- Kickoff with manufacturer — *Incontro introduttivo con il produttore*
+- Study plan drafting — *Redazione del piano di studio*
+- Lead-site selection — *Selezione centro principale*
+- Kickoff with lead PI — *Incontro introduttivo con il centro/PI*
+- Follow-up meetings with manufacturer and lead site
+- Quote request to PI — *Richiesta preventivo al PI*
+- Quote to manufacturer — *Quotazione per il produttore*
+- Post-quote meeting — *Incontro post-quotazione*
+- Contract signature with manufacturer — *Firma contratto con il Produttore*
+- Study protocol finalisation — *Finalizzazione del protocollo di studio*
+- Informed consent finalisation — *Finalizzazione del consenso informato*
 
-- 报价生成、谈判与签约。
+**Regulatory touchpoint:** IVDR Annex XIII Part A — CPS Plan drafting.
 
-## Phase 2.5 — PROTOCOL WRITING
+---
 
-- Protocol / ICF / Privacy consent / 伦理委员会其他文件的撰写。
+## Phase 1 — Evaluation
 
-## Phase 3 — SUBMISSION (RA & Docs Finalization)
+- All Phase-0 evaluation sub-items
+- **1.B) Site selection** — including satellite-site feasibility
 
-监管与伦理提交阶段。
+## Phase 2 — Quotation
 
-### 伦理委员会 (CE — Comitato Etico)
-- Finalizzazione del consenso per la privacy — 隐私同意书最终化
-- Finalizzazione dei altri documenti per comitato etico — 其他 CE 文件最终化
-- Sottomissione del comitato etico — 提交伦理委员会
-- Giorno della revisione — 审议日
-- Parere unico del comitato etico — CE 一致意见 (Parere Unico)
-- Documentazione centro satellite XXX — 卫星中心文件
+- Quote generation, negotiation, and signature
 
-### 卫生部 (MinSal — Ministero della Salute)
-- Preparazione Domanda MinSal — MinSal 申请准备
-- Verbale CE — CE 会议纪要
-- Finalizzazione Contratto — 合同最终化
-- Revisione contratto — 合同复核
-- Invio Domanda al MinSal — 提交申请至 MinSal
-- Convalida MinSal — MinSal 受理
-- Approvazione MinSal — MinSal 批准
+## Phase 2.5 — Protocol writing
+
+- Protocol / Informed Consent Form / Privacy consent / other ethics-committee documents
+
+## Phase 3 — Submission (RA & Docs finalisation)
+
+Regulatory and ethics submission.
+
+### Ethics Committee (CE — *Comitato Etico*)
+- Privacy consent finalisation — *Finalizzazione del consenso per la privacy*
+- Other CE documents — *Finalizzazione dei altri documenti per comitato etico*
+- CE submission — *Sottomissione del comitato etico*
+- Review day — *Giorno della revisione*
+- CE unanimous opinion — *Parere unico del comitato etico*
+- Satellite-site documentation
+
+### Italian Ministry of Health (*Ministero della Salute*)
+- MinSal application preparation — *Preparazione Domanda MinSal*
+- CE meeting minutes — *Verbale CE*
+- Contract finalisation and review
+- MinSal application submission — *Invio Domanda al MinSal*
+- MinSal validation — *Convalida MinSal*
+- MinSal approval — *Approvazione MinSal*
 
 ### ✅ GREEN LIGHT #1 — Admin & RA
 
-**对应 IVDR 触点**:Article 58 / 66 — CPS 监管授权前置条件。
+**Regulatory touchpoint:** IVDR Articles 58 / 66 — CPS regulatory authorisation preconditions.
 
 ---
 
-## Phase 4 — SET UP
+## Phase 4 — Set-up
 
-正式启动前的多线并行准备。
+Parallel preparation across swimlanes before study go-live.
 
-### 4.A) SET UP — RA
-- Comprehensive Protocol Review (SS — Scientific Specialist)
-- Team Discussion
-- Insurance Coverage Review with whole team (Admin)
+### 4.A) Set-up — RA
+- Comprehensive protocol review (Scientific Specialist)
+- Team discussion
+- Insurance coverage review (Admin)
 
-### 4.B) SET-UP — Study Procedures
-- Data Collection Strategy (SS)
-- Diary (SS) — 病人日记设计
-- Database / e-CRF finalization (SS / BS — Biostatistician)
+### 4.B) Set-up — Study Procedures
+- Data collection strategy (SS)
+- Patient diary design (SS)
+- Database / e-CRF finalisation (SS / Biostatistician)
 - Data Management Plan (BS)
-- Supplies — Initial Study Materials (PM — Project Manager)
+- Supplies — initial study materials (Project Manager)
 
 ### ✅ GREEN LIGHT #2 — Scientific & Operational
 
-### 4.C) SET-UP — QA
-- Monitoring Plan — 监查计划
-- Sponsor Responsibilities and Vigilance — 申办方职责与警戒
-- Sponsor Study SOPs
-- TMF — Trial Master File
-- ISF — Investigator Site File
-- CRA — Clinical Research Associate 指派
-- SIV — Site Initiation Visit
+### 4.C) Set-up — QA
+- Monitoring plan
+- Sponsor responsibilities and vigilance
+- Sponsor study SOPs
+- Trial Master File (TMF)
+- Investigator Site File (ISF)
+- CRA (Clinical Research Associate) assignment
+- Site Initiation Visit (SIV)
 
 ### ✅ GREEN LIGHT #3 — QA
 
-### 4.D) PRE-TEST
-- Pre-test Protocol
+### 4.D) Pre-test
+- Pre-test protocol
 - Pre-test database
-- Pretest Supplies
-- Pre-test PM
-- Pre-test Report
+- Pre-test supplies
+- Pre-test Project Manager
+- Pre-test report
 
 ### ✅ GREEN LIGHT #4 — Manufacturer
 
-### 4.5 EMENDAMENTS & SUB-SITES
-- Centro XXX — 各中心激活
-- On Site Monitoring Visit XXX
-- Remote Monitoring Visit XXX
+### 4.5 Amendments & Sub-sites
+- Site XXX activations
+- On-site monitoring visits
+- Remote monitoring visits
 
-**对应 IVDR 触点**:Annex XIII Part A Section 2 — 监查与数据管理。
-
----
-
-## Phase 5 — FOLLOW UP (PM & Monitoring)
-
-正式研究执行期。
-
-- Queries — 数据询问
-- Data Cleaning
-- Fornitura di materiale di studio — 持续物料供应
-- COV — Close-Out Visit
-- DM — Date Freeze — 数据库锁定
-- BS — Analisi statistico — 统计分析
-- Analisi dello studio con PI — 与 PI 复核分析
-- CPS Report — 临床性能研究报告
+**Regulatory touchpoint:** IVDR Annex XIII Part A §2 — monitoring and data management.
 
 ---
 
-## Phase 6 — CONCLUSION (SA & Report)
+## Phase 5 — Follow-up (PM & Monitoring)
 
-- Scientific Affairs 终审与最终 CPS Report 交付,作为 Technical Documentation 输入。
+Live study execution.
 
-**对应 IVDR 触点**:Annex XIII Part A Section 3 — CPSR (Clinical Performance Study Report) 输出。
-
----
-
-## 关键角色 (RACI 速查)
-
-| 缩写 | 角色 |
-|------|------|
-| PI   | Principal Investigator(中心主要研究者) |
-| SS   | Scientific Specialist(科学专员) |
-| BS   | Biostatistician(生物统计师) |
-| PM   | Project Manager |
-| CRA  | Clinical Research Associate(临床监查员) |
-| RA   | Regulatory Affairs |
-| QA   | Quality Assurance |
-| CE   | Comitato Etico(伦理委员会,意大利) |
-| MinSal | Ministero della Salute(意大利卫生部) |
+- Queries (data clarification cycles)
+- Data cleaning
+- Study material supply — *Fornitura di materiale di studio*
+- Close-Out Visit (COV)
+- Database date freeze (DM)
+- Statistical analysis (BS)
+- Study analysis review with PI — *Analisi dello studio con PI*
+- CPS Report drafting
 
 ---
 
-## Agent 使用提示
+## Phase 6 — Conclusion (SA & Report)
 
-- 当客户问 "我们到哪一步了" → 找到对应 Phase + GREEN LIGHT 状态
-- 当客户问 "下一步要交什么文件" → 看对应 Phase 的子项清单
-- 当客户问 "需要多久" → 各 Phase 历时见 `notes/procedures/cps-timing.md`(待建)
-- 法规链接:见 [[ivdr-annex-xiii]](../regulations/ivdr-annex-xiii.md)
+Scientific Affairs final review and the final CPS Report, delivered as input
+to the Technical Documentation submission.
+
+**Regulatory touchpoint:** IVDR Annex XIII Part A §3 — CPSR (Clinical
+Performance Study Report) output.
+
+---
+
+## Roles (RACI quick reference)
+
+| Abbreviation | Role |
+|--------------|------|
+| PI    | Principal Investigator (lead site clinical lead) |
+| SS    | Scientific Specialist |
+| BS    | Biostatistician |
+| PM    | Project Manager |
+| CRA   | Clinical Research Associate (site monitor) |
+| RA    | Regulatory Affairs |
+| QA    | Quality Assurance |
+| CE    | Ethics Committee (*Comitato Etico*, Italy) |
+| MinSal| Italian Ministry of Health (*Ministero della Salute*) |
+
+---
+
+## How Conformly uses this procedure
+
+- When the user asks "where are we in the CPS?", Conformly reads the project
+  dossier and maps the current state to a phase + green-light row above.
+- The dashboard's 6-phase journey is the certification *outer* loop; this CPS
+  procedure is the inner sub-loop that fills Phases 4–6.
+- Each green-light gate is a natural place to run a Notified Body simulation
+  before progressing.
+- Regulatory touchpoints (Annex XIII references) above are the citations
+  Conformly attaches when answering questions about CPS execution.
+
+*This procedure was adapted from a working Italian CRO's Asana board with
+their permission; identifiers and client names are scrubbed.*

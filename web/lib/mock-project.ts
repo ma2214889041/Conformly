@@ -512,4 +512,9 @@ export const KNOWLEDGE_TREE: KnowledgeNode[] = [
     { id: "kb-tnb-19", name: "PP-19 — Common IVDR deficiencies",            used: 21 },
     { id: "kb-tnb-22", name: "PP-22 — Software documentation expectations", used: 11 },
   ]},
+  { id: "kb-proc", name: "Conformly internal procedures", count: 3, children: [
+    { id: "kb-proc-cps", name: "Clinical Performance Study — 60+ step procedure", used: 47 },
+    { id: "kb-proc-nb",  name: "Notified Body audit preparation",                  used: 8  },
+    { id: "kb-proc-capa",name: "CAPA response drafting playbook",                  used: 14 },
+  ]},
 ];
