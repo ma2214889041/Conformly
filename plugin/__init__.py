@@ -32,12 +32,17 @@ from .tools.list_clients import (
     LIST_CLIENTS_SCHEMA,
     handle_list_clients,
 )
+from .tools.search_regulation import (
+    SEARCH_REGULATION_SCHEMA,
+    handle_search_regulation,
+)
 
 
 # (name, schema, handler, emoji) — extend as more tools come online.
 _TOOLS = (
     ("conformly_get_client_status", GET_CLIENT_STATUS_SCHEMA, handle_get_client_status, "📋"),
     ("conformly_list_clients",      LIST_CLIENTS_SCHEMA,      handle_list_clients,      "👥"),
+    ("conformly_search_regulation", SEARCH_REGULATION_SCHEMA, handle_search_regulation, "📚"),
 )
 
 
