@@ -198,6 +198,37 @@ ProtectControlGroups=true
 WantedBy=multi-user.target
 EOF
 
+log "Writing systemd unit conformly-api.service"
+cat > /etc/systemd/system/conformly-api.service <<EOF
+[Unit]
+Description=Conformly — FastAPI sidecar (tool endpoints + SSE)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=${APP_USER}
+WorkingDirectory=${APP_DIR}
+EnvironmentFile=-${ENV_FILE}
+Environment="HERMES_HOME=${APP_HOME}/.hermes"
+Environment="CONFORMLY_VAULT=${APP_DIR}/vault"
+Environment="PYTHONPATH=${APP_DIR}/plugin"
+ExecStart=${HERMES_DIR}/venv/bin/python -m uvicorn api.server:app --host 127.0.0.1 --port 8080 --workers 2
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=${APP_HOME}/.hermes ${APP_HOME}/.conformly ${APP_DIR}/vault
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 if [[ $WEB_HAS_APP -eq 1 ]]; then
     log "Writing systemd unit conformly-web.service"
     cat > /etc/systemd/system/conformly-web.service <<EOF
@@ -262,7 +293,31 @@ server {
     add_header Referrer-Policy strict-origin-when-cross-origin always;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-    # Reverse proxy → Next.js
+    # SSE for the live agent feed — long-lived, no buffering.
+    # MUST come before the generic /api/ block (more specific match wins).
+    location ~ ^/api/agent/run/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Connection '';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 24h;
+    }
+
+    # FastAPI sidecar — all /api/* (except the SSE route above).
+    location /api/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 300;
+    }
+
+    # Reverse proxy → Next.js (catches everything else, including SPA routes).
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
@@ -273,16 +328,6 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_read_timeout 90;
-    }
-
-    # SSE / WebSocket for the live agent feed (when added)
-    location /api/agent/live {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Connection '';
-        proxy_buffering off;
-        proxy_cache off;
-        proxy_read_timeout 24h;
     }
 }
 EOF
@@ -309,9 +354,20 @@ fi
 # 10. Start services
 # ---------------------------------------------------------------------------
 log "Enabling + starting systemd services"
-systemctl enable --now hermes-gateway.service
+systemctl enable --now conformly-api.service
+# Hermes gateway is only useful once the user has configured Telegram/Slack
+# and a model — leave it enabled but only start when ready.
+systemctl enable hermes-gateway.service
 if [[ $WEB_HAS_APP -eq 1 ]]; then
     systemctl enable --now conformly-web.service
+fi
+
+# Give the API a beat to come up before probing
+sleep 2
+if curl -sf http://127.0.0.1:8080/api/health >/dev/null; then
+    ok "conformly-api responding on :8080"
+else
+    warn "conformly-api not responding — check 'journalctl -u conformly-api'"
 fi
 
 # ---------------------------------------------------------------------------
