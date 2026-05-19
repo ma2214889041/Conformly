@@ -35,7 +35,11 @@ export function Sidebar() {
       className="fixed inset-y-0 left-0 z-30 hidden md:flex w-[252px] shrink-0 flex-col bg-white border-r border-ink-200"
     >
       {/* brand */}
-      <div className="h-16 px-5 flex items-center gap-2.5 border-b border-ink-200">
+      <Link
+        href="/"
+        aria-label="Conformly home"
+        className="h-16 px-5 flex items-center gap-2.5 border-b border-ink-200 hover:bg-surface-subtle transition-colors"
+      >
         <div className="h-7 w-7 rounded-md bg-accent grid place-items-center shrink-0">
           <span className="text-white font-bold text-[15px] tracking-tight">C</span>
         </div>
@@ -43,7 +47,7 @@ export function Sidebar() {
           <div className="text-ink-900 font-semibold tracking-tight text-[15px]">Conformly</div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-ink-400">Design-to-Certificate</div>
         </div>
-      </div>
+      </Link>
 
       {/* nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
