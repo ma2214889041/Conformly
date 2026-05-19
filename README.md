@@ -19,7 +19,7 @@
 | **What** | Autonomous AI agent that turns IVDR regulatory affairs from a multi-million-euro multi-year manual program into a guided, auditable, single-screen workflow. |
 | **Why now** | EU Regulation (EU) 2017/746 reclassified 80%+ of IVD devices into stricter compliance tiers. The bottleneck isn't the science — it's the document burden. Conformly removes the document burden. |
 | **How** | Five purpose-built Python tools running on top of the [NousResearch Hermes Agent](https://github.com/NousResearch/hermes-agent), powered by **Gemini 3 Pro** for deep reasoning (2M-token context = no RAG needed) and **Gemini 3 Flash** for triage. |
-| **Demonstrably real** | 90 unit tests, 7 HTTP endpoints, a FastAPI backend, a Next.js front-end, a one-shot Vultr installer, and the whole thing is live at `217.69.14.165` right now. |
+| **Demonstrably real** | 90 unit tests, 7 HTTP endpoints, a FastAPI backend, a Next.js front-end, a one-shot Vultr installer, and the whole thing is live at [`conformly.gopromp.com`](https://conformly.gopromp.com) right now — HTTPS, Gemini 3 Pro responding in ~10 s. |
 | **Numbers** | **–78 % time** on NB letter triage · **–65 % cognitive load** on GSPR gap analysis · **–40 % consulting fees** on a typical Class C submission |
 | **Stack** | Python 3.11 · Gemini 3 · Next.js 14 · FastAPI · nginx · Let's Encrypt · Ubuntu 24.04 · Vultr |
 
